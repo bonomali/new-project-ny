@@ -17,7 +17,7 @@ For more details on specific processes or systems, see the wiki.
 
 * [Docker (19.03.8 or higher)](https://docs.docker.com/get-started/#download-and-install-docker-desktop)
 * Backend
-  * [JDK (14.0.1 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
+  * [JDK (8 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
   * [Gradle (6.3 or higher)](https://gradle.org/install/)
 * Frontend
   * [Node.js (6.14.4 or higher)](https://nodejs.org/en/)
