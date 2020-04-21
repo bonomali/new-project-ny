@@ -1,5 +1,7 @@
 # hello-world-docker
 
+NOTE: This is not an officially supported Google product.
+
 A quick and dirty hello world docker test.
 
 ## Architecture
