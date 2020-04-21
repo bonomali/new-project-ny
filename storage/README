@@ -1,0 +1,5 @@
+# Running mongodb as a Docker image
+
+MongoDB provides [their own image](https://hub.docker.com/_/mongo). This folder
+here is for specific configuration that needs to be done for a MongoDB instance.
+What that is exactly is yet to be determined.

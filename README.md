@@ -17,6 +17,17 @@ For more details on specific processes or systems, see the wiki.
 * [Docker (19.03.8 or higher)](https://docs.docker.com/get-started/#download-and-install-docker-desktop)
 * [JDK (14.0.1 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
 
+## Build and run
+
+Go to the directory you want to build and run from and run:
+
+```sh
+SERVICE=your-name-here
+./gradlew build
+docker build --tag $SERVICE:1.0 .
+docker run $SERVICE:1.0
+```
+
 ## Source Code Headers
 
 Every file containing source code must include copyright and license
