@@ -1,27 +1,21 @@
 # hello-world-docker
-A quick and dirty hello world docker test
 
-This template uses the Apache license, as is Google's default.  See the
-documentation for instructions on using alternate license.
+A quick and dirty hello world docker test.
 
-## How to use this template
+## Architecture
 
-1. Check it out from GitHub.
-    * There is no reason to fork it.
-1. Create a new local repository and copy the files from this repo into it.
-1. Modify README.md and docs/contributing.md to represent your project, not the
-   template project.
-1. Develop your new project!
+This repository contains three docker images that represent a front-end,
+back-end, and storage service. Normally we would probably have these as three
+separate repositories but for learning and proof of concept purposes we'll put
+them all in separate directories here.
 
-``` shell
-git clone https://github.com/google/new-project
-mkdir my-new-thing
-cd my-new-thing
-git init
-cp -r ../new-project/* .
-git add *
-git commit -a -m 'Boilerplate for new Google open source project'
-```
+For more details on specific processes or systems, see the wiki.
+
+## Pre-requisites
+
+* [Gradle (6.3 or higher)](https://gradle.org/install/)
+* [Docker (19.03.8 or higher)](https://docs.docker.com/get-started/#download-and-install-docker-desktop)
+* [JDK (14.0.1 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
 
 ## Source Code Headers
 
