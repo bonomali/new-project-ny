@@ -6,6 +6,6 @@ A simple Gradle app (eventually with Spring Boot)
 
 ```sh
 ./gradlew build
-docker build --tag frontend:1.0 .
-docker run frontend:1.0
+docker build --tag backend:1.0 .
+docker run --name backend backend:1.0
 ```
