@@ -34,17 +34,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext
 public class HelloWorldConfigurationTests {
 
-	@LocalServerPort
-	private int port;
+  @LocalServerPort private int port;
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-	@Test
-	public void testGreeting() throws Exception {
-		ResponseEntity<String> entity = restTemplate
-				.getForEntity("http://localhost:" + this.port + "/", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-	}
-
+  @Test
+  public void testGreeting() throws Exception {
+    ResponseEntity<String> entity =
+        restTemplate.getForEntity("http://localhost:" + this.port + "/", String.class);
+    assertEquals(HttpStatus.OK, entity.getStatusCode());
+  }
 }
