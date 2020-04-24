@@ -22,6 +22,12 @@ dependencies {
 	}
 }
 
+node {
+    version = '14.0.0'
+    npmVersion = '6.14.4'
+    download = true
+}
+
 test {
 	useJUnitPlatform()
 }
