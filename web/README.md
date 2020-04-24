@@ -15,7 +15,7 @@ Builds on your machine and utilizes your local build cache before loading the
 result into Docker. From the `web` directory run:
 
 ```bash
-gradle build
+./gradlew build
 docker build --tag=google-org/new-project-ny-web:dev --file dev.Dockerfile .
 ```
 

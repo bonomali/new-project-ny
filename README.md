@@ -14,11 +14,12 @@ For more details on specific processes or systems, see the wiki.
 ## Pre-requisites
 
 * [Docker (19.03.8 or higher)](https://docs.docker.com/get-started/#download-and-install-docker-desktop)
-* Backend
-  * [JDK (8 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
-  * [Gradle (6.3 or higher)](https://gradle.org/install/)
-* Frontend
-  * [Node.js (6.14.4 or higher)](https://nodejs.org/en/)
+
+The build scripts will automatically install a local version of:
+
+* [JDK (8 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
+* [Gradle (6.3 or higher)](https://gradle.org/install/)
+* [Node.js (6.14.4 or higher)](https://nodejs.org/en/)
 
 ## Source Code Headers
 
