@@ -6,9 +6,7 @@ A quick and dirty hello world docker test.
 
 ## Architecture
 
-This repository contains three docker images that represent a front-end,
-back-end, and storage service. Normally we would probably have these as three
-separate repositories but for learning and proof of concept purposes we'll put
+This repository contains two docker images that represent a web and storage service. Normally we would probably have these as separate repositories but for learning and proof of concept purposes we'll put
 them all in separate directories here.
 
 For more details on specific processes or systems, see the wiki.
@@ -21,17 +19,6 @@ For more details on specific processes or systems, see the wiki.
   * [Gradle (6.3 or higher)](https://gradle.org/install/)
 * Frontend
   * [Node.js (6.14.4 or higher)](https://nodejs.org/en/)
-
-## Build and run
-
-Go to the directory you want to build and run from and run:
-
-```sh
-SERVICE=your-name-here
-./gradlew build
-docker build --tag $SERVICE:1.0 .
-docker run $SERVICE:1.0
-```
 
 ## Source Code Headers
 
