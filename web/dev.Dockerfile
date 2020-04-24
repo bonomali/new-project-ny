@@ -10,10 +10,11 @@ FROM openjdk:8-slim
 # separate one just for the app.
 RUN addgroup --system spring && adduser --system spring --ingroup spring
 USER spring:spring
+WORKDIR /home/spring
 
 # Copy all the JAR file over
 ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
+COPY --chown=spring:spring ${JAR_FILE} app.jar
 
 # Start the main class on container start.
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
