@@ -27,17 +27,23 @@ test {
 }
 
 task installNodeDeps(type: NpmTask) {
+	group = "React App"
+	description = "Installs Node dependencies for frontend/"
 	workingDir = file('frontend')
 	args = ['install']
 }
 
 task buildFrontend(type: NpmTask) {
+	group = "React App"
+	description = "Builds production version of the React app"
 	dependsOn installNodeDeps
 	workingDir = file('frontend')
 	args = ['run', 'build']
 }
 
 task packFrontend(type: Copy) {
+	group = "React App"
+	description = "Adds compiled React app to Jar path"
 	dependsOn buildFrontend
 	from 'frontend/build'
 	into 'build/node/public'
@@ -52,14 +58,10 @@ sourceSets {
 	}
 }
 
-build {
+classes {
 	dependsOn packFrontend
 }
 
-task cleanFrontend {
-	delete 'frontend/build'
-}
-
 clean {
-	dependsOn cleanFrontend
+	delete 'frontend/build'
 }
