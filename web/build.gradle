@@ -54,3 +54,11 @@ sourceSets {
 build {
 	dependsOn packFrontend
 }
+
+task cleanFrontend {
+	delete 'frontend/build'
+}
+
+clean {
+	dependsOn cleanFrontend
+}
