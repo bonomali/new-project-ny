@@ -12,7 +12,7 @@ builds or hermetic production builds.
 ### Dev builds
 
 Builds on your machine and utilizes your local build cache before loading the
-result into Docker.
+result into Docker. From the `web` directory run:
 
 ```bash
 gradle build
@@ -22,13 +22,15 @@ docker build --tag=google-org/new-project-ny-web:dev --file dev.Dockerfile .
 ### Prod builds
 
 Copies all source to the Docker container, builds there, then generates the
-image.
+image. From the `web` directory run:
 
 ```bash
 docker build --tag=google-org/new-project-ny-web:prod .
 ```
 
 ## Run
+
+From the `web` directory run:
 
 ```bash
 VERSION=(dev|prod)
