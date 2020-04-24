@@ -1,9 +1,9 @@
 package org.google.newprojectny.dao;
 
-import org.google.newprojectny.model.Person;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.google.newprojectny.model.Person;
 
 public interface PersonDao {
 
@@ -21,5 +21,4 @@ public interface PersonDao {
   int deletePersonById(UUID id);
 
   int updatePersonById(UUID id, Person person);
-
 }
