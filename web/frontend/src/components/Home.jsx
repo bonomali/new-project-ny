@@ -1,18 +1,38 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import People from './People.jsx';
-import {Grid, Container, Form, Input, Button, Icon} from 'semantic-ui-react'
+import {Grid, Container, Form, Input, Button, Icon} from 'semantic-ui-react';
+import axios from 'axios';
 
 function Home() {
-  const [people, setPeople] = useState(() => {
-    // Here is where we could issue an aysnc API call to get people from our database (can use package axios).
-    return [{id: "id", name: "name"}, {id: "id2", name: "name2"}]
-  })
+  const [people, setPeople] = useState([])
+
+  useEffect(() => {
+    const fetchPeople = async () => {
+      try {
+        const res = await axios.get("/api/v1/person");
+        setPeople(res.data);
+      }
+      catch (error) {
+        console.log(error); // Add other error handling.
+      }
+    };
+    fetchPeople();
+  }, []) // indicates that this should only be run if the field inside the bracket changes (in this case, it should only be run on original render since '' will never change)
   
   const [name, setName] = useState('')
-  const [id, setID] = useState('')
 
-  const handleSubmit = () => {
-    setPeople(people.concat({name: name, id: id}))
+  const handleSubmit = (evt) => {
+    const addPerson = async () => {
+      try {
+        const res = await axios.post('/api/v1/person', { name: name });
+        setPeople(people.concat(res.data))
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+    addPerson();
+    setName(''); // Clear input
   }
 
   return (
@@ -26,10 +46,7 @@ function Home() {
         <Form onSubmit={handleSubmit}>
           <h4>Information</h4>
           <Form.Group>
-          <Form.Field required control={Input} label='Full Name' placeholder='Full Name' onChange={(evt, data) => {setName(data.value)}} />
-          </Form.Group>
-          <Form.Group>
-          <Form.Field control={Input} label='ID' placeholder='ID' onChange={(evt, data) => {setID(data.value)}} />
+          <Form.Field required control={Input} value={name} label='Full Name' placeholder='Full Name' onChange={(evt, data) => {setName(data.value)}} />
           </Form.Group>
           <Form.Field>
           <Button primary type="submit">
