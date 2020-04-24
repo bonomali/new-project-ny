@@ -1,11 +1,13 @@
-# backend
+# web
 
-A Spring Boot app. Starter code generated from https://start.spring.io
+A Spring Boot app with a React UI. Starter code generated from https://start.spring.io.
+
+Spring Boot code is under `src`. React code is under `frontend`. Upon compilation, `frontend` code will be packaged with the Spring Boot app into a JAR for deployment.
 
 ## Build and run
 
 ```bash
-./gradlew build
+gradle build
 docker build --tag=backend:1.0 .
 docker run --publish 8080:8080 --name backend backend:1.0
 ```
