@@ -46,6 +46,7 @@ task packFrontend(type: Copy) {
 sourceSets {
 	main {
 		resources {
+			compiledBy packFrontend
 			srcDirs 'build/node'
 		}
 	}

@@ -2,11 +2,11 @@
 # https://github.com/spring-guides/gs-spring-boot-docker
 
 # Use JDK 8 image
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-slim
 
 # By default, Docker runs apps as a root user in the container. We'll create a
 # separate one just for the app.
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN addgroup --system spring && adduser --system spring --ingroup spring
 USER spring:spring
 
 # Copy all the JAR file over
