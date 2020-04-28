@@ -1,0 +1,7 @@
+secretGenerator:
+  - name: mongo-pass
+    literals:
+      - password=ABADIDEA
+resources:
+  - mongodb.yaml
+  - web.yaml

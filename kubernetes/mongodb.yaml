@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: npny-mongo-service
+  labels:
+    app: new-project-ny
+spec:
+  ports:
+    - port: 27017
+  selector:
+    app: new-project-ny
+    tier: mongo
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: npny-mongo-pv-claim
+  labels:
+    app: new-project-ny
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: npny-mongo
+  labels:
+    app: new-project-ny
+spec:
+  selector:
+    matchLabels:
+      app: new-project-ny
+      tier: mongo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: new-project-ny
+        tier: mongo
+    spec:
+      containers:
+        - image: mongo:4.2.6
+          name: npny-mongo
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-pass
+                  key: password
+          ports:
+            - containerPort: 27017
+              name: mongo
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: npny-mongo-pv-claim

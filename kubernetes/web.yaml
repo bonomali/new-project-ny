@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: npny-web-service
+  labels:
+    app: new-project-ny
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: new-project-ny
+    tier: web
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: npny-web
+  labels:
+    app: new-project-ny
+spec:
+  selector:
+    matchLabels:
+      app: new-project-ny
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: new-project-ny
+        tier: web
+    spec:
+      containers:
+        - image: google-org/new-project-ny-web:prod
+          name: npny-web
+          env:
+            - name: MONGODB_HOST
+              value: npny-mongo-service
+          ports:
+            - containerPort: 8080
+              name: web
