@@ -37,6 +37,8 @@ spec:
           env:
             - name: MONGODB_HOST
               value: npny-mongo-service
+            - name: MONGODB_PORT
+              value: '27017'
             - name: MONGODB_USER
               value: root
             - name: MONGODB_PASSWORD
