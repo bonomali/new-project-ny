@@ -37,6 +37,13 @@ spec:
           env:
             - name: MONGODB_HOST
               value: npny-mongo-service
+            - name: MONGODB_USER
+              value: root
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-pass
+                  key: password
           ports:
             - containerPort: 8080
               name: web
