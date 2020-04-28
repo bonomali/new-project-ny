@@ -10,7 +10,7 @@ spec:
   selector:
     app: new-project-ny
     tier: web
-  type: LoadBalancer
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
