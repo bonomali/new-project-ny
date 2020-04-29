@@ -3,6 +3,7 @@ package org.google.helloworld.api;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
+import org.google.helloworld.dao.PersonRepository;
 import org.google.helloworld.model.Person;
 import org.google.helloworld.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/person")
 @RestController
 public class PersonController {
+  @Autowired
+  private PersonRepository personRepository;
+
+  @GetMapping("/insert")
+  public Person insert() {
+    Person person = new Person(UUID.randomUUID().toString(), "Alice");
+    personRepository.save(person);
+    return person;
+  }
+
+  @GetMapping("/select")
+  public Person select() {
+    List<Person> people = personRepository.findByName("Alice");
+    return people.get(0);
+  }
 
   private final PersonService personService;
 

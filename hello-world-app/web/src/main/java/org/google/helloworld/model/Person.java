@@ -3,8 +3,15 @@ package org.google.helloworld.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.UUID;
 import javax.validation.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
+@Document(collection="people")
+@Data
 public class Person {
+  @Id
   private final UUID id;
   @NotBlank private final String name;
 
