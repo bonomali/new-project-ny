@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: npny-web-service
+  labels:
+    app: call-me-back
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: call-me-back
+    tier: web
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: npny-web
+  labels:
+    app: call-me-back
+spec:
+  selector:
+    matchLabels:
+      app: call-me-back
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: call-me-back
+        tier: web
+    spec:
+      containers:
+        - image: google-org/call-me-back-web:prod
+          name: npny-web
+          env:
+            - name: MONGODB_HOST
+              value: npny-mongo-service
+            - name: MONGODB_PORT
+              value: '27017'
+            - name: MONGODB_USER
+              value: root
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-pass
+                  key: password
+          ports:
+            - containerPort: 8080
+              name: web
