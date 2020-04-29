@@ -1,6 +1,7 @@
 plugins {
 	id "com.bmuschko.docker-remote-api" version "6.4.0"
 	id 'com.github.node-gradle.node' version '2.2.3'
+  id "com.google.cloud.tools.minikube" version "1.0.0-alpha.3"
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
@@ -67,14 +68,57 @@ sourceSets {
 	}
 }
 
+def minikubeInit() {
+  // TODO: requires minikube start, don't
+  def dockerEnv = minikube.getDockerEnv('minikube')
+  docker.url = dockerEnv.DOCKER_HOST
+  docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
+  docker.apiVersion = dockerEnv.DOCKER_API_VERSION
+}
+
 task buildImage(type: DockerBuildImage) {
 	dependsOn bootJar
+  minikubeInit()
 	inputDir = file('.')
 	dockerFile = file('dev.Dockerfile')
 	images.add('google-org/hello-world-app:dev')
 }
 
+task applyChanges(type: Exec) {
+  dependsOn buildImage
+  commandLine 'kubectl', 'apply', '-k', 'kubernetes'
+}
+
+task start(type: Exec) {
+  dependsOn applyChanges
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Hello World App is running at'
+  }
+  commandLine 'minikube', 'service', '--url', 'hw-web-service'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
+task stop(type: Exec) {
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Stopping app'
+  }
+  commandLine 'kubectl', 'delete', '-k', 'kubernetes'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
 task buildProdImage(type: DockerBuildImage) {
+  dependsOn minikubeStart
+  minikubeInit()
 	inputDir = file('.')
 	images.add('google-org/hello-world-app:prod')
 }
