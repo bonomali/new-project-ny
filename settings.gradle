@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'newprojectny'
-include 'hello-world-app', 'call-me-back-app'
+include 'helloworld', 'callmeback'

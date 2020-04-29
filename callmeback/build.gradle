@@ -1,4 +1,5 @@
 plugins {
+	id "com.bmuschko.docker-remote-api" version "6.4.0"
 	id 'com.github.node-gradle.node' version '2.2.3'
 	id 'org.springframework.boot' version '2.2.6.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
@@ -8,6 +9,8 @@ plugins {
 group = 'org.google'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
+
+import com.bmuschko.gradle.docker.tasks.image.*
 
 repositories {
 	mavenCentral()
@@ -62,6 +65,13 @@ sourceSets {
 			srcDirs 'build/node'
 		}
 	}
+}
+
+task buildDevImage(type: DockerBuildImage) {
+	dependsOn bootJar
+	inputDir = file('.')
+	dockerFile = file('dev.Dockerfile')
+	images.add('google-org/call-me-back:dev')
 }
 
 classes {
