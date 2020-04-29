@@ -67,11 +67,16 @@ sourceSets {
 	}
 }
 
-task buildDevImage(type: DockerBuildImage) {
+task buildImage(type: DockerBuildImage) {
 	dependsOn bootJar
 	inputDir = file('.')
 	dockerFile = file('dev.Dockerfile')
 	images.add('google-org/hello-world-app:dev')
+}
+
+task buildProdImage(type: DockerBuildImage) {
+	inputDir = file('.')
+	images.add('google-org/hello-world-app:prod')
 }
 
 classes {
