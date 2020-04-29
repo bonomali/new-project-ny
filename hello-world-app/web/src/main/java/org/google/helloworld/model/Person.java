@@ -6,10 +6,9 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="people")
+@Document(collection = "people")
 public class Person {
-  @Id
-  private final UUID id;
+  @Id private final UUID id;
   @NotBlank private final String name;
 
   public Person(@JsonProperty("id") UUID id, @JsonProperty("name") String name) {

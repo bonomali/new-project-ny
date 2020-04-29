@@ -1,6 +1,5 @@
 package org.google.callmeback;
 
-import com.mongodb.DB;
 import java.util.UUID;
 import org.google.newprojectny.dao.PersonRepository;
 import org.google.newprojectny.model.Person;
@@ -14,8 +13,7 @@ public class DemoPersonApi {
 
   private final MongoDbFactory mongo;
 
-  @Autowired
-  private PersonRepository repository;
+  @Autowired private PersonRepository repository;
 
   public DemoPersonApi(MongoDbFactory mongo) {
     this.mongo = mongo;
@@ -35,8 +33,8 @@ public class DemoPersonApi {
     System.out.println(System.getenv("MONGODB_USER"));
     System.out.println(System.getenv("MONGODB_PASSWORD"));
 
-//    MongoClient mongoClient = new MongoClient(serverAddress, credential);
-//    DB db = mongoClient.getDB(mongoDatabase);
+    //    MongoClient mongoClient = new MongoClient(serverAddress, credential);
+    //    DB db = mongoClient.getDB(mongoDatabase);
 
     // save a couple of people
     UUID alice_id = UUID.randomUUID();
@@ -71,6 +69,5 @@ public class DemoPersonApi {
     for (Person person : repository.findByName("Alice")) {
       System.out.println(person);
     }
-
   }
 }
