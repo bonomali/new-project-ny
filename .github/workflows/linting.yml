@@ -1,6 +1,6 @@
 # Style and format enforcement
 
-name: Code Style & Format
+name: Format Java code
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
