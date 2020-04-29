@@ -70,7 +70,6 @@ sourceSets {
 
 task buildImage(type: DockerBuildImage) {
 	dependsOn bootJar
-  // TODO: requires minikube start, don't
   def dockerEnv = minikube.getDockerEnv('minikube')
   docker.url = dockerEnv.DOCKER_HOST
   docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)

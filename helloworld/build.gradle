@@ -68,17 +68,12 @@ sourceSets {
 	}
 }
 
-def minikubeInit() {
-  // TODO: requires minikube start, don't
+task buildImage(type: DockerBuildImage) {
+	dependsOn bootJar
   def dockerEnv = minikube.getDockerEnv('minikube')
   docker.url = dockerEnv.DOCKER_HOST
   docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
   docker.apiVersion = dockerEnv.DOCKER_API_VERSION
-}
-
-task buildImage(type: DockerBuildImage) {
-	dependsOn bootJar
-  minikubeInit()
 	inputDir = file('.')
 	dockerFile = file('dev.Dockerfile')
 	images.add('google-org/hello-world-app:dev')
