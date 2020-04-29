@@ -1,9 +1,6 @@
 package org.google.helloworld;
 
-import com.mongodb.DB;
-import java.util.UUID;
 import org.google.helloworld.dao.PersonRepository;
-import org.google.helloworld.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +11,7 @@ public class DemoPersonApi {
 
   private final MongoDbFactory mongo;
 
-  @Autowired
-  private PersonRepository repository;
+  @Autowired private PersonRepository repository;
 
   public DemoPersonApi(MongoDbFactory mongo) {
     this.mongo = mongo;
@@ -69,4 +65,4 @@ public class DemoPersonApi {
 //        DB db = mongo.getDb();
 //    }
 
-//}
+// }
