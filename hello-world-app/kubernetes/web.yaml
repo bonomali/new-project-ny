@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: npny-web-service
+  name: hw-web-service
   labels:
     app: hello-world
 spec:
@@ -15,7 +15,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: npny-web
+  name: hw-web
   labels:
     app: hello-world
 spec:
@@ -33,10 +33,10 @@ spec:
     spec:
       containers:
         - image: google-org/hello-world-web:prod
-          name: npny-web
+          name: hw-web
           env:
             - name: MONGODB_HOST
-              value: npny-mongo-service
+              value: hw-mongo-service
             - name: MONGODB_PORT
               value: '27017'
             - name: MONGODB_USER
