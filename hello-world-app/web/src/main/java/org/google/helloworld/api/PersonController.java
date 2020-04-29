@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/person")
 @RestController
 public class PersonController {
-  @Autowired
-  private PersonRepository personRepository;
+  @Autowired private PersonRepository personRepository;
 
   @GetMapping("/insert")
   public Person insert() {

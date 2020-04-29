@@ -1,6 +1,5 @@
 package org.google.callmeback;
 
-import com.mongodb.DB;
 import java.util.UUID;
 import org.google.callmeback.dao.PersonRepository;
 import org.google.callmeback.model.Person;
@@ -14,8 +13,7 @@ public class DemoPersonApi {
 
   private final MongoDbFactory mongo;
 
-  @Autowired
-  private PersonRepository repository;
+  @Autowired private PersonRepository repository;
 
   public DemoPersonApi(MongoDbFactory mongo) {
     this.mongo = mongo;
@@ -24,7 +22,6 @@ public class DemoPersonApi {
   public static void main(String[] args) {
     SpringApplication.run(DemoPersonApi.class, args);
   }
-
 }
 //  public void run(String... args) throws Exception {
 //
