@@ -69,6 +69,8 @@ sourceSets {
 }
 
 task buildImage(type: DockerBuildImage) {
+	group = "Docker / k8s"
+	description = "Builds an image for a local run"
 	dependsOn bootJar
   def dockerEnv = minikube.getDockerEnv('minikube')
   docker.url = dockerEnv.DOCKER_HOST
@@ -85,6 +87,8 @@ task applyChanges(type: Exec) {
 }
 
 task start(type: Exec) {
+	group = "Docker / k8s"
+	description = "Starts the app locally"
   dependsOn applyChanges
   doFirst {
     println '---------------------------------------------------'
@@ -99,6 +103,8 @@ task start(type: Exec) {
 }
 
 task stop(type: Exec) {
+	group = "Docker / k8s"
+	description = "Stops the running app"
   doFirst {
     println '---------------------------------------------------'
     println ''
@@ -112,8 +118,8 @@ task stop(type: Exec) {
 }
 
 task buildProdImage(type: DockerBuildImage) {
-  dependsOn minikubeStart
-  minikubeInit()
+	group = "Docker / k8s"
+	description = "Builds a hermetic prod image"
 	inputDir = file('.')
 	images.add('google-org/hello-world-app:prod')
 }
