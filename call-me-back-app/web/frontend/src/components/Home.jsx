@@ -28,7 +28,9 @@ function Home() {
       number: number,
       topic: topic,
     };
-    // Send reservation to backend route api/reservations
+    // Send reservation to backend route api/reservations.
+    // Get ID of reservation from response, and direct the user to /reservations/{id}
+    // where they will see information about callback.
   }
 
   return (
