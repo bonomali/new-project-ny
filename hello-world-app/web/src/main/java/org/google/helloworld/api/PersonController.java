@@ -31,9 +31,9 @@ public class PersonController {
   }
 
   @GetMapping("/select")
-  public Person select() {
+  public List<Person> select() {
     List<Person> people = personRepository.findByName("Alice");
-    return people.get(0);
+    return people;
   }
 
   private final PersonService personService;
