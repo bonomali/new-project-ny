@@ -22,7 +22,7 @@ instructions.
 
 ```bash
 kubectl apply -k .
-minikube service npny-web-service
+minikube service hw-web-service
 ```
 
 ### Stopping

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: npny-mongo-service
+  name: hw-mongo-service
   labels:
     app: hello-world
 spec:
@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: npny-mongo-pv-claim
+  name: hw-mongo-pv-claim
   labels:
     app: hello-world
 spec:
@@ -28,7 +28,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: npny-mongo
+  name: hw-mongo
   labels:
     app: hello-world
 spec:
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - image: mongo:4.2.6
-          name: npny-mongo
+          name: hw-mongo
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: root
@@ -64,4 +64,4 @@ spec:
       volumes:
         - name: mongo-persistent-storage
           persistentVolumeClaim:
-            claimName: npny-mongo-pv-claim
+            claimName: hw-mongo-pv-claim
