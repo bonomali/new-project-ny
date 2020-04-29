@@ -3,6 +3,7 @@ package org.google.callmeback.api;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
+import org.google.callmeback.dao.PersonRepository;
 import org.google.callmeback.model.Person;
 import org.google.callmeback.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/person")
 @RestController
 public class PersonController {
+
+  @Autowired
+  private PersonRepository personRepository;
+
+  @GetMapping("/insert")
+  public Person insert() {
+    Person person = new Person(UUID.randomUUID(), "Alice", "555-555-5555", "WAITING");
+    personRepository.save(person);
+    return person;
+  }
+
+  @GetMapping("/select")
+  public List<Person> select() {
+    List<Person> people = personRepository.findByName("Alice");
+    return people;
+  }
+
+  @GetMapping("/insertBob")
+  public Person insertBob() {
+    Person person = new Person(UUID.randomUUID(), "Bob", "555-555-5556", "CALL_IN_PROGRESS");
+    personRepository.save(person);
+    return person;
+  }
+
+  @GetMapping("/selectAll")
+  public List<Person> updateStatus() {
+    List<Person> all_people = personRepository.findAll();
+    return all_people;
+  }
 
   private final PersonService personService;
 

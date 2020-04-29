@@ -25,7 +25,6 @@ public class DemoPersonApi {
     SpringApplication.run(DemoPersonApi.class, args);
   }
 }
-
 //  public void run(String... args) throws Exception {
 //
 //    repository.deleteAll();
