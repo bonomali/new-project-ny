@@ -4,45 +4,9 @@ A Spring Boot app with a React UI. Starter code generated from https://start.spr
 
 Spring Boot code is under `src`. React code is under `frontend`. Upon compilation, `frontend` code will be packaged with the Spring Boot app into a JAR for deployment.
 
-## Build
+## Build & Run
 
-We have two build configurations that can be used either for quick development
-builds or hermetic production builds.
-
-### Dev builds
-
-Builds on your machine and utilizes your local build cache before loading the
-result into Docker. From the `web` directory run:
-
-```bash
-./gradlew build
-docker build --tag=google-org/call-me-back-web:dev --file dev.Dockerfile .
-```
-
-### Prod builds
-
-Copies all source to the Docker container, builds there, then generates the
-image. From the `web` directory run:
-
-```bash
-docker build --tag=google-org/call-me-back-web:prod .
-```
-
-## Run
-
-From the `web` directory run:
-
-```bash
-VERSION=(dev|prod)
-docker run --publish 8080:8080 --detach --name web google-org/call-me-back-web:$VERSION
-```
-
-Open [http://localhost:8080](http://localhost:8080) with your browser to see
-the result. To shut down the container run
-
-```bash
-docker rm --force web
-```
+See top level README.md
 
 ## Reference Documentation
 For further reference, please consider the following sections:
