@@ -16,6 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build and test Call Me Back
+    - name: Build and test
       working-directory: .
       run: ./gradlew buildProdImage
