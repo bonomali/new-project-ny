@@ -7,9 +7,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface PersonRepository extends MongoRepository<Person, String> {
 
-    public Person findById(UUID id);
-    public List<Person> findByName(String name);
-    public List<Person> findByPhoneNumber(String phone_number);
-    public List<Person> findByStatus(String status);
-  
+  public Person findById(UUID id);
+
+  public List<Person> findByName(String name);
+
+  public List<Person> findByPhoneNumber(String phone_number);
+
+  public List<Person> findByStatus(String status);
 }

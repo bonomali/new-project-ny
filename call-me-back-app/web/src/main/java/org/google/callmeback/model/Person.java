@@ -6,17 +6,18 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="people")
+@Document(collection = "people")
 public class Person {
-  @Id
-  private final UUID id;
+  @Id private final UUID id;
   @NotBlank private final String name;
   @NotBlank private final String phone_number;
   private final String status;
 
-  public Person(@JsonProperty("id") UUID id, @JsonProperty("name") String name,
-                @JsonProperty("phone_number") String phone_number,
-                @JsonProperty("status") String status) {
+  public Person(
+      @JsonProperty("id") UUID id,
+      @JsonProperty("name") String name,
+      @JsonProperty("phone_number") String phone_number,
+      @JsonProperty("status") String status) {
     this.id = id;
     this.name = name;
     this.phone_number = phone_number;
@@ -31,7 +32,11 @@ public class Person {
     return name;
   }
 
-  public String getPhoneNumber() { return phone_number;}
+  public String getPhoneNumber() {
+    return phone_number;
+  }
 
-  public String getStatus() { return status;}
+  public String getStatus() {
+    return status;
+  }
 }

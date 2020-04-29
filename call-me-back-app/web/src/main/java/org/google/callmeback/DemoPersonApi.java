@@ -1,8 +1,6 @@
 package org.google.callmeback;
 
-import java.util.UUID;
 import org.google.callmeback.dao.PersonRepository;
-import org.google.callmeback.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

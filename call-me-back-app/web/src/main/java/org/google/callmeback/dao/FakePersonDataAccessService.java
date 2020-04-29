@@ -46,8 +46,9 @@ public class FakePersonDataAccessService implements PersonDao {
             person -> {
               int indexOfPersonToUpdate = DB.indexOf(person);
               if (indexOfPersonToUpdate >= 0) {
-                DB.set(indexOfPersonToUpdate, new Person(id, update.getName(),
-                        update.getPhoneNumber(), update.getStatus()));
+                DB.set(
+                    indexOfPersonToUpdate,
+                    new Person(id, update.getName(), update.getPhoneNumber(), update.getStatus()));
                 return 1;
               }
               return 0;
