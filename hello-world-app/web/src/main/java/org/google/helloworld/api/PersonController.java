@@ -25,7 +25,7 @@ public class PersonController {
 
   @GetMapping("/insert")
   public Person insert() {
-    Person person = new Person(UUID.randomUUID().toString(), "Alice");
+    Person person = new Person(UUID.randomUUID(), "Alice");
     personRepository.save(person);
     return person;
   }
