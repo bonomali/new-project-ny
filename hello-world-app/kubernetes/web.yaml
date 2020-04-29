@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hw-web-service
+  labels:
+    app: hello-world
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: hello-world
+    tier: web
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw-web
+  labels:
+    app: hello-world
+spec:
+  selector:
+    matchLabels:
+      app: hello-world
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hello-world
+        tier: web
+    spec:
+      containers:
+        - image: google-org/hello-world-web:prod
+          name: hw-web
+          env:
+            - name: MONGODB_HOST
+              value: hw-mongo-service
+            - name: MONGODB_PORT
+              value: '27017'
+            - name: MONGODB_USER
+              value: root
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-pass
+                  key: password
+          ports:
+            - containerPort: 8080
+              name: web
