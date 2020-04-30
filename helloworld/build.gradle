@@ -28,27 +28,26 @@ dependencies {
 }
 
 node {
-    version = '14.0.0'
-    npmVersion = '6.14.4'
-    download = true
+  version = '14.0.0'
+  npmVersion = '6.14.4'
+  download = true
+  nodeModulesDir = file('frontend')
 }
 
 test {
   useJUnitPlatform()
 }
 
-task installNodeDeps(type: NpmTask) {
-  group = "React App"
-  description = "Installs Node dependencies for frontend/"
-  workingDir = file('frontend')
-  args = ['install']
-}
-
 task buildFrontend(type: NpmTask) {
   group = "React App"
   description = "Builds production version of the React app"
-  dependsOn installNodeDeps
-  workingDir = file('frontend')
+  dependsOn npmInstall
+  inputs.files(fileTree(
+      dir: 'frontend',
+      includes: ['**/public', '**/src']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  outputs.dir('frontend/build')
   args = ['run', 'build']
 }
 
