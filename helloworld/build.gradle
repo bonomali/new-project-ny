@@ -28,27 +28,27 @@ dependencies {
 }
 
 node {
-    version = '14.0.0'
-    npmVersion = '6.14.4'
-    download = true
+  version = '14.0.0'
+  npmVersion = '6.14.4'
+  download = true
+  nodeModulesDir = file('frontend')
 }
 
 test {
   useJUnitPlatform()
 }
 
-task installNodeDeps(type: NpmTask) {
-  group = "React App"
-  description = "Installs Node dependencies for frontend/"
-  workingDir = file('frontend')
-  args = ['install']
-}
-
 task buildFrontend(type: NpmTask) {
   group = "React App"
   description = "Builds production version of the React app"
-  dependsOn installNodeDeps
-  workingDir = file('frontend')
+  dependsOn npmInstall
+  inputs.files(fileTree(
+      dir: 'frontend',
+      includes: ['**/public', '**/src']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  outputs.dir('frontend/build')
+    .withPropertyName('outputDir')
   args = ['run', 'build']
 }
 
@@ -73,6 +73,11 @@ task buildImage(type: DockerBuildImage) {
   group = "Docker / k8s"
   description = "Builds an image for a local run"
   dependsOn bootJar
+  inputs.files(fileTree(
+      dir: '.',
+      includes: ['build/lib/*.jar', '*Dockerfile*']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
   doFirst {
     def dockerEnv = minikube.getDockerEnv('minikube')
     docker.url = dockerEnv.DOCKER_HOST
