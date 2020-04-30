@@ -73,6 +73,11 @@ task buildImage(type: DockerBuildImage) {
   group = "Docker / k8s"
   description = "Builds an image for a local run"
   dependsOn bootJar
+  inputs.files(fileTree(
+      dir: '.',
+      includes: ['build/lib/*.jar', '*Dockerfile*']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
   doFirst {
     def dockerEnv = minikube.getDockerEnv('minikube')
     docker.url = dockerEnv.DOCKER_HOST
