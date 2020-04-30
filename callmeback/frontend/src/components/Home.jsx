@@ -1,11 +1,105 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import useStyles from  '../styles';
 
 function Home() {
+  const classes = useStyles();
+  const [name, setName] = useState('')
+  const [number, setNumber] = useState('')
+  const [topic, setTopic] = useState('')
+  const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
+
+  useEffect(() => {
+    if (number !== "") {
+      // only set requestButtonEnabled to true if number is provied
+      // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
+      if (!requestButtonEnabled) setRequestButtonEnabled(true)
+    } else {
+      if (requestButtonEnabled) setRequestButtonEnabled(false)
+    }
+  })
+
+  const handleSubmit = (evt) => {
+    const reservation = {
+      name: name,
+      number: number,
+      topic: topic,
+    };
+    // TODO: Send reservation to backend route api/reservations.
+    // Get ID of reservation from response, and direct the user to /reservations/{id}
+    // where they will see information about callback.
+  }
+
   return (
-    <div>
-      <h1>Welcome to the call back queue!</h1>
-      <p>Rather than waiting, New York State will call you back at a specific time.</p>
-    </div>
+    <Container component="main" maxWidth="xs">
+      <div className={classes.paper}>
+        <Typography component="h1" variant="h5">
+          Request a call back
+        </Typography>
+        <br />
+        <Typography variant="subtitle1" align="center">
+          Rather than waiting on hold, New York State will
+          call you back.
+        </Typography>
+        <form className={classes.form} noValidate>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="name"
+            label="Name (optional)"
+            name="name"
+            type="text"
+            autoComplete="name"
+            autoFocus
+            value={name}
+            onChange={(evt) => {setName(evt.target.value)}}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="number"
+            label="Phone number"
+            name="number"
+            type="text"
+            autoComplete="555-555-5555"
+            value={number}
+            onChange={(evt) => {setNumber(evt.target.value)}}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            multiline
+            id="topic"
+            placeholder="I lost my job, how do I get unemployment help?"
+            name="topic"
+            type="text"
+            rows='3'
+            value={topic}
+            onChange={(evt) => {setTopic(evt.target.value)}}
+          />
+          <div align='center'>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={!requestButtonEnabled}
+            className={classes.submit}
+            onSubmit={handleSubmit}
+          >
+            Send request
+          </Button>
+          </div>
+        </form>
+      </div>
+    </Container>
   );
 }
 
