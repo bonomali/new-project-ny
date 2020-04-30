@@ -4,13 +4,15 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import useStyles from  '../styles';
+import { useHistory } from 'react-router-dom';
 
-function Home() {
+function Home(props) {
   const classes = useStyles();
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
   const [topic, setTopic] = useState('')
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
+  const history = useHistory();
 
   useEffect(() => {
     if (number !== "") {
@@ -20,17 +22,20 @@ function Home() {
     } else {
       if (requestButtonEnabled) setRequestButtonEnabled(false)
     }
-  })
+  }, [name, number, topic])
 
   const handleSubmit = (evt) => {
+    evt.preventDefault()
     const reservation = {
       name: name,
       number: number,
       topic: topic,
     };
     // TODO: Send reservation to backend route api/reservations.
-    // Get ID of reservation from response, and direct the user to /reservations/{id}
-    // where they will see information about callback.
+    // Get ID of reservation from response, and direct the user to
+    // /reservations/{id} where they will see information about callback.
+    let id = "sampleresid"
+    history.push('/reservations/' + id)
   }
 
   return (
@@ -44,7 +49,7 @@ function Home() {
           Rather than waiting on hold, New York State will
           call you back.
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -92,7 +97,6 @@ function Home() {
             color="primary"
             disabled={!requestButtonEnabled}
             className={classes.submit}
-            onSubmit={handleSubmit}
           >
             Send request
           </Button>
