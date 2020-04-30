@@ -37,6 +37,11 @@ public class ReservationController {
     return reservationService.getAllReservations();
   }
 
+  /**
+   * Returns a Reservation based on the specified id.
+   * 
+   * Always returns a 200 code, no matter whether the Reservation is found.
+   */
   @GetMapping(path = "{id}")
   public Reservation getReservationById(@PathVariable("id") UUID id) {
     return reservationService.getReservationById(id).orElse(null);
