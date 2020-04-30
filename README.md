@@ -23,7 +23,7 @@ minikube status || minikube start
 ```
 
 Note that as long as Docker is installed properly, minikube should use
-Docker as its driver, and a separate Hypervisor should be necessary to
+Docker as its driver, and a separate Hypervisor should not be necessary to
 install.
 
 To build and run:
