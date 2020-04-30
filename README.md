@@ -22,6 +22,10 @@ Before starting anything, make sure minikube is running.
 minikube status || minikube start
 ```
 
+Note that as long as Docker is installed properly, minikube should use
+Docker as its driver, and a separate Hypervisor should not be necessary to
+install.
+
 To build and run:
 
 * `./gradlew appName:buildImage` - Builds an image for a local run
@@ -30,7 +34,10 @@ To build and run:
 * `./gradlew appName:stop` - Stops the running app
 
 Replace `appName` with the directory name you'd like to run or exclude it to
-build or run everything (e.g. `./gradlew callmeback:run)
+build or run everything (e.g. `./gradlew callmeback:run).
+
+Note that during development, only `./gradlew appName:start` should be necessary
+to rebuild and restart the application with the updated code.
 
 ## Source Code Headers
 
