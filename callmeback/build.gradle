@@ -1,0 +1,136 @@
+plugins {
+  id "com.bmuschko.docker-remote-api" version "6.4.0"
+  id 'com.github.node-gradle.node' version '2.2.3'
+  id "com.google.cloud.tools.minikube" version "1.0.0-alpha.3"
+  id 'org.springframework.boot' version '2.2.6.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+  id 'java'
+}
+
+group = 'org.google'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+  implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+  runtimeOnly 'com.h2database:h2'
+  testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+}
+
+node {
+    version = '14.0.0'
+    npmVersion = '6.14.4'
+    download = true
+}
+
+test {
+  useJUnitPlatform()
+}
+
+task installNodeDeps(type: NpmTask) {
+  group = "React App"
+  description = "Installs Node dependencies for frontend/"
+  workingDir = file('frontend')
+  args = ['install']
+}
+
+task buildFrontend(type: NpmTask) {
+  group = "React App"
+  description = "Builds production version of the React app"
+  dependsOn installNodeDeps
+  workingDir = file('frontend')
+  args = ['run', 'build']
+}
+
+task packFrontend(type: Copy) {
+  group = "React App"
+  description = "Adds compiled React app to Jar path"
+  dependsOn buildFrontend
+  from 'frontend/build'
+  into 'build/node/public'
+}
+
+sourceSets {
+  main {
+    resources {
+      compiledBy packFrontend
+      srcDirs 'build/node'
+    }
+  }
+}
+
+task buildImage(type: DockerBuildImage) {
+  group = "Docker / k8s"
+  description = "Builds an image for a local run"
+  dependsOn bootJar
+  doFirst {
+    def dockerEnv = minikube.getDockerEnv('minikube')
+    docker.url = dockerEnv.DOCKER_HOST
+    docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
+    docker.apiVersion = dockerEnv.DOCKER_API_VERSION
+  }
+  inputDir = file('.')
+  dockerFile = file('dev.Dockerfile')
+  images.add('google-org/call-me-back:dev')
+}
+
+task applyChanges(type: Exec) {
+  dependsOn buildImage
+  commandLine 'kubectl', 'apply', '-k', 'kubernetes'
+}
+
+task start(type: Exec) {
+  group = "Docker / k8s"
+  description = "Starts the app locally"
+  dependsOn applyChanges
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Call Me Back App is running at'
+  }
+  commandLine 'minikube', 'service', '--url', 'cmb-web-service'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
+task stop(type: Exec) {
+  group = "Docker / k8s"
+  description = "Stops the running app"
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Stopping app'
+  }
+  commandLine 'kubectl', 'delete', '-k', 'kubernetes'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
+task buildProdImage(type: DockerBuildImage) {
+  group = "Docker / k8s"
+  description = "Builds a hermetic prod image"
+  inputDir = file('.')
+  images.add('google-org/call-me-back:prod')
+}
+
+classes {
+  dependsOn packFrontend
+}
+
+clean {
+  delete 'frontend/build'
+}

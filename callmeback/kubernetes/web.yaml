@@ -32,7 +32,7 @@ spec:
         tier: web
     spec:
       containers:
-        - image: google-org/call-me-back-web:prod
+        - image: google-org/call-me-back:dev
           name: cmb-web
           env:
             - name: MONGODB_HOST
@@ -44,7 +44,7 @@ spec:
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongo-pass
+                  name: cmb-mongo-pass
                   key: password
           ports:
             - containerPort: 8080
