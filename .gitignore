@@ -8,6 +8,9 @@
 **/.settings
 /bin
 
+#Ignore Visual Studio Code settings
+.vscode/settings.json
+
 # misc
 **/.DS_Store
 .env.local
