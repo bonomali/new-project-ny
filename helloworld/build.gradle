@@ -48,6 +48,7 @@ task buildFrontend(type: NpmTask) {
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
   outputs.dir('frontend/build')
+    .withPropertyName('outputDir')
   args = ['run', 'build']
 }
 

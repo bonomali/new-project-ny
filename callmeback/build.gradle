@@ -41,13 +41,14 @@ test {
 task buildFrontend(type: NpmTask) {
   group = "React App"
   description = "Builds production version of the React app"
-  dependsOn npmInsstall
+  dependsOn npmInstall
   inputs.files(fileTree(
       dir: 'frontend',
       includes: ['**/public', '**/src']))
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
   outputs.dir('frontend/build')
+    .withPropertyName('outputDir')
   args = ['run', 'build']
 }
 
