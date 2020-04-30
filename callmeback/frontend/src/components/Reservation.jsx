@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useParams} from 'react-router';
-import Time from 'react-time';
+import Moment from 'react-moment';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -23,8 +23,8 @@ function Reservation() {
         return {topic, waitMin, waitMax, expCallStart, expCallStartMax}
     })
 
-    const callStartFormatted = <Time value={reservationDetails.expCallStart} format="h:mm A" />
-    const callStartMaxFormatted = <Time value={reservationDetails.expCallStartMax} format="h:mm A" />
+    const callStartFormatted = <Moment format="h:mm A">{reservationDetails.expCallStart}</Moment>
+    const callStartMaxFormatted = <Moment format="h:mm A">{reservationDetails.expCallStartMax}</Moment>
 
     return (
         <Container component="main" maxWidth="xs">
