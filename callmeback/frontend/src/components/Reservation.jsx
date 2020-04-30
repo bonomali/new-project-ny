@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {useParams} from 'react-router';
-import Moment from 'react-moment';
 import { Container, Icon } from 'semantic-ui-react'
+import Feedback from './Feedback.jsx'
+import WaitDetails from './WaitDetails.jsx'
 
 function Reservation() {
     const { id } = useParams();
@@ -11,32 +12,24 @@ function Reservation() {
         // reservation data we got upon form submit)
         // and generate a random expected wait time here.
         const topic = "Employment";
-        const expCallStart = new Date();
-        const expCallStartMax = new Date(expCallStart.getTime() + 5*60000)
-        const waitMS = new Date() - expCallStart;
+        const status = "Waiting";
+        const expCallStartMin = new Date();
+        const expCallStartMax = new Date(expCallStartMin.getTime() + 5*60000)
+        const waitMS = new Date() - expCallStartMin;
         const waitMin = Math.round(((waitMS % 86400000) % 3600000) / 60000); // minutes
         const waitMax = waitMin + 5;
 
-        return {topic, waitMin, waitMax, expCallStart, expCallStartMax}
+        return {topic, status, waitMin, waitMax, expCallStartMin, expCallStartMax}
     })
-
-    const callStartFormatted = <Moment format="h:mm A">{reservationDetails.expCallStart}</Moment>
-    const callStartMaxFormatted = <Moment format="h:mm A">{reservationDetails.expCallStartMax}</Moment>
 
     return (
         <Container text textAlign='center' className='paper'>
-            {reservationDetails &&
-            <div>
-                <div style={{"font-size":"20px"}}>
-                    We'll call you back regarding <b>{reservationDetails.topic}</b> in
-                </div>
-                <div style={{"font-size":"30px"}}>
-                    <Icon name='clock' />  {reservationDetails.waitMin} - {reservationDetails.waitMax} min
-                </div>
-                <div>
-                    between {callStartFormatted} and {callStartMaxFormatted}
-                </div>
-            </div>}
+            {!!reservationDetails &&
+            reservationDetails.status === "Waiting" &&
+            <WaitDetails reservationDetails={reservationDetails}/>}
+            {!!reservationDetails &&
+            reservationDetails.status === "Call Completed" &&
+            <Feedback />}
         </Container>
     )
 }
