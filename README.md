@@ -39,6 +39,17 @@ build or run everything (e.g. `./gradlew callmeback:run).
 Note that during development, only `./gradlew appName:start` should be necessary
 to rebuild and restart the application with the updated code.
 
+To view logs:
+
+```
+> kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+cmb-mongo-5d746ddb7d-85w7n   1/1     Running   0          61s
+cmb-web-5bd6c94b98-8dlfp     1/1     Running   0          61s
+> kubectl logs -f cmb-web-5bd6c94b98-8dlfp
+# logs begin streaming from the selected container
+```
+
 ## Source Code Headers
 
 Every file containing source code must include copyright and license
