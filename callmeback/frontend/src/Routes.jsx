@@ -1,17 +1,15 @@
 import React from 'react'
-import {Router} from 'react-router'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom'
 import Home from './components/Home.jsx'
-import history from './history'
-import CssBaseline from '@material-ui/core/CssBaseline';
+import Reservation from './components/Reservation.jsx'
 
 function Routes() {
     return (
-        <Router history={history}>
-            <CssBaseline />
+        <Router>
             <div className="container-fluid">
                 <Switch>
                     <Route path='/home' component={Home} />
+                    <Route path='/reservations/:id' component={Reservation} />
                     <Route exact path='/' component={Home} />
                 </Switch>
             </div>

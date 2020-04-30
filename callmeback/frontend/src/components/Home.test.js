@@ -4,6 +4,6 @@ import Home from './Home';
 
 test('renders welcome link', () => {
   const { getByText } = render(<Home />);
-  const linkElement = getByText(/Call-Me-Back/i);
+  const linkElement = getByText(/Join the queue/i);
   expect(linkElement).toBeInTheDocument();
 });
