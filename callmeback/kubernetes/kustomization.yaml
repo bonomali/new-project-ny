@@ -1,0 +1,7 @@
+secretGenerator:
+  - name: cmb-mongo-pass
+    literals:
+      - password=ABADIDEA
+resources:
+  - mongodb.yaml
+  - web.yaml
