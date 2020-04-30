@@ -32,6 +32,17 @@ To build and run:
 Replace `appName` with the directory name you'd like to run or exclude it to
 build or run everything (e.g. `./gradlew callmeback:run)
 
+To view logs:
+
+```
+> kubectl get pods
+NAME                         READY   STATUS    RESTARTS   AGE
+cmb-mongo-5d746ddb7d-85w7n   1/1     Running   0          61s
+cmb-web-5bd6c94b98-8dlfp     1/1     Running   0          61s
+> kubectl logs -f cmb-web-5bd6c94b98-8dlfp
+# logs begin streaming from the selected container
+```
+
 ## Source Code Headers
 
 Every file containing source code must include copyright and license
