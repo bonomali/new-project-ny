@@ -1,11 +1,7 @@
 spring:
     data:
-        mongodb:        
-            host: localhost
-            port: 27017
+        mongodb:
             database: Person
             authentication-database: admin
-            username: root
-            password: ABADIDEA
         rest:
             base-path: /api
