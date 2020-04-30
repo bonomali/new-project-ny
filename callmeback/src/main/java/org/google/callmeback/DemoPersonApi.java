@@ -5,8 +5,8 @@ import java.util.Properties;
 import org.google.callmeback.dao.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.data.mongodb.MongoDbFactory;
 
 @SpringBootApplication
