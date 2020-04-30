@@ -11,16 +11,16 @@ function Home(props) {
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
   const [topic, setTopic] = useState('')
-  const [enabled, setEnabled] = useState(false)
+  const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
   const history = useHistory();
 
   useEffect(() => {
-    if (name !== "" && number !== "" && topic !== "") {
-      // only set enabled to true if name, number, and topic are selected
-      // AND enabled is not already true (don't re-render if we don't need to)
-      if (!enabled) setEnabled(true)
+    if (number !== "") {
+      // only set requestButtonEnabled to true if number is provied
+      // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
+      if (!requestButtonEnabled) setRequestButtonEnabled(true)
     } else {
-      if (enabled) setEnabled(false)
+      if (requestButtonEnabled) setRequestButtonEnabled(false)
     }
   }, [name, number, topic])
 
@@ -31,7 +31,7 @@ function Home(props) {
       number: number,
       topic: topic,
     };
-    // Send reservation to backend route api/reservations.
+    // TODO: Send reservation to backend route api/reservations.
     // Get ID of reservation from response, and direct the user to
     // /reservations/{id} where they will see information about callback.
     let id = "sampleresid"
@@ -42,21 +42,20 @@ function Home(props) {
     <Container component="main" maxWidth="xs">
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
-          Welcome to the call back queue!
+          Request a call back
         </Typography>
         <br />
         <Typography variant="subtitle1" align="center">
-          Rather than waiting, New York State will
-          call you back at a specific time.
+          Rather than waiting on hold, New York State will
+          call you back.
         </Typography>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="name"
-            label="Full Name"
+            label="Name (optional)"
             name="name"
             type="text"
             autoComplete="name"
@@ -70,18 +69,13 @@ function Home(props) {
             required
             fullWidth
             id="number"
-            label="Phone Number"
+            label="Phone number"
             name="number"
             type="text"
             autoComplete="555-555-5555"
             value={number}
             onChange={(evt) => {setNumber(evt.target.value)}}
           />
-          <br />
-          <br />
-          <Typography variant="subtitle1">
-            What are you calling about?
-          </Typography>
           <TextField
             variant="outlined"
             margin="normal"
@@ -89,10 +83,10 @@ function Home(props) {
             fullWidth
             multiline
             id="topic"
-            label="Topic"
+            placeholder="I lost my job, how do I get unemployment help?"
             name="topic"
             type="text"
-            rows='4'
+            rows='3'
             value={topic}
             onChange={(evt) => {setTopic(evt.target.value)}}
           />
@@ -101,10 +95,10 @@ function Home(props) {
             type="submit"
             variant="contained"
             color="primary"
-            disabled={!enabled}
+            disabled={!requestButtonEnabled}
             className={classes.submit}
           >
-            Join the queue
+            Send request
           </Button>
           </div>
         </form>
