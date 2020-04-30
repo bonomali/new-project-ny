@@ -1,12 +1,9 @@
 package org.google.callmeback.dao;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.google.callmeback.dao.ReservationDao;
 import org.google.callmeback.model.Reservation;
 import org.springframework.stereotype.Repository;
 
