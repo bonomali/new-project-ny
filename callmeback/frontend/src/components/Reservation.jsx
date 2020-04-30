@@ -1,18 +1,15 @@
 import React, {useState} from 'react';
 import {useParams} from 'react-router';
 import Moment from 'react-moment';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import useStyles from  '../styles';
-import WatchLaterIcon from '@material-ui/icons/WatchLater';
+import { Container, Icon } from 'semantic-ui-react'
 
 function Reservation() {
-    const classes = useStyles();
     const { id } = useParams();
     const [reservationDetails] = useState(() => {
         // TODO: Call reservations/{id} endpoint to get reservation data
-        // and reservations/{id}/statistics to get wait information
+        // (this would not be necessary if we had a global redux state with the
+        // reservation data we got upon form submit)
+        // and generate a random expected wait time here.
         const topic = "Employment";
         const expCallStart = new Date();
         const expCallStartMax = new Date(expCallStart.getTime() + 5*60000)
@@ -27,28 +24,18 @@ function Reservation() {
     const callStartMaxFormatted = <Moment format="h:mm A">{reservationDetails.expCallStartMax}</Moment>
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container text textAlign='center' className='paper'>
             {reservationDetails &&
-            <div className={classes.paper}>
-                <Typography component="h1" variant="h5" align='center'>
+            <div>
+                <div style={{"font-size":"20px"}}>
                     We'll call you back regarding <b>{reservationDetails.topic}</b> in
-                </Typography>
-                <br />
-                <Grid container spacing={1} justify='center' alignItems='center'>
-                    <Grid item>
-                        <WatchLaterIcon fontSize='large' color='action' />
-                    </Grid>
-                    <Grid item>
-                        <Typography component="h1" variant="h4">
-                            {reservationDetails.waitMin} - {reservationDetails.waitMax} min
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Typography variant="subtitles1" justify='center'>
+                </div>
+                <div style={{"font-size":"30px"}}>
+                    <Icon name='clock' />  {reservationDetails.waitMin} - {reservationDetails.waitMax} min
+                </div>
+                <div>
                     between {callStartFormatted} and {callStartMaxFormatted}
-                </Typography>
-                <br />
-                
+                </div>
             </div>}
         </Container>
     )
