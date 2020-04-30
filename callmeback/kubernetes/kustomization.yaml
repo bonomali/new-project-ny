@@ -1,5 +1,5 @@
 secretGenerator:
-  - name: mongo-pass
+  - name: cmb-mongo-pass
     literals:
       - password=ABADIDEA
 resources:

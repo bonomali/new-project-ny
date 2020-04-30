@@ -32,7 +32,7 @@ spec:
         tier: web
     spec:
       containers:
-        - image: google-org/hello-world-web:prod
+        - image: google-org/hello-world-app:dev
           name: hw-web
           env:
             - name: MONGODB_HOST
@@ -44,7 +44,7 @@ spec:
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongo-pass
+                  name: hw-mongo-pass
                   key: password
           ports:
             - containerPort: 8080
