@@ -4,22 +4,33 @@ NOTE: This is not an officially supported Google product.
 
 A quick and dirty hello world docker test.
 
-## Architecture
-
-This repository contains two docker images that represent a web and storage service. Normally we would probably have these as separate repositories but for learning and proof of concept purposes we'll put
-them all in separate directories here.
-
 For more details on specific processes or systems, see the wiki.
 
 ## Pre-requisites
 
 * [Docker (19.03.8 or higher)](https://docs.docker.com/get-started/#download-and-install-docker-desktop)
+* [kubectl (1.18.2 or
+  higher)](https://kubernetes.io/docs/tasks/tools/install-kubectl)
+* [minikube (1.9.2 or
+  higher)](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
-The build scripts will automatically install a local version of:
+## Building and running
 
-* [JDK (8 or higher)](https://www.oracle.com/java/technologies/javase-downloads.html)
-* [Gradle (6.3 or higher)](https://gradle.org/install/)
-* [Node.js (6.14.4 or higher)](https://nodejs.org/en/)
+Before starting anything, make sure minikube is running.
+
+```shell
+minikube status || minikube start
+```
+
+To build and run:
+
+* `./gradlew appName:buildImage` - Builds an image for a local run
+* `./gradlew appName:buildProdImage` - Builds a hermetic prod image
+* `./gradlew appName:start` - Starts the app locally
+* `./gradlew appName:stop` - Stops the running app
+
+Replace `appName` with the directory name you'd like to run or exclude it to
+build or run everything (e.g. `./gradlew callmeback:run)
 
 ## Source Code Headers
 
