@@ -8,9 +8,10 @@ function Home(props) {
   const [topic, setTopic] = useState('')
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
   const history = useHistory();
+  const validPhoneNumber = /((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/;
 
   useEffect(() => {
-    if (number !== "") {
+    if (validPhoneNumber.test(number)) {
       // only set requestButtonEnabled to true if number is provied
       // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
       if (!requestButtonEnabled) setRequestButtonEnabled(true)
@@ -53,6 +54,8 @@ function Home(props) {
           required 
           control={Input} 
           value={number}
+          type="tel"
+          pattern="((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})"
           placeholder='Phone number' 
           onChange={(evt) => {setNumber(evt.target.value)}} 
         />

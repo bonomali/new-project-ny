@@ -91,6 +91,9 @@ task buildImage(type: DockerBuildImage) {
 
 task applyChanges(type: Exec) {
   dependsOn buildImage
+  inputs.dir('kubernetes')
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
   commandLine 'kubectl', 'apply', '-k', 'kubernetes'
 }
 

@@ -1,5 +1,6 @@
 .gradle
 **/build/
+**/bin/
 !src/**/build/
 
 # Ignore Eclipse configs
@@ -8,8 +9,9 @@
 **/.settings
 /bin
 
-#Ignore Visual Studio Code settings
-.vscode/settings.json
+# Ignore Visual Studio Code settings
+.vscode
+.devcontainer
 
 # misc
 **/.DS_Store
@@ -48,3 +50,4 @@ gradle-app.setting
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
