@@ -1,18 +1,46 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Container, Form, Rating, Button } from 'semantic-ui-react'
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
-function Feedback() {
+function Feedback(props) {
+    const id = props.id;
     const [details, setDetails] = useState('')
     const defaultRating = 0;
-    const [rate, setRate] = useState(defaultRating)
+    const [rating, setRating] = useState(defaultRating)
+    const [submitButtonEnabled, setSubmitButtonEnabled] = useState(false)
     const history = useHistory();
+
+    useEffect(() => {
+        if (rating != defaultRating) {
+          // only enable submit button if the rating has been set.
+          if (!submitButtonEnabled) setSubmitButtonEnabled(true);
+        } else {
+          if (submitButtonEnabled) setSubmitButtonEnabled(false);
+        }
+      }, [rating, submitButtonEnabled])    
 
     const handleSubmit = (evt) => {
         evt.preventDefault()
-        // TODO: Send rate and details to the backend.
-        // Send to a thank you screen.
-        history.push('/thankyou')
+
+        // Send feedback details to the backend.
+        const feedback = {
+          date: new Date(),
+          rating: rating,
+          comment: details,
+        };
+        axios.patch("/api/v1/reservations/" + id, {
+          feedback:feedback,
+        })
+        .then((response) => {
+          console.log(response);
+
+          // Send to a thank you screen.
+          history.push('/thankyou')
+        }, (error) => {
+          console.log(error);
+          // TODO Display error in the UI.
+        });
     }
 
     return (
@@ -27,7 +55,7 @@ function Feedback() {
                 size='huge'
                 defaultRating={defaultRating}
                 maxRating={5}
-                onRate={(evt, data)=>{setRate(data.rating)}}
+                onRate={(evt, data)=>{setRating(data.rating)}}
                 />
                 <br/>
                 <br/>
@@ -40,6 +68,7 @@ function Feedback() {
                 type="submit"
                 color="blue"
                 variant="contained"
+                disabled={!submitButtonEnabled}
                 className="submit"
                 >
                 Submit feedback

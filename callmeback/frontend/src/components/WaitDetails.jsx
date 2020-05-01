@@ -1,13 +1,14 @@
 import React from 'react';
 import { Container, Icon } from 'semantic-ui-react'
+import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 
 function WaitDetails(props) {
-    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax} = props.reservationDetails
+    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
-
+    
     return (
         <Container text className='paper'>
             <div>
@@ -18,6 +19,19 @@ function WaitDetails(props) {
                     <div style={{"fontSize":"30px"}}>
                         <Icon name='clock' />  {waitMin} - {waitMax} min
                     </div>
+                    <Link
+                        to={{
+                            pathname: "/cancel",
+                            state: {
+                                expCallStartMin: expCallStartMin,
+                                expCallStartMax: expCallStartMax,
+                                id: id,
+                            }
+                        }}
+                        style={{"fontSize":"12px"}}
+                    >
+                        Cancel call back
+                    </Link>
                 </div>
                 <br/>
                 <p style={{"textAlign":"left", "fontSize":"small"}}>
