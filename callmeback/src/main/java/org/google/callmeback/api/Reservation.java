@@ -33,9 +33,11 @@ public class Reservation {
 
   /** The topic of the reservation, derived from the resident's query. */
   public String topic;
-
-  /** The history of all calls and call attempts on this reservation. */
-  public List<ReservationHistoryEvent> events;
+  
+  /**
+   * The history of all calls and call attempts on this reservation.
+   */
+  public List<ReservationEvent> events;
 
   /** The date/time when this reservation was resolved. */
   public Date resolutionDate;
