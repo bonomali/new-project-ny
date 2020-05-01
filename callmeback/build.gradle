@@ -77,6 +77,20 @@ sourceSets {
   }
 }
 
+// Convenience check to see if we should start minikube. Getting the docker
+// environment details returns a non-zero exit code which throws an exception.
+// We use that to trigger a start if that happens.
+minikubeStart.onlyIf {
+  def needsStart = false
+  try {
+    minikube.getDockerEnv('minikube')
+  } catch (Exception e) {
+    println "Looks like minikube is not running, starting..."
+    needsStart = true
+  }
+  return needsStart
+}
+
 // We need to run the initialization of the docker environment separately
 // because of the way gradle configures and evaluates tasks. If we just put the
 // getDockerEnv() call in the task closure, it would cause any build to fail
@@ -84,6 +98,7 @@ sourceSets {
 // use minikube but it means that prod image builds will also break (which don't
 // need minikube to work).
 task configureMinikube {
+  dependsOn minikubeStart
   doFirst {
     def dockerEnv = minikube.getDockerEnv('minikube')
     docker.url.set(dockerEnv.DOCKER_HOST)
@@ -113,6 +128,20 @@ task applyChanges(type: Exec) {
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
   commandLine 'kubectl', 'apply', '-k', 'kubernetes'
+
+  // Kubernetes does not update the images of running pods even if the image is
+  // updated. The way we can do that is by forcing a scale operation.
+  //
+  // H/T to pagid on StackOverflow for the suggestion
+  // https://stackoverflow.com/questions/41735829/update-a-deployment-image-in-kubernetes
+  doLast {
+    exec {
+      commandLine 'kubectl', 'scale', '--replicas=0', '--all', 'deployments'
+    }
+    exec {
+      commandLine 'kubectl', 'scale', '--replicas=1', '--all', 'deployments'
+    }
+  }
 }
 
 task start(type: Exec) {
@@ -158,5 +187,6 @@ classes {
 }
 
 clean {
+  dependsOn minikubeDelete
   delete 'frontend/build'
 }
