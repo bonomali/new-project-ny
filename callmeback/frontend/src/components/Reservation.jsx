@@ -7,75 +7,54 @@ import axios from 'axios';
 
 function Reservation() {
     const { id } = useParams();
-    // const [topic, setTopic] = useState([]);
 
-    // Fetch topic.
-    // Override topic if it exists;
-    
-    
-    
-    // Used to indicate whether the component has already been rendered, so on re-render, we can mark
-    // status as complete.
-    // TODO: Remove when we call the backend and allow the status update to occur there.
-    let hasBeenDisplayed = false; 
+    const [reservationDetails, setReservationDetails] = useState({});
 
     const fetchReservation = async () => {
-        // TODO: Call reservations/{id} endpoint to get reservation data
-        // (this would not be necessary if we had a global redux state with the
-        // reservation data we got upon form submit).
-
-        // const fetchData = async () => {
-            try {
-                const response = await axios.get("/api/v1/reservations/" + id); //concatenate id variable
-                // use response.data fields
-                console.log("the data response is:");
-                console.log(response.data);
-            }
-            catch (error) {
-                console.log(error); // Add other error handling.
-            }
-        // };
-        // fetchData();
-            
-
-        // The following will all come from the API call.
-        const topic = "TESTING";
-        const status = hasBeenDisplayed ? "Call Completed" : "Waiting";
+        // This will be replaced with the callback interval from API call.
         const now = new Date();
         const expCallStartMin = new Date(now.getTime() + 10*60000)
         const expCallStartMax = new Date(expCallStartMin.getTime() + 5*60000)
-    
+
         // Calculations for wait time given the min and max exp call time.
         const waitMinMS = expCallStartMin - now;
         const waitMaxMS = expCallStartMax - now;
         const waitMin = Math.round(((waitMinMS % 86400000) % 3600000) / 60000); // minutes
         const waitMax = Math.round(((waitMaxMS % 86400000) % 3600000) / 60000); 
 
-        hasBeenDisplayed = true;
+        try {
+            const response = await axios.get("/api/v1/reservations/" + id); //concatenate id variable
+            console.log(response.data)
     
-        return {topic, status, waitMin, waitMax, expCallStartMin, expCallStartMax, id}
+            setReservationDetails({
+                id: id,
+                topic: "Employment", // Not in response yet
+                resolved: response.resolution != null,
+                waitMin, waitMax, expCallStartMin, expCallStartMax, // Not in response yet
+            });
+        }
+        catch (error) {
+            console.log(error); // Add other error handling.
+        }
     }
 
-    const [reservationDetails, setReservationDetails] = useState(() => {
-        return fetchReservation(); // Load initial data
-    })
-
     useEffect(() => {
-        // Refetch data every ten seconds
+        fetchReservation(); // Run this once upfront to get the data.
+    
+        // Set interval to refetch data every ten seconds.
         const interval = setInterval(() => {
-            const res = fetchReservation();
-            setReservationDetails(res);
-        }, 1000 * 100); // 100 seconds, change back to 10
+            fetchReservation();
+        }, 1000 * 10);
         return () => clearInterval(interval);
     }, [])
 
     return (
         <Container text textAlign='center' className='paper'>
-            {!!reservationDetails &&
-            reservationDetails.status === "Waiting" &&
+            {reservationDetails.id !== "" &&
+            !reservationDetails.resolved &&
             <WaitDetails reservationDetails={reservationDetails}/>}
-            {!!reservationDetails &&
-            reservationDetails.status === "Call Completed" &&
+            {reservationDetails.id !== "" &&
+            reservationDetails.resolved &&
             <Feedback />}
         </Container>
     )
