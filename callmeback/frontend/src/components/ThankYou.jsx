@@ -6,7 +6,7 @@ function ThankYou() {
         <Container text style={{"paddingTop":"2em"}}>
             <div>Thank you!</div>
             <br/>
-            <div><a href="/">Go to NYS call homepage</a></div>
+            <div><a href="/">Go to New York State call homepage</a></div>
         </Container>
     )
 }

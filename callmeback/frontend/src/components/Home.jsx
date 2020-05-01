@@ -30,7 +30,7 @@ function Home(props) {
     // TODO: Send reservation to backend route api/reservations.
     // Get ID of reservation from response, and direct the user to
     // /reservations/{id} where they will see information about callback.
-    let id = "sampleresid"
+    let id = "12345"
     history.push('/reservations/' + id)
   }
 

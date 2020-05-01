@@ -3,23 +3,44 @@ import {useParams} from 'react-router';
 import { Container } from 'semantic-ui-react'
 import Feedback from './Feedback.jsx'
 import WaitDetails from './WaitDetails.jsx'
+import axios from 'axios';
 import moment from 'moment';
 
 function Reservation() {
     const { id } = useParams();
+    // const [topic, setTopic] = useState([]);
+
+    // Fetch topic.
+    // Override topic if it exists;
+    
+    
     
     // Used to indicate whether the component has already been rendered, so on re-render, we can mark
     // status as complete.
     // TODO: Remove when we call the backend and allow the status update to occur there.
     let hasBeenDisplayed = false; 
 
-    const fetchReservation = () => {
+    const fetchReservation = async () => {
         // TODO: Call reservations/{id} endpoint to get reservation data
         // (this would not be necessary if we had a global redux state with the
         // reservation data we got upon form submit).
 
+        // const fetchData = async () => {
+            try {
+                const response = await axios.get("/api/v1/reservations/" + id); //concatenate id variable
+                // use response.data fields
+                console.log("the data response is:");
+                console.log(response.data);
+            }
+            catch (error) {
+                console.log(error); // Add other error handling.
+            }
+        // };
+        // fetchData();
+            
+
         // The following will all come from the API call.
-        const topic = "Employment";
+        const topic = "TESTING";
         const status = hasBeenDisplayed ? "Call Completed" : "Waiting";
         const now = new Date();
         const expCallStartMin = new Date(now.getTime() + 10*60000)
@@ -45,7 +66,7 @@ function Reservation() {
         const interval = setInterval(() => {
             const res = fetchReservation();
             setReservationDetails(res);
-        }, 1000 * 10); // 10 seconds
+        }, 1000 * 100); // 100 seconds, change back to 10
         return () => clearInterval(interval);
     }, [])
 
