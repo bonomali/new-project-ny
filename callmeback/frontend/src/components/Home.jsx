@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Container, Button, Form, Input, Header } from 'semantic-ui-react'
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 function Home(props) {
   const [name, setName] = useState('')
@@ -30,8 +31,19 @@ function Home(props) {
     // TODO: Send reservation to backend route api/reservations.
     // Get ID of reservation from response, and direct the user to
     // /reservations/{id} where they will see information about callback.
-    let id = "sampleresid"
-    history.push('/reservations/' + id)
+    axios.post('/api/v1/reservations', {
+      name: name,
+      phone: number,
+      topic: topic,
+    })
+    .then((response) => {
+      console.log(response);
+    }, (error) => {
+      console.log(error);
+    });
+
+    // let id = "sampleresid"
+    // history.push('/reservations/' + id)
   }
 
   return (
