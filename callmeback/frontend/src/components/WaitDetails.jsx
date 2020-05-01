@@ -10,7 +10,13 @@ function WaitDetails(props) {
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
 
     const [checked, setCheckbox] = useState(false)
-    
+
+    const numMinutesInHour = 60;
+    const numHoursInDay = 24;
+    const numMinutesInDay = numHoursInDay * numMinutesInHour;
+    const minWaitInHours = waitMin / numMinutesInHour;
+    const minWaitInDays = waitMin / numMinutesInDay;
+
     return (
         <Container text className='paper'>
             <div>
@@ -18,9 +24,18 @@ function WaitDetails(props) {
                     <div style={{"fontSize":"20px"}}>
                         We'll call you back in
                     </div>
+                    {waitMin < numMinutesInHour &&
                     <div style={{"fontSize":"30px"}}>
                         <Icon name='clock' />  {waitMin} - {waitMax} min
-                    </div>
+                    </div>}
+                  {minWaitInHours >= 1 && minWaitInHours < numHoursInDay &&
+                  <div style={{"fontSize":"30px"}}>
+                    <Icon name='clock' />  {minWaitInHours} - {waitMax / numMinutesInHour} hours
+                  </div>}
+                  {minWaitInDays >= 1 &&
+                  <div style={{"fontSize":"30px"}}>
+                    <Icon name='calendar alternate outline' />  {minWaitInDays} - {waitMax / numMinutesInDay} days
+                  </div>}
                     <Link
                         to={{
                             pathname: "/cancel",
@@ -46,7 +61,7 @@ function WaitDetails(props) {
                     <span style={{"display":"table-cell", "paddingRight":"4px", "verticalAlign":"top"}}>
                         <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
                     </span>
-                    <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
+                    <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>
                     </div>
                 </p>
             </div>
