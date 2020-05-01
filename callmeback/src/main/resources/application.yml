@@ -4,4 +4,4 @@ spring:
             database: Person
             authentication-database: admin
         rest:
-            base-path: /api
+            base-path: /api/v1
