@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 
 function WaitDetails(props) {
-    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax} = props.reservationDetails
+    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
@@ -25,6 +25,7 @@ function WaitDetails(props) {
                             state: {
                                 expCallStartMin: expCallStartMin,
                                 expCallStartMax: expCallStartMax,
+                                id: id,
                             }
                         }}
                         style={{"fontSize":"12px"}}
