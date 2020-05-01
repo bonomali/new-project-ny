@@ -37,7 +37,7 @@ function Feedback(props) {
 
           // Send to a thank you screen.
           history.push('/thankyou')
-    }, (error) => {
+        }, (error) => {
           console.log(error);
           // TODO Display error in the UI.
         });
