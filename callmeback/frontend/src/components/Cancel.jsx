@@ -20,7 +20,10 @@ function Cancel() {
             <div style={{"fontSize":"small"}}>If you cancel, we will not call you. You can always schedule a new call later.</div>
             <br/>
             <div style={{"textAlign":"center"}}>
-            <Button size="small"><Link to="/cancelconfirmation">Cancel my call</Link></Button>
+            <Button size="small">
+                {/*TODO: Send cancelation to the backend.*/}
+                <Link to="/cancelconfirmation">Cancel my call</Link>
+            </Button>
             <br/>
             <br/>
             <Link to={reservationLink} style={{"fontSize":"small"}}>Keep my call</Link>
