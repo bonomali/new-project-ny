@@ -3,6 +3,7 @@ import {useParams} from 'react-router';
 import { Container } from 'semantic-ui-react'
 import Feedback from './Feedback.jsx'
 import WaitDetails from './WaitDetails.jsx'
+import moment from 'moment';
 
 function Reservation() {
     const { id } = useParams();
@@ -36,10 +37,11 @@ function Reservation() {
     }
 
     const [reservationDetails, setReservationDetails] = useState(() => {
-        return fetchReservation();
+        return fetchReservation(); // Load initial data
     })
 
     useEffect(() => {
+        // Refetch data every ten seconds
         const interval = setInterval(() => {
             const res = fetchReservation();
             setReservationDetails(res);
