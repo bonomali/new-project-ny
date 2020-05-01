@@ -1,8 +1,6 @@
 package org.google.callmeback.api;
 
-/**
- * Represents the final resolution status of a reservation.
- */
+/** Represents the final resolution status of a reservation. */
 public enum ReservationResolutionType {
   /** The reservation had invalid data, such as a non-working phone number. */
   INVALID,
