@@ -42,4 +42,9 @@ public class Reservation {
 
   /** The resident's feedback about the service experience. */
   public ReservationFeedback feedback;
+
+  /** The resident's feedback about the service experience. */
+  public ReservationWindow getWindow() {
+    return new ReservationWindow();
+  }
 }
