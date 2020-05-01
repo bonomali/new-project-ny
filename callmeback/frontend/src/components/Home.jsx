@@ -45,14 +45,12 @@ function Home(props) {
         <Form onSubmit={handleSubmit}>
         <Form.Field 
           control={Input}
-          autoComplete
           value={name}
           placeholder='Name (optional)'
           onChange={(evt) => {setName(evt.target.value)}}
         />
         <Form.Field
           required 
-          autoComplete
           control={Input} 
           value={number}
           placeholder='Phone number' 
@@ -67,7 +65,7 @@ function Home(props) {
         <Button
           type="submit"
           variant="contained"
-          color="primary"
+          color="blue"
           disabled={!requestButtonEnabled}
           className="submit"
         >

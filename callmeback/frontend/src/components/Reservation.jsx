@@ -12,7 +12,7 @@ function Reservation() {
         // reservation data we got upon form submit)
         // and generate a random expected wait time here.
         const topic = "Employment";
-        const status = "Waiting";
+        const status = "Call Completed";
         const expCallStartMin = new Date();
         const expCallStartMax = new Date(expCallStartMin.getTime() + 5*60000)
         const waitMS = new Date() - expCallStartMin;
