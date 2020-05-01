@@ -172,5 +172,6 @@ classes {
 }
 
 clean {
+  dependsOn minikubeDelete
   delete 'frontend/build'
 }
