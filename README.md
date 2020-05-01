@@ -16,12 +16,6 @@ For more details on specific processes or systems, see the wiki.
 
 ## Building and running
 
-Before starting anything, make sure minikube is running.
-
-```shell
-minikube status || minikube start
-```
-
 Note that as long as Docker is installed properly, minikube should use
 Docker as its driver, and a separate Hypervisor should not be necessary to
 install.
@@ -30,7 +24,7 @@ To build and run:
 
 * `./gradlew appName:buildImage` - Builds an image for a local run
 * `./gradlew appName:buildProdImage` - Builds a hermetic prod image
-* `./gradlew appName:start` - Starts the app locally
+* `./gradlew appName:start` - Starts (or updates) the running app
 * `./gradlew appName:stop` - Stops the running app
 
 Replace `appName` with the directory name you'd like to run or exclude it to

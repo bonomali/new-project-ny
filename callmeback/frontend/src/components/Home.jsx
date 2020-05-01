@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import { Container, Button, Form, Input, Header } from 'semantic-ui-react'
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 function Home(props) {
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
-  const [topic, setTopic] = useState('')
+  const [query, setQuery] = useState('')
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
   const history = useHistory();
   const validPhoneNumber = /^(((\d{3})?)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
@@ -22,16 +23,26 @@ function Home(props) {
 
   const handleSubmit = (evt) => {
     evt.preventDefault()
+
+    // Store reservation in the backend.
     const reservation = {
-      name: name,
-      number: number,
-      topic: topic,
+      preferredName: name,
+      contactPhone: number,
+      query: query,
     };
-    // TODO: Send reservation to backend route api/reservations.
-    // Get ID of reservation from response, and direct the user to
-    // /reservations/{id} where they will see information about callback.
-    let id = "12345"
-    history.push('/reservations/' + id)
+    axios.post('/api/v1/reservations', reservation)
+    .then((response) => {
+      console.log(response);
+
+      // Get ID of reservation from response, and direct the user to
+      // /reservations/{id} where they will see information about callback.
+      let hrefArray = response.data._links.self.href.split('/');
+      let reservationId = hrefArray[hrefArray.length - 1];
+      history.push('/reservations/' + reservationId);
+    }, (error) => {
+      console.log(error);
+      // TODO Display error in the UI.
+    });
   }
 
   return (
@@ -59,8 +70,8 @@ function Home(props) {
         />
         <Form.TextArea
           placeholder="What can we help you with?"
-          value={topic}
-          onChange={(evt) => {setTopic(evt.target.value)}}
+          value={query}
+          onChange={(evt) => {setQuery(evt.target.value)}}
         />
         <br/>
         <Button

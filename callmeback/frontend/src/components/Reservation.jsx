@@ -4,7 +4,6 @@ import { Container } from 'semantic-ui-react'
 import Feedback from './Feedback.jsx'
 import WaitDetails from './WaitDetails.jsx'
 import axios from 'axios';
-import moment from 'moment';
 
 function Reservation() {
     const { id } = useParams();
@@ -54,7 +53,7 @@ function Reservation() {
 
         hasBeenDisplayed = true;
     
-        return {topic, status, waitMin, waitMax, expCallStartMin, expCallStartMax}
+        return {topic, status, waitMin, waitMax, expCallStartMin, expCallStartMax, id}
     }
 
     const [reservationDetails, setReservationDetails] = useState(() => {

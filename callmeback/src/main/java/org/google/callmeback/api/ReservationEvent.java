@@ -1,7 +1,7 @@
 package org.google.callmeback.api;
 
 /** Represents a type of event in the reservation history. */
-public enum ReservationHistoryEvent {
+public enum ReservationEvent {
   /** Call was attempted but did not connect (busy, no answer, voicemail). */
   ATTEMPTED,
   /** Call connected and conversation started. */
