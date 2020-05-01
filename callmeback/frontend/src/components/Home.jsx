@@ -18,7 +18,7 @@ function Home(props) {
     } else {
       if (requestButtonEnabled) setRequestButtonEnabled(false)
     }
-  }, [name, number, topic])
+  }, [validPhoneNumber, number, requestButtonEnabled])
 
   const handleSubmit = (evt) => {
     evt.preventDefault()
@@ -55,7 +55,7 @@ function Home(props) {
           control={Input} 
           value={number}
           type="tel"
-          pattern="((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})"
+          pattern="/((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/"
           placeholder='Phone number' 
           onChange={(evt) => {setNumber(evt.target.value)}} 
         />

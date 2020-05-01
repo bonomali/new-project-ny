@@ -1,28 +1,40 @@
 import React, {useState} from 'react';
 import { Container, Form, Rating, Button } from 'semantic-ui-react'
+import { useHistory } from 'react-router-dom';
 
 function Feedback() {
     const [details, setDetails] = useState('')
     const defaultRating = 3;
     const [rate, setRate] = useState(defaultRating)
+    const history = useHistory();
+
+    const handleSubmit = (evt) => {
+        evt.preventDefault()
+        // TODO: Send rate and details to the backend.
+        // Send to a thank you screen.
+        history.push('/thankyou')
+    }
+
     return (
         <Container text textAlign='center' className='paper'>
             <div>
                 <div style={{"fontSize":"20px", "paddingBottom":"10px"}}>
                     How was your call back?
                 </div>
-                <Form onSubmit={(evt)=>{setDetails(evt.target.data)}}>
+                <Form onSubmit={handleSubmit}>
                 <Rating
                 icon='star'
                 size='huge'
                 defaultRating={defaultRating}
                 maxRating={4}
-                value={rate}
-                onRate={(evt)=>{setRate(evt.target.data)}}
+                onRate={(evt, data)=>{setRate(data.rating)}}
                 />
+                <br/>
+                <br/>
                 <Form.TextArea
                 value={details}
                 placeholder="Tell us more (optional)"
+                onChange={(evt)=>{setDetails(evt.target.value)}}
                 />
                 <Button
                 type="submit"
