@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 function Feedback() {
     const [details, setDetails] = useState('')
-    const defaultRating = 3;
+    const defaultRating = 0;
     const [rate, setRate] = useState(defaultRating)
     const history = useHistory();
 
@@ -26,7 +26,7 @@ function Feedback() {
                 icon='star'
                 size='huge'
                 defaultRating={defaultRating}
-                maxRating={4}
+                maxRating={5}
                 onRate={(evt, data)=>{setRate(data.rating)}}
                 />
                 <br/>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react'
 
-function Feedback() {
+function ThankYou() {
     return (
         <Container text style={{"paddingTop":"2em"}}>
             <div>Thank you!</div>
@@ -11,4 +11,4 @@ function Feedback() {
     )
 }
 
-export default Feedback;
+export default ThankYou;

@@ -9,17 +9,22 @@ function WaitDetails(props) {
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
 
     return (
-        <Container text textAlign='center' className='paper'>
+        <Container text className='paper'>
             <div>
-                <div style={{"fontSize":"20px"}}>
-                    We'll call you back regarding <b>{topic}</b> in
+                <div style={{"textAlign":"center"}} >
+                    <div style={{"fontSize":"20px"}}>
+                        We'll call you back in
+                    </div>
+                    <div style={{"fontSize":"30px"}}>
+                        <Icon name='clock' />  {waitMin} - {waitMax} min
+                    </div>
                 </div>
-                <div style={{"fontSize":"30px"}}>
-                    <Icon name='clock' />  {waitMin} - {waitMax} min
-                </div>
-                <div>
-                    between {callStartFormatted} and {callStartMaxFormatted}
-                </div>
+                <br/>
+                <p style={{"textAlign":"left", "fontSize":"small"}}>
+                    You have requested a call with New York State about <b>{topic}</b>.
+                    Someone will call you between {callStartFormatted} and {callStartMaxFormatted}.
+                    Keep your phone nearby!
+                </p>
             </div>
         </Container>
     )
