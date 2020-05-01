@@ -55,7 +55,7 @@ function Reservation() {
             <WaitDetails reservationDetails={reservationDetails}/>}
             {reservationDetails.id !== "" &&
             reservationDetails.resolved &&
-            <Feedback />}
+            <Feedback id={id}/>}
         </Container>
     )
 }
