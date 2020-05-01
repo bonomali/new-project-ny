@@ -16,12 +16,6 @@ For more details on specific processes or systems, see the wiki.
 
 ## Building and running
 
-Before starting anything, make sure minikube is running.
-
-```shell
-minikube status || minikube start
-```
-
 Note that as long as Docker is installed properly, minikube should use
 Docker as its driver, and a separate Hypervisor should not be necessary to
 install.
