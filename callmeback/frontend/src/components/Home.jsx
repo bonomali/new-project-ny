@@ -8,7 +8,7 @@ function Home(props) {
   const [topic, setTopic] = useState('')
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
   const history = useHistory();
-  const validPhoneNumber = /((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})/;
+  const validPhoneNumber = /^(((\d{3})?)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
 
   useEffect(() => {
     if (validPhoneNumber.test(number)) {
@@ -18,7 +18,7 @@ function Home(props) {
     } else {
       if (requestButtonEnabled) setRequestButtonEnabled(false)
     }
-  }, [name, number, topic])
+  }, [validPhoneNumber, number, requestButtonEnabled])
 
   const handleSubmit = (evt) => {
     evt.preventDefault()
@@ -37,27 +37,23 @@ function Home(props) {
   return (
     <Container text textAlign='center' className='paper'>
       <div >
-        <Header as="h1">Request a call back</Header>
+        <Header as="h1">Request a call with us</Header>
         <div>
-          Rather than waiting on hold, New York State will
-          call you back.
+          Tell us what you need and someone from our New York State offices will call you back.
         </div>
         <br/>
         <Form onSubmit={handleSubmit}>
         <Form.Field 
           control={Input}
-          autoComplete
           value={name}
           placeholder='Name (optional)'
           onChange={(evt) => {setName(evt.target.value)}}
         />
         <Form.Field
           required 
-          autoComplete
           control={Input} 
           value={number}
           type="tel"
-          pattern="((\(\d{3}\)?)|(\d{3}))([\s-./]?)(\d{3})([\s-./]?)(\d{4})"
           placeholder='Phone number' 
           onChange={(evt) => {setNumber(evt.target.value)}} 
         />
@@ -70,7 +66,7 @@ function Home(props) {
         <Button
           type="submit"
           variant="contained"
-          color="primary"
+          color="blue"
           disabled={!requestButtonEnabled}
           className="submit"
         >
