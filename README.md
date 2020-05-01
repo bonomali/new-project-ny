@@ -24,7 +24,7 @@ To build and run:
 
 * `./gradlew appName:buildImage` - Builds an image for a local run
 * `./gradlew appName:buildProdImage` - Builds a hermetic prod image
-* `./gradlew appName:start` - Starts the app locally
+* `./gradlew appName:start` - Starts (or updates) the running app
 * `./gradlew appName:stop` - Stops the running app
 
 Replace `appName` with the directory name you'd like to run or exclude it to
