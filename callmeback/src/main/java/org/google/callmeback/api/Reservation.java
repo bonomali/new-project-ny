@@ -59,11 +59,6 @@ public class Reservation {
   public List<ReservationEvent> events;
 
   /** 
-   * The date/time when this reservation was resolved. 
-   */
-  public Date resolutionDate;
-
-  /** 
    * The final status of the reservation upon resolution. 
    */
   public ReservationResolution resolution;

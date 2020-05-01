@@ -1,13 +1,18 @@
 package org.google.callmeback.api;
 
-/** Represents the final resolution status of a reservation. */
-public enum ReservationResolution {
-  /** The reservation had invalid data, such as a non-working phone number. */
-  INVALID,
+import java.util.Date;
 
-  /** The reservation was canceled by the user. */
-  CANCELED,
+/**
+ * Represents the final resolution status of the reservation.
+ */
+public class ReservationResolution {
+  /**
+   * The date/time when this reservation was resolved.
+   */
+  public Date date;
 
-  /** The reservation was resolved. */
-  RESOLVED
+  /**
+   * The final resolution type of a reservation.
+   */
+  public ReservationResolutionType type;
 }
