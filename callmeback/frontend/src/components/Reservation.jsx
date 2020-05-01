@@ -29,7 +29,7 @@ function Reservation() {
             setReservationDetails({
                 id: id,
                 topic: "Employment", // Not in response yet
-                resolved: response.resolution != null,
+                resolved: response.data.resolution != null,
                 waitMin, waitMax, expCallStartMin, expCallStartMax, // Not in response yet
             });
         }
