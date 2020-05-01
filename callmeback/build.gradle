@@ -88,6 +88,8 @@ task buildImage(type: DockerBuildImage) {
   // TODO: This requires `minikube start` to be done before running the script,
   // find a way to pre-configure the script to either not break immediately or
   // to start minikube for us.
+  //
+  // Tracked in issue #50
   def dockerEnv = minikube.getDockerEnv('minikube')
   docker.url = dockerEnv.DOCKER_HOST
   docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
