@@ -55,7 +55,7 @@ function Reservation() {
             <WaitDetails reservationDetails={reservationDetails}/>}
             {!!reservationDetails &&
             reservationDetails.status === "Call Completed" &&
-            <Feedback />}
+            <Feedback id={id}/>}
         </Container>
     )
 }
