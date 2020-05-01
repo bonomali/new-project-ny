@@ -44,7 +44,7 @@ task buildFrontend(type: NpmTask) {
   dependsOn npmInstall
   inputs.files(fileTree(
       dir: 'frontend',
-      includes: ['**/public', '**/src']))
+      excludes: ['build', 'node_modules']))
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
   outputs.dir('frontend/build')
@@ -56,6 +56,13 @@ task packFrontend(type: Copy) {
   group = "React App"
   description = "Adds compiled React app to Jar path"
   dependsOn buildFrontend
+
+  // Create React App creates different hashed cahce files each build, these can
+  // interfere with each other and show old caches so we make sure we delete
+  // them if there are any changes.
+  doFirst {
+    delete 'build/node/public'
+  }
   from 'frontend/build'
   into 'build/node/public'
 }
@@ -78,12 +85,13 @@ task buildImage(type: DockerBuildImage) {
       includes: ['build/lib/*.jar', '*Dockerfile*']))
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
-  doFirst {
-    def dockerEnv = minikube.getDockerEnv('minikube')
-    docker.url = dockerEnv.DOCKER_HOST
-    docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
-    docker.apiVersion = dockerEnv.DOCKER_API_VERSION
-  }
+  // TODO: This requires `minikube start` to be done before running the script,
+  // find a way to pre-configure the script to either not break immediately or
+  // to start minikube for us.
+  def dockerEnv = minikube.getDockerEnv('minikube')
+  docker.url = dockerEnv.DOCKER_HOST
+  docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
+  docker.apiVersion = dockerEnv.DOCKER_API_VERSION
   inputDir = file('.')
   dockerFile = file('dev.Dockerfile')
   images.add('google-org/hello-world-app:dev')
