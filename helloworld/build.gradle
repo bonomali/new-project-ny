@@ -76,24 +76,31 @@ sourceSets {
   }
 }
 
+// We need to run the initialization of the docker environment separately
+// because of the way gradle configures and evaluates tasks. If we just put the
+// getDockerEnv() call in the task closure, it would cause any build to fail
+// that doesn't have minikube installed. This is fine for the dev builds that
+// use minikube but it means that prod image builds will also break (which don't
+// need minikube to work).
+task configureMinikube {
+  doFirst {
+    def dockerEnv = minikube.getDockerEnv('minikube')
+    docker.url.set(dockerEnv.DOCKER_HOST)
+    docker.certPath.set(file(dockerEnv.DOCKER_CERT_PATH))
+    docker.apiVersion.set(dockerEnv.DOCKER_API_VERSION)
+  }
+}
+
 task buildImage(type: DockerBuildImage) {
   group = "Docker / k8s"
   description = "Builds an image for a local run"
   dependsOn bootJar
+  dependsOn configureMinikube
   inputs.files(fileTree(
       dir: '.',
       includes: ['build/lib/*.jar', '*Dockerfile*']))
     .withPropertyName('sourceFiles')
     .withPathSensitivity(PathSensitivity.RELATIVE)
-  // TODO: This requires `minikube start` to be done before running the script,
-  // find a way to pre-configure the script to either not break immediately or
-  // to start minikube for us.
-  //
-  // Tracked in issue #50
-  def dockerEnv = minikube.getDockerEnv('minikube')
-  docker.url = dockerEnv.DOCKER_HOST
-  docker.certPath = file(dockerEnv.DOCKER_CERT_PATH)
-  docker.apiVersion = dockerEnv.DOCKER_API_VERSION
   inputDir = file('.')
   dockerFile = file('dev.Dockerfile')
   images.add('google-org/hello-world-app:dev')
