@@ -3,8 +3,10 @@ package org.google.callmeback;
 import java.util.Properties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @SpringBootApplication
+@EnableMongoAuditing
 public class CallMeBackApp {
   public static void main(String[] args) {
     Properties props = new Properties();
