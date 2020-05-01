@@ -43,7 +43,9 @@ function WaitDetails(props) {
                     <br/>
                     <br/>
                     <div style={{"display":"table-row"}}>
-                    <span style={{"display":"table-cell", "paddingRight":"4px", "verticalAlign":"top"}}><input type="checkbox" onChange={()=>{setCheckbox(!checked)}} /></span>
+                    <span style={{"display":"table-cell", "paddingRight":"4px", "verticalAlign":"top"}}>
+                        <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
+                    </span>
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
                     </div>
                 </p>
