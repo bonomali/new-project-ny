@@ -27,7 +27,9 @@ export default class AccordionExampleStandard extends Component {
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
           <p>
-            Check your eligibility then apply for benefits online.
+          To file for unemployment, first determine your eligibility by visiting the  
+          <a href="https://dol.ny.gov/unemployment/file-your-first-claim-benefits"> Department of Labor website. </a>
+          If you are eligible, follow the instructions to file a claim.
           </p>
         </Accordion.Content>
 
@@ -40,8 +42,9 @@ export default class AccordionExampleStandard extends Component {
           If I am sick and cannot work, can I get unemployment?
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
-          <p>
-            It depends.
+          <p> You can determine your eligibility by visiting the  
+          <a href="https://dol.ny.gov/unemployment/file-your-first-claim-benefits"> Department of Labor website. </a>
+          If you are eligible, follow the instructions to file a claim.
           </p>
         </Accordion.Content>
 
@@ -54,11 +57,9 @@ export default class AccordionExampleStandard extends Component {
           What happens if I am fired because of COVID-19?
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
-          <p>
-            You should keep a record of this.
-          </p>
-          <p>
-            You should still file for unemployment.
+          <p> You may still be eligible for unemployment and can determine that at the  
+          <a href="https://dol.ny.gov/unemployment/file-your-first-claim-benefits"> Department of Labor website. </a>
+          If you are eligible, follow the instructions to file a claim.
           </p>
         </Accordion.Content>
       </Accordion>

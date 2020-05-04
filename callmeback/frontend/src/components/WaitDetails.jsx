@@ -50,10 +50,10 @@ function WaitDetails(props) {
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
                     </div>
                 </p>
-                <h2 style={{"textAlign":"left", "fontSize":"large"}}>
+                <h2 style={{"textAlign":"left", "fontSize":"medium"}}>
                     Common questions about <b>{topic}</b> 
                 </h2>
-                <div style={{"textAlign":"left"}} >
+                <div style={{"textAlign":"left", "fontSize":"small"}} >
                     <Accordion />
                 </div>              
             </div>               
