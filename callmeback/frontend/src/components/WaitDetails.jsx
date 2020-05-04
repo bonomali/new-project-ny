@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
+import Accordion from './Accordion.jsx';
 
 function WaitDetails(props) {
     const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
@@ -39,7 +40,13 @@ function WaitDetails(props) {
                     Someone will call you between {callStartFormatted} and {callStartMaxFormatted}.
                     Keep your phone nearby!
                 </p>
-            </div>
+                <h2 style={{"textAlign":"left", "fontSize":"large"}}>
+                    Common questions about <b>{topic}</b> 
+                </h2>
+                <div style={{"textAlign":"left"}} >
+                    <Accordion />
+                </div>              
+            </div>               
         </Container>
     )
 
