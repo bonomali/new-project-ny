@@ -1,5 +1,4 @@
 .paper {
-    margin-top: 100px;
     align-items: 'center';
 }
 
@@ -10,4 +9,10 @@
 
 .submit {
     margin: (3, 0, 2);
+}
+
+header {
+    padding-top: 2em;
+    padding-bottom: 1em;
+    text-align: center;
 }
