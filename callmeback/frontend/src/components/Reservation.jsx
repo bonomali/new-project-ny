@@ -5,10 +5,15 @@ import Feedback from './Feedback.jsx'
 import WaitDetails from './WaitDetails.jsx'
 import axios from 'axios';
 
-function Reservation() {
+function Reservation(props) {
     const { id } = useParams();
 
-    const [reservationDetails, setReservationDetails] = useState({});
+    const [reservationDetails, setReservationDetails] = useState(() => {
+        if (!!props && !!props.location.state) {
+            console.log(props.location.state.reservation)
+        }
+        return {}
+    });
 
     const fetchReservation = async () => {
         // This will be replaced with the callback interval from API call.
