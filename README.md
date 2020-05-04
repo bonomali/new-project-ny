@@ -2,7 +2,9 @@
 
 NOTE: This is not an officially supported Google product.
 
-A quick and dirty hello world docker test.
+This project is a simple web app running with Spring Boot, React, MongoDB,
+and Docker. It includes a proof of concept starter app as well as a more
+detailed app implementation based on the starter.
 
 For more details on specific processes or systems, see the wiki.
 
