@@ -33,7 +33,7 @@ function WaitDetails(props) {
                       {' '} - {' '}
                       <WaitTimeEstimate estimateDate={expCallStartMax} />
                     </div>
-                      <Link
+                    <Link
                         to={{
                             pathname: "/cancel",
                             state: {
