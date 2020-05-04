@@ -14,7 +14,7 @@ function WaitDetails(props) {
     
     return (
         <Container text className='paper'>
-            <div>
+            {!!waitMin && <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
                         We'll call you in
@@ -57,7 +57,7 @@ function WaitDetails(props) {
                 <div style={{"textAlign":"left", "fontSize":"small"}} >
                     <FAQAccordion />
                 </div>              
-            </div>               
+            </div>}
         </Container>
     )
 
