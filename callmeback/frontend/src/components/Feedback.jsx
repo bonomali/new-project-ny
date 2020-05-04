@@ -12,7 +12,7 @@ function Feedback(props) {
     const history = useHistory();
 
     useEffect(() => {
-        if (rating != defaultRating) {
+        if (rating !== defaultRating) {
           // only enable submit button if the rating has been set.
           if (!submitButtonEnabled) setSubmitButtonEnabled(true);
         } else {

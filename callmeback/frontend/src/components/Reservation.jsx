@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useParams} from 'react-router';
 import { Container } from 'semantic-ui-react'
 import Feedback from './Feedback.jsx'
@@ -34,7 +34,7 @@ function Reservation(props) {
         return {}
     });
 
-    const fetchReservation = async () => {
+    const fetchReservation = useCallback(async () => {
         try {
             const response = await axios.get("/api/v1/reservations/" + id);
             const reservation = convertReservationToState(response.data);
@@ -43,7 +43,7 @@ function Reservation(props) {
         catch (error) {
             console.log(error); // Add other error handling.
         }
-    }
+    }, [id])
 
     useEffect(() => {
         fetchReservation(); // Run this once upfront to get the data.
@@ -53,7 +53,7 @@ function Reservation(props) {
             fetchReservation();
         }, 1000 * 10);
         return () => clearInterval(interval);
-    }, [])
+    }, [fetchReservation])
 
     return (
         <Container text textAlign='center' className='paper'>
@@ -62,7 +62,7 @@ function Reservation(props) {
             <WaitDetails reservationDetails={reservationDetails}/>}
             {reservationDetails.id !== "" &&
             reservationDetails.resolved &&
-            <Feedback id={id}/>}
+            <Feedback id={reservationDetails.id}/>}
         </Container>
     )
 }
