@@ -12,14 +12,14 @@ function Home(props) {
   const validPhoneNumber = /^(\((\d{3})\)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
 
   useEffect(() => {
-    if (validPhoneNumber.test(number)) {
+    if (validPhoneNumber.test(number) && name !== "" && query !== "") {
       // only set requestButtonEnabled to true if number is provied
       // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
       if (!requestButtonEnabled) setRequestButtonEnabled(true)
     } else {
       if (requestButtonEnabled) setRequestButtonEnabled(false)
     }
-  }, [validPhoneNumber, number, requestButtonEnabled])
+  }, [validPhoneNumber, number, requestButtonEnabled, name, query])
 
   const handleSubmit = (evt) => {
     evt.preventDefault()
@@ -57,7 +57,7 @@ function Home(props) {
         <Form.Field 
           control={Input}
           value={name}
-          placeholder='Name (optional)'
+          placeholder='Name'
           onChange={(evt) => {setName(evt.target.value)}}
         />
         <Form.Field
@@ -69,7 +69,7 @@ function Home(props) {
           onChange={(evt) => {setNumber(evt.target.value)}} 
         />
         <Form.TextArea
-          placeholder="What can we help you with?"
+          placeholder="Tell us what you need"
           value={query}
           onChange={(evt) => {setQuery(evt.target.value)}}
         />
