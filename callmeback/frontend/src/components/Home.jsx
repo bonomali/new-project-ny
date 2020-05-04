@@ -38,7 +38,7 @@ function Home(props) {
       // /reservations/{id} where they will see information about callback.
       let hrefArray = response.data._links.self.href.split('/');
       let reservationId = hrefArray[hrefArray.length - 1];
-      history.push('/reservations/' + reservationId);
+      history.push('/reservations/' + reservationId, { reservation: response.data });
     }, (error) => {
       console.log(error);
       // TODO Display error in the UI.

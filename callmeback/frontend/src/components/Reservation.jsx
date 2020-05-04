@@ -5,32 +5,40 @@ import Feedback from './Feedback.jsx'
 import WaitDetails from './WaitDetails.jsx'
 import axios from 'axios';
 
-function Reservation() {
+function Reservation(props) {
     const { id } = useParams();
+    const now = new Date();
 
-    const [reservationDetails, setReservationDetails] = useState({});
+    const convertReservationToState = (reservation) => {
+        const expCallStartMin = new Date(reservation.window.min)
+        const expCallStartMax = new Date(reservation.window.max)
+
+        // Calculations for wait time given the min and max exp call time.
+        const waitMinMS = expCallStartMin - now;
+        const waitMaxMS = expCallStartMax - now;
+        const waitMin = Math.round(((waitMinMS % 86400000) % 3600000) / 60000); // minutes
+        const waitMax = Math.round(((waitMaxMS % 86400000) % 3600000) / 60000); 
+
+        return {
+            id: id,
+            topic: "Employment", // Not in response yet
+            resolved: reservation.resolution != null,
+            waitMin, waitMax, expCallStartMin, expCallStartMax,
+        };
+    }
+
+    const [reservationDetails, setReservationDetails] = useState(() => {
+        if (!!props && !!props.location.state) {
+            return convertReservationToState(props.location.state.reservation)
+        }
+        return {}
+    });
 
     const fetchReservation = useCallback(async () => {
         try {
-            const response = await axios.get("/api/v1/reservations/" + id); //concatenate id variable
-            console.log(response.data)
-    
-            const now = new Date();
-            const expCallStartMin = new Date(response.data.window.min)
-            const expCallStartMax = new Date(response.data.window.max)
-    
-            // Calculations for wait time given the min and max exp call time.
-            const waitMinMS = expCallStartMin - now;
-            const waitMaxMS = expCallStartMax - now;
-            const waitMin = Math.round(((waitMinMS % 86400000) % 3600000) / 60000); // minutes
-            const waitMax = Math.round(((waitMaxMS % 86400000) % 3600000) / 60000); 
-    
-            setReservationDetails({
-                id: id,
-                topic: "Employment", // Not in response yet
-                resolved: response.data.resolution != null,
-                waitMin, waitMax, expCallStartMin, expCallStartMax,
-            });
+            const response = await axios.get("/api/v1/reservations/" + id);
+            const reservation = convertReservationToState(response.data);
+            setReservationDetails(reservation);
         }
         catch (error) {
             console.log(error); // Add other error handling.
