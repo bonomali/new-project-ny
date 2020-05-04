@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
+import moment from 'moment';
+import WaitTimeEstimate from './WaitTimeEstimate';
 
 function WaitDetails(props) {
-    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
+    const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
 
     const [checked, setCheckbox] = useState(false)
 
-    const numMinutesInHour = 60;
-    const numHoursInDay = 24;
-    const numMinutesInDay = numHoursInDay * numMinutesInHour;
-    const minWaitInHours = waitMin / numMinutesInHour;
-    const minWaitInDays = waitMin / numMinutesInDay;
+    const now = moment();
+    const callStartMaxMoment = moment(expCallStartMax);
+    const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
+    const iconName =
+        callStartMaxDuration.asHours() < 24
+            ? 'clock' : 'calendar alternate outline';
 
     return (
         <Container text className='paper'>
@@ -24,19 +27,13 @@ function WaitDetails(props) {
                     <div style={{"fontSize":"20px"}}>
                         We'll call you back in
                     </div>
-                    {waitMin < numMinutesInHour &&
                     <div style={{"fontSize":"30px"}}>
-                        <Icon name='clock' />  {waitMin} - {waitMax} min
-                    </div>}
-                  {minWaitInHours >= 1 && minWaitInHours < numHoursInDay &&
-                  <div style={{"fontSize":"30px"}}>
-                    <Icon name='clock' />  {minWaitInHours} - {waitMax / numMinutesInHour} hours
-                  </div>}
-                  {minWaitInDays >= 1 &&
-                  <div style={{"fontSize":"30px"}}>
-                    <Icon name='calendar alternate outline' />  {minWaitInDays} - {waitMax / numMinutesInDay} days
-                  </div>}
-                    <Link
+                      <Icon name={iconName} />
+                      <WaitTimeEstimate estimateDate={expCallStartMin} />
+                      {' '} - {' '}
+                      <WaitTimeEstimate estimateDate={expCallStartMax} />
+                    </div>
+                      <Link
                         to={{
                             pathname: "/cancel",
                             state: {
