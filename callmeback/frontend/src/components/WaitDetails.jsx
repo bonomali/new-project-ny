@@ -13,7 +13,7 @@ function WaitDetails(props) {
     
     return (
         <Container text className='paper'>
-            <div>
+            {!!waitMin && <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
                         We'll call you back in
@@ -49,7 +49,7 @@ function WaitDetails(props) {
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
                     </div>
                 </p>
-            </div>
+            </div>}
         </Container>
     )
 
