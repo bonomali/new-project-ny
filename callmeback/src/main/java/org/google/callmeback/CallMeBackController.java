@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class CallMeBackController {
  
+<<<<<<< HEAD
   /**
    * Redirects URLs that are handled by React routing
    *
@@ -38,4 +39,16 @@ public class CallMeBackController {
   public String index() {
       return "/";
   }
+=======
+    @RequestMapping(value = {
+      "/home",
+      "/thankyou",
+      "/cancel",
+      "/cancelconfirmation",
+      "/reservations/**"
+    })
+    public String index() {
+        return "/";
+    }
+>>>>>>> 2693f6befdd4dff76017af244446fe10f3f1bab9
 }
