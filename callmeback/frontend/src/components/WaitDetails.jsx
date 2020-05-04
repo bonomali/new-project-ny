@@ -48,6 +48,7 @@ function WaitDetails(props) {
                         <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
                     </span>
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
+                    <br/>
                     </div>
                 </p>
                 <div style={{"textAlign":"left", "fontSize":"medium"}}>
