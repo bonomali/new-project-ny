@@ -3,7 +3,6 @@ import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import moment from 'moment';
-import WaitTimeEstimate from './WaitTimeEstimate';
 
 function WaitDetails(props) {
     const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
@@ -16,22 +15,32 @@ function WaitDetails(props) {
     const now = moment();
     const callStartMaxMoment = moment(expCallStartMax);
     const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
-    const iconName =
-        callStartMaxDuration.asHours() < 24
-            ? 'clock' : 'calendar alternate outline';
+    const longWait = callStartMaxDuration.asHours() >= 24;
+    const iconName = longWait ? 'calendar alternate outline' : 'clock';
+
+    let waitTimeEstimate;
+    if (longWait) {
+        waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{expCallStartMax}</Moment>;
+    } else {
+        waitTimeEstimate =
+            <span>
+                <Moment fromNow ago>{expCallStartMin}</Moment>
+                {' '} - {' '}
+                <Moment fromNow ago>{expCallStartMax}</Moment>
+            </span>
+    }
 
     return (
         <Container text className='paper'>
+            {console.log(callStartMaxDuration.asHours())}
             <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
-                        We'll call you back in
+                        We'll call you back {longWait ? 'on' : 'in'}
                     </div>
                     <div style={{"fontSize":"30px"}}>
-                      <Icon name={iconName} />
-                      <WaitTimeEstimate estimateDate={expCallStartMin} />
-                      {' '} - {' '}
-                      <WaitTimeEstimate estimateDate={expCallStartMax} />
+                        <Icon name={iconName} />
+                        {waitTimeEstimate}
                     </div>
                     <Link
                         to={{

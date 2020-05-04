@@ -13,7 +13,7 @@ function Reservation() {
     const fetchReservation = useCallback(async () => {
         try {
             const response = await axios.get("/api/v1/reservations/" + id); //concatenate id variable
-            console.log(response.data);
+            console.log(response.data)
 
             const now = new Date();
             const expCallStartMin = new Date(response.data.window.min)
