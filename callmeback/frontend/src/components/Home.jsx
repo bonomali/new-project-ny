@@ -9,7 +9,7 @@ function Home(props) {
   const [query, setQuery] = useState('')
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false)
   const history = useHistory();
-  const validPhoneNumber = /^(((\d{3})?)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
+  const validPhoneNumber = /^(\((\d{3})\)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
 
   useEffect(() => {
     if (validPhoneNumber.test(number)) {

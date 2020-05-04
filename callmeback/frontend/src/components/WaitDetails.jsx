@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
@@ -9,6 +9,8 @@ function WaitDetails(props) {
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
+
+    const [checked, setCheckbox] = useState(false)
     
     return (
         <Container text className='paper'>
@@ -39,6 +41,14 @@ function WaitDetails(props) {
                     You have requested a call with New York State about <b>{topic}</b>.
                     Someone will call you between {callStartFormatted} and {callStartMaxFormatted}.
                     Keep your phone nearby!
+                    <br/>
+                    <br/>
+                    <div style={{"display":"table-row"}}>
+                    <span style={{"display":"table-cell", "paddingRight":"4px", "verticalAlign":"top"}}>
+                        <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
+                    </span>
+                    <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
+                    </div>
                 </p>
                 <h2 style={{"textAlign":"left", "fontSize":"large"}}>
                     Common questions about <b>{topic}</b> 
