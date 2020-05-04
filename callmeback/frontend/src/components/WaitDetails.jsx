@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
+import FAQAccordion from './FAQAccordion.jsx';
 import moment from 'moment';
 
 function WaitDetails(props) {
@@ -32,11 +33,10 @@ function WaitDetails(props) {
 
     return (
         <Container text className='paper'>
-            {console.log(callStartMaxDuration.asHours())}
             <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
-                        We'll call you back {longWait ? 'on' : 'in'}
+                        We'll call you {longWait ? 'on' : 'in'}
                     </div>
                     <div style={{"fontSize":"30px"}}>
                         <Icon name={iconName} />
@@ -53,7 +53,7 @@ function WaitDetails(props) {
                         }}
                         style={{"fontSize":"12px"}}
                     >
-                        Cancel call back
+                        Cancel call
                     </Link>
                 </div>
                 <br/>
@@ -68,9 +68,16 @@ function WaitDetails(props) {
                         <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
                     </span>
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>
+                    <br/>
                     </div>
                 </p>
-            </div>
+                <div style={{"textAlign":"left", "fontSize":"medium"}}>
+                    Common questions about <b>{topic}</b>
+                </div>
+                <div style={{"textAlign":"left", "fontSize":"small"}} >
+                    <FAQAccordion />
+                </div>
+            </div>}
         </Container>
     )
 

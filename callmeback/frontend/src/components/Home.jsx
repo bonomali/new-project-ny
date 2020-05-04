@@ -35,10 +35,10 @@ function Home(props) {
       console.log(response);
 
       // Get ID of reservation from response, and direct the user to
-      // /reservations/{id} where they will see information about callback.
+      // /reservations/{id} where they will see information about their call.
       let hrefArray = response.data._links.self.href.split('/');
       let reservationId = hrefArray[hrefArray.length - 1];
-      history.push('/reservations/' + reservationId);
+      history.push('/reservations/' + reservationId, { reservation: response.data });
     }, (error) => {
       console.log(error);
       // TODO Display error in the UI.
@@ -50,7 +50,7 @@ function Home(props) {
       <div >
         <Header as="h1">Request a call with us</Header>
         <div>
-          Tell us what you need and someone from our New York State offices will call you back.
+          Tell us what you need and someone from our New York State offices will call you.
         </div>
         <br/>
         <Form onSubmit={handleSubmit}>
