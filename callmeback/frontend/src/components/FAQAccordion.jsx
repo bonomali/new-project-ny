@@ -1,26 +1,22 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { Accordion, Icon } from 'semantic-ui-react'
 
-export default class AccordionExampleStandard extends Component {
-  state = { activeIndex: -1 }
+  function FAQAccordion() {
+    const [activeIndex, setIndex] = useState(-1)
 
-  handleClick = (e, titleProps) => {
-    const { index } = titleProps
-    const { activeIndex } = this.state
-    const newIndex = activeIndex === index ? -1 : index
-
-    this.setState({ activeIndex: newIndex })
-  }
-
-  render() {
-    const { activeIndex } = this.state
+    const handleClick = (e, titleProps) => {
+      const { index } = titleProps
+      const { activeIndex } = this.state
+      const newIndex = activeIndex === index ? -1 : index
+      setIndex(newIndex)
+    }
 
     return (
       <Accordion>
         <Accordion.Title 
           active={activeIndex === 0}
           index={0}
-          onClick={this.handleClick}
+          onClick={handleClick}
         >
           <Icon name='dropdown' />
           How do I file for unemployment?
@@ -36,7 +32,7 @@ export default class AccordionExampleStandard extends Component {
         <Accordion.Title
           active={activeIndex === 1}
           index={1}
-          onClick={this.handleClick}
+          onClick={handleClick}
         >
           <Icon name='dropdown' />
           If I am sick and cannot work, can I get unemployment?
@@ -51,7 +47,7 @@ export default class AccordionExampleStandard extends Component {
         <Accordion.Title
           active={activeIndex === 2}
           index={2}
-          onClick={this.handleClick}
+          onClick={handleClick}
         >
           <Icon name='dropdown' />
           What happens if I am fired because of COVID-19?
@@ -65,4 +61,5 @@ export default class AccordionExampleStandard extends Component {
       </Accordion>
     )
   }
-}
+
+  export default FAQAccordion;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
-import Accordion from './Accordion.jsx';
+import FAQAccordion from './FAQAccordion.jsx';
 
 function WaitDetails(props) {
     const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
@@ -50,11 +50,11 @@ function WaitDetails(props) {
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
                     </div>
                 </p>
-                <h2 style={{"textAlign":"left", "fontSize":"medium"}}>
+                <div style={{"textAlign":"left", "fontSize":"medium"}}>
                     Common questions about <b>{topic}</b> 
-                </h2>
+                </div>
                 <div style={{"textAlign":"left", "fontSize":"small"}} >
-                    <Accordion />
+                    <FAQAccordion />
                 </div>              
             </div>               
         </Container>
