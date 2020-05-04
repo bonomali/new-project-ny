@@ -17,7 +17,7 @@ function WaitDetails(props) {
             <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
-                        We'll call you back in
+                        We'll call you in
                     </div>
                     <div style={{"fontSize":"30px"}}>
                         <Icon name='clock' />  {waitMin} - {waitMax} min
@@ -33,7 +33,7 @@ function WaitDetails(props) {
                         }}
                         style={{"fontSize":"12px"}}
                     >
-                        Cancel call back
+                        Cancel call
                     </Link>
                 </div>
                 <br/>
