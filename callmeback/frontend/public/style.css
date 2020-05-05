@@ -16,3 +16,9 @@ header {
     padding-bottom: 1em;
     text-align: center;
 }
+
+accordion {
+    padding-top: 10px;
+    text-align: left;
+    font-size: small;
+}
