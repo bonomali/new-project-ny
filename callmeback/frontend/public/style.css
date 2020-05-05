@@ -26,3 +26,15 @@ header {
     padding-left: 1em;
     text-align: left;
 }
+
+.accordion {
+    text-align: left;
+    font-size: small;
+}
+
+.faq-title {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: left;
+    font-size: medium;
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
-import FAQAccordion from './FAQAccordion.jsx';
+import FaqAccordion from './FaqAccordion.jsx';
 import moment from 'moment';
 
 function WaitDetails(props) {
@@ -73,12 +73,12 @@ function WaitDetails(props) {
                     <br/>
                     </div>
                 </p>
-                <div style={{"textAlign":"left", "fontSize":"medium"}}>
-                    Common questions about <b>{topic}</b>
+                <div className = "faq-title">
+                    Common questions about <b>{topic}</b> 
                 </div>
-                <div style={{"textAlign":"left", "fontSize":"small"}} >
-                    <FAQAccordion />
-                </div>
+                <div className="accordion">
+                    <FaqAccordion />
+                </div>              
             </div>}
         </Container>
     )

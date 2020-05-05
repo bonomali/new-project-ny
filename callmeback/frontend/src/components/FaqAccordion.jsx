@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Accordion, Icon } from 'semantic-ui-react'
 
-function FAQAccordion() {
+function FaqAccordion() {
   const [activeIndex, setIndex] = useState(-1)
 
   const handleClick = (e, titleProps) => {
@@ -11,7 +11,7 @@ function FAQAccordion() {
   }
 
   return (
-    <Accordion>
+    <Accordion styled>
       <Accordion.Title 
         active={activeIndex === 0}
         index={0}
@@ -60,4 +60,4 @@ function FAQAccordion() {
   )
 }
 
-export default FAQAccordion;
+export default FaqAccordion;
