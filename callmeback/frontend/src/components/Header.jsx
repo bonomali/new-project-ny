@@ -8,10 +8,10 @@ function Header() {
     <div>
     {location.pathname==="/" || location.pathname==="/home" ?
       <header>
-        <img src="/nygov-logo.png" alt="New York State logo" width="30%" height="30%"/>
+        <img src="/nygov-logo.png" alt="New York State logo" />
       </header> :
       <div className="corner-logo">
-        <img src="/nygov-logo.png" alt="New York State logo" width="25%" height="25%"/>
+        <img src="/nygov-logo.png" alt="New York State logo" style={{"width":"5em"}}/>
       </div>}
     </div>
   );
