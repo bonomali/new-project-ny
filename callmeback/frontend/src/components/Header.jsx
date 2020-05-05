@@ -1,10 +1,10 @@
 import React from 'react'
 
-function Header() {
+function Header(props) {
   return (
-    <header>
+    <cornerlogo>
       <img src="/nygov-logo.png" alt="New York State logo"/>
-    </header>
+    </cornerlogo>
   );
 }
 
