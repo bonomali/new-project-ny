@@ -11,8 +11,18 @@
     margin: (3, 0, 2);
 }
 
+.container-fluid {
+    margin-top: 1em;
+}
+
 header {
     padding-top: 2em;
     padding-bottom: 1em;
     text-align: center;
+}
+
+.corner-logo {
+    padding-bottom: 1em;
+    padding-left: 1em;
+    text-align: left;
 }
