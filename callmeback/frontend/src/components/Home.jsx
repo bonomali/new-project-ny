@@ -71,7 +71,7 @@ function Home(props) {
         />
         <Form.TextArea
           required
-          placeholder="Tell us what you need"
+          placeholder="Tell us how we can help"
           value={query}
           onChange={(evt) => {setQuery(evt.target.value)}}
         />
