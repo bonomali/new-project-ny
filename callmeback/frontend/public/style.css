@@ -28,13 +28,13 @@ header {
 }
 
 .accordion {
-    padding-top: 10px;
     text-align: left;
     font-size: small;
 }
 
 .faq-title {
     padding-top: 10px;
+    padding-bottom: 10px;
     text-align: left;
     font-size: medium;
 }
