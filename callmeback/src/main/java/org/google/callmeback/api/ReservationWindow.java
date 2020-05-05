@@ -10,8 +10,8 @@ public class ReservationWindow {
 
   public ReservationWindow() {
     Date current = new Date();
-    this.min = Date.from(current.toInstant().plus(Duration.ofMinutes(10)));
-    this.exp = Date.from(current.toInstant().plus(Duration.ofMinutes(20)));
-    this.max = Date.from(current.toInstant().plus(Duration.ofMinutes(30)));
+    this.min = Date.from(current.toInstant().plus(Duration.ofMinutes(20)));
+    this.exp = Date.from(current.toInstant().plus(Duration.ofMinutes(30)));
+    this.max = Date.from(current.toInstant().plus(Duration.ofMinutes(40)));
   }
 }
