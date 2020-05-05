@@ -3,6 +3,7 @@ import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import FaqAccordion from './FaqAccordion.jsx';
+import moment from 'moment';
 
 function WaitDetails(props) {
     const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
