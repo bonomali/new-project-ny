@@ -1,35 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import FaqAccordion from './FaqAccordion.jsx';
-import moment from 'moment';
 
 function WaitDetails(props) {
     const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
-
-    const [checked, setCheckbox] = useState(false)
-
-    const now = moment();
-    const callStartMaxMoment = moment(expCallStartMax);
-    const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
-    const longWait = callStartMaxDuration.asHours() >= 24;
-    const iconName = longWait ? 'calendar alternate outline' : 'clock';
-
-    let waitTimeEstimate;
-    if (longWait) {
-        waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{expCallStartMax}</Moment>;
-    } else {
-        waitTimeEstimate =
-            <span>
-                <Moment fromNow ago>{expCallStartMin}</Moment>
-                {' '} - {' '}
-                <Moment fromNow ago>{expCallStartMax}</Moment>
-            </span>
-    }
 
     return (
         <Container text className='paper'>
