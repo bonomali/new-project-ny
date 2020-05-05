@@ -13,7 +13,7 @@ function Home(props) {
 
   useEffect(() => {
     if (validPhoneNumber.test(number) && name.trim() !== "" && query.trim() !== "") {
-      // only set requestButtonEnabled to true if number, name, and topic are provied
+      // only set requestButtonEnabled to true if number, name, and topic are provided
       // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
       if (!requestButtonEnabled) setRequestButtonEnabled(true)
     } else {
