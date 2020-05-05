@@ -12,7 +12,7 @@
 }
 
 .container-fluid {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 header {
@@ -21,8 +21,8 @@ header {
     text-align: center;
 }
 
-cornerlogo {
+.corner-logo {
     padding-bottom: 1em;
-    padding-left: 1em;
+    padding-left: 2em;
     text-align: left;
 }

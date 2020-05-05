@@ -11,7 +11,7 @@ function Routes() {
     return (
         <Router>
             <div className="container-fluid">
-                <Header />
+                <Header/>
                 <Switch>
                     <Route path='/home' component={Home} />
                     <Route path='/thankyou' component={ThankYou} />
