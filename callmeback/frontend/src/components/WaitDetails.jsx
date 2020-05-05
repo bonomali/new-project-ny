@@ -73,12 +73,12 @@ function WaitDetails(props) {
                     <br/>
                     </div>
                 </p>
-                <div style={{"padding-top":"10px", "textAlign":"left", "fontSize":"medium"}}>
+                <div className = "faq-title">
                     Common questions about <b>{topic}</b> 
                 </div>
-                <accordion>
+                <div className="accordion">
                     <FaqAccordion />
-                </accordion>              
+                </div>              
             </div>}
         </Container>
     )

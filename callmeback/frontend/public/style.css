@@ -21,13 +21,20 @@ header {
     text-align: center;
 }
 
-accordion {
-    padding-top: 10px;
-    text-align: left;
-    font-size: small;
-}
 .corner-logo {
     padding-bottom: 1em;
     padding-left: 1em;
     text-align: left;
+}
+
+.accordion {
+    padding-top: 10px;
+    text-align: left;
+    font-size: small;
+}
+
+.faq-title {
+    padding-top: 10px;
+    text-align: left;
+    font-size: medium;
 }
