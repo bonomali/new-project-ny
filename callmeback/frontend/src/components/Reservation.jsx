@@ -21,7 +21,7 @@ function Reservation(props) {
 
         return {
             id: id,
-            topic: "Employment", // Not in response yet
+            topic: "Business", // Not in response yet, hard coded for demo.
             resolved: reservation.resolution != null,
             waitMin, waitMax, expCallStartMin, expCallStartMax,
         };
