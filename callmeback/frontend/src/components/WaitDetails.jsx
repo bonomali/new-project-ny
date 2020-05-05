@@ -3,24 +3,46 @@ import { Container, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom';
 import Moment from 'react-moment';
 import FaqAccordion from './FaqAccordion.jsx';
+import moment from 'moment';
 
 function WaitDetails(props) {
-    const {topic, expCallStartMin, expCallStartMax, waitMin, waitMax, id} = props.reservationDetails
+    const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
 
     const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
 
     const [checked, setCheckbox] = useState(false)
-    
+
+    const now = moment();
+    const callStartMaxMoment = moment(expCallStartMax);
+    const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
+    const longWait = callStartMaxDuration.asHours() >= 24;
+    const iconName = longWait ? 'calendar alternate outline' : 'clock';
+
+    let waitTimeEstimate;
+    if (longWait) {
+        waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{expCallStartMax}</Moment>;
+    } else {
+        waitTimeEstimate =
+            <span>
+                <Moment fromNow ago>{expCallStartMin}</Moment>
+                {' '} - {' '}
+                <Moment fromNow ago>{expCallStartMax}</Moment>
+            </span>
+    }
+
     return (
         <Container text className='paper'>
-            {!!waitMin && <div>
+            {/* Ensure props are loaded before rendering the component */}
+            {!!expCallStartMin &&
+            <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
-                        We'll call you in
+                        We'll call you {longWait ? 'on' : 'in'}
                     </div>
                     <div style={{"fontSize":"30px"}}>
-                        <Icon name='clock' />  {waitMin} - {waitMax} min
+                        <Icon name={iconName} />
+                        {waitTimeEstimate}
                     </div>
                     <Link
                         to={{
@@ -47,7 +69,7 @@ function WaitDetails(props) {
                     <span style={{"display":"table-cell", "paddingRight":"4px", "verticalAlign":"top"}}>
                         <input type="checkbox" onChange={()=>{setCheckbox(!checked)}} value={checked}/>
                     </span>
-                    <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>              
+                    <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a>Data charges</a> may apply.</label>
                     <br/>
                     </div>
                 </p>
