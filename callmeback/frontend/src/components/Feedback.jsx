@@ -47,7 +47,7 @@ function Feedback(props) {
         <Container text textAlign='center' className='paper'>
             <div>
                 <div style={{"fontSize":"20px", "paddingBottom":"10px"}}>
-                    How was your call back?
+                    How was your call?
                 </div>
                 <Form onSubmit={handleSubmit}>
                 <Rating
