@@ -33,6 +33,8 @@ function WaitDetails(props) {
 
     return (
         <Container text className='paper'>
+            {/* Ensure props are loaded before rendering the component */}
+            {!!expCallStartMin &&
             <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
