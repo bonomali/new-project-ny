@@ -1,6 +1,8 @@
-# web
+# callmeback
 
-A Spring Boot app with a React UI. Starter code generated from https://start.spring.io.
+Prototype project allowing for NYS residents to contact a customer service representative.
+
+This is a Spring Boot app with a React UI. Starter code generated from https://start.spring.io.
 
 Spring Boot code is under `src`. React code is under `frontend`. Upon compilation, `frontend` code will be packaged with the Spring Boot app into a JAR for deployment.
 
