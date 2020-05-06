@@ -1,0 +1,8 @@
+secretGenerator:
+  - name: hwr-mongo-pass
+    literals:
+      - password=ABADIDEA
+resources:
+  - mongodb.yaml
+  - frontend.yaml
+  - backend.yaml
