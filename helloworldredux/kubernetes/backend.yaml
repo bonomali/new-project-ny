@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hwr-backend-service
+  labels:
+    app: hello-world-redux
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: hello-world-redux
+    tier: web
+  clusterIp: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hwr-backend
+  labels:
+    app: hello-world-redux
+spec:
+  selector:
+    matchLabels:
+      app: hello-world-redux
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hello-world-redux
+        tier: web
+    spec:
+      containers:
+        - image: google-org/hello-world-redux-backend:dev
+          name: hwr-backend
+          env:
+            - name: MONGODB_HOST
+              value: hwr-mongo-service
+            - name: MONGODB_PORT
+              value: '27017'
+            - name: MONGODB_USER
+              value: root
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hwr-mongo-pass
+                  key: password
+          ports:
+            - containerPort: 8080
+              name: backend

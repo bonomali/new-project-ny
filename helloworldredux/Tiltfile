@@ -1,0 +1,15 @@
+k8s_yaml(kustomize('kubernetes'))
+
+docker_build(
+  'google-org/hello-world-redux-backend',
+  'backend',
+  dockerfile='backend/dev.Dockerfile'
+)
+
+docker_build(
+  'google-org/hello-world-redux-frontend',
+  'frontend',
+  dockerfile='frontend/dev.Dockerfile'
+)
+
+k8s_resource('hwr-frontend', port_forwards=8080)
