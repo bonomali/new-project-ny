@@ -1,14 +1,21 @@
 package org.google.helloworld.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.google.helloworld.model.Person;
+import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.jboss.logging.Logger;
 import org.springframework.stereotype.Repository;
+
 
 @Repository("fakeDao")
 public class FakePersonDataAccessService implements PersonDao {
+
+  private static Logger logger = LoggerFactory.logger(FakePersonDataAccessService.class);
 
   private static List<Person> DB = new ArrayList<>();
 
@@ -20,12 +27,19 @@ public class FakePersonDataAccessService implements PersonDao {
   }
 
   @Override
+  public Person insertPerson(Person person) {
+    DB.add(person);
+    return person;
+  }
+
+  @Override
   public List<Person> selectAllPeople() {
     return DB;
   }
 
   @Override
   public Optional<Person> selectPersonById(UUID id) {
+    logger.info(Arrays.toString(DB.toArray())); 
     return DB.stream().filter(person -> person.getId().equals(id)).findFirst();
   }
 

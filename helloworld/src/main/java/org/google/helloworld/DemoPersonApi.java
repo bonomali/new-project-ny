@@ -8,7 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 public class DemoPersonApi {
-  @Autowired private PersonRepository repository;
+  // @Autowired private PersonRepository repository;
 
   public static void main(String[] args) {
     Properties props = new Properties();
