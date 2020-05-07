@@ -1,0 +1,30 @@
+plugins {
+  id 'com.github.node-gradle.node' version '2.2.3'
+}
+
+repositories {
+  mavenCentral()
+}
+
+node {
+  version = '14.0.0'
+  npmVersion = '6.14.4'
+  download = true
+}
+
+task test(type: NpmTask) {
+  description = "Runs all the React tests."
+  args = ['test', '--', '--watchAll=false']
+}
+
+task build(type: NpmTask) {
+  description = "Builds a production version of the React app."
+  dependsOn npmInstall
+  dependsOn test
+  args = ['run', 'build']
+}
+
+task clean {
+  description = "Cleans build artifacts."
+  delete build
+}
