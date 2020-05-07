@@ -4,3 +4,4 @@ Fixes #<issue_number_goes_here>
 
 - [ ] Tests pass
 - [ ] Appropriate changes to README are included in PR
+- [ ] Feature has been fleshed out in design document
