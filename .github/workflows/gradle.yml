@@ -19,3 +19,9 @@ jobs:
     - name: Build and test
       working-directory: .
       run: ./gradlew buildProdImage
+
+    - uses: romeovs/lcov-reporter-action@v0.2.11
+    - name: Code Coverage Report
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: ./../callmeback/frontend/coverage/lcov.info
