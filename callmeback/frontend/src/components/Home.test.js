@@ -15,7 +15,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 test('renders call queue form', async () => {
-  const { container, getByText } = render(<Home />);
+  render(<Home />);
   expect(screen.getByRole('button')).toHaveAttribute('disabled')
 
   axiosMock.post.mockResolvedValueOnce({
