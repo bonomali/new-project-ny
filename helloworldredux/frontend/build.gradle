@@ -12,6 +12,10 @@ node {
   download = true
 }
 
+nodeSetup.onlyIf { !project.hasProperty('assumeDeps') }
+npmSetup.onlyIf { !project.hasProperty('assumeDeps') }
+npmInstall.onlyIf { !project.hasProperty('assumeDeps') }
+
 task test(type: NpmTask) {
   description = "Runs all the React tests."
   args = ['test', '--', '--watchAll=false']
@@ -20,7 +24,6 @@ task test(type: NpmTask) {
 task build(type: NpmTask) {
   description = "Builds a production version of the React app."
   dependsOn npmInstall
-  dependsOn test
   args = ['run', 'build']
 }
 

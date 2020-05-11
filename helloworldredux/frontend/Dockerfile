@@ -21,7 +21,7 @@ RUN ./gradlew --no-daemon npmInstall || return 0
 
 # Now copy everything else and build it as a separte step.
 COPY . .
-RUN ./gradlew --no-daemon build
+RUN ./gradlew --no-daemon build -PassumeDeps
 
 ### RUN STEP ###
 FROM node:14.0.0
@@ -29,5 +29,6 @@ ENV APP_HOME=/usr/app
 
 # Copy all the JAR file over
 COPY --from=builder --chown=node:node $APP_HOME $APP_HOME
+EXPOSE 80
 WORKDIR $APP_HOME
 ENTRYPOINT ["npm", "run", "server"]
