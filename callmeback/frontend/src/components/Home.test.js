@@ -24,7 +24,7 @@ test('renders call queue form', async () => {
 
   const name = screen.getByPlaceholderText("Name")
   const number = screen.getByPlaceholderText("Phone number")
-  const topic = screen.getByPlaceholderText("Tell us how we can help")
+  const query = screen.getByPlaceholderText("Tell us how we can help")
   const submit = screen.getByRole('button')
 
   fireEvent.change(name, {
@@ -37,9 +37,9 @@ test('renders call queue form', async () => {
       value: 'mocknumber'
     }
   })
-  fireEvent.change(topic, {
+  fireEvent.change(query, {
     target: {
-      value: 'mocktopic'
+      value: 'mockquery'
     }
   })
   fireEvent.submit(submit)
@@ -48,7 +48,8 @@ test('renders call queue form', async () => {
   expect(axiosMock.post).toHaveBeenCalledWith("/api/v1/reservations", {
     preferredName: 'mockname',
     contactPhone: 'mocknumber',
-    query: 'mocktopic',
+    query: 'mockquery',
   })
   expect(historyAdd).toBe("/reservations/res-id");
+
 });
