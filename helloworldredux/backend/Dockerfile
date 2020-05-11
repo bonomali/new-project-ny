@@ -16,7 +16,7 @@ ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 COPY build.gradle settings.gradle gradlew $APP_HOME/
 COPY gradle $APP_HOME/gradle
-RUN ./gradlew --no-daemon build || return 0
+RUN ./gradlew --no-daemon build || echo "Build failed...this is expected."
 
 # Now copy everything else and build it as a separte step.
 COPY . .
