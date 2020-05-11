@@ -10,7 +10,7 @@ spec:
   selector:
     app: hello-world-redux
     tier: web
-  clusterIp: None
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment

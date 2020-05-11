@@ -9,5 +9,3 @@ docker_build(
   'google-org/hello-world-redux-frontend',
   'frontend',
 )
-
-k8s_resource('hwr-frontend', port_forwards=8080)
