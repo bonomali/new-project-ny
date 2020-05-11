@@ -24,8 +24,10 @@ COPY . .
 RUN ./gradlew --no-daemon build
 
 ### RUN STEP ###
-FROM nginx:1.17
+FROM node:14.0.0
 ENV APP_HOME=/usr/app
 
 # Copy all the JAR file over
-COPY --from=builder --chown=nginx:nginx $APP_HOME/build /usr/share/nginx/html
+COPY --from=builder --chown=node:node $APP_HOME $APP_HOME
+WORKDIR $APP_HOME
+ENTRYPOINT ["npm", "run", "server"]
