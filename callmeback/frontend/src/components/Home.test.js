@@ -32,22 +32,24 @@ test('renders call queue form', async () => {
       value: 'mockname'
     }
   })
-  fireEvent.change(number, {
-    target: {
-      value: 'mocknumber'
-    }
-  })
   fireEvent.change(query, {
     target: {
       value: 'mockquery'
     }
   })
+  fireEvent.change(number, {
+    target: {
+      value: '1234567890'
+    }
+  })
+  expect(screen.getByRole('button').getAttribute('disabled')).toBe(null)
+
   fireEvent.submit(submit)
 
   await waitFor(() => expect(axiosMock.post).toHaveBeenCalledTimes(1))
   expect(axiosMock.post).toHaveBeenCalledWith("/api/v1/reservations", {
     preferredName: 'mockname',
-    contactPhone: 'mocknumber',
+    contactPhone: '1234567890',
     query: 'mockquery',
   })
   expect(historyAdd).toBe("/reservations/res-id");
