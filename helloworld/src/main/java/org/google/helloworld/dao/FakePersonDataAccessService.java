@@ -5,12 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.google.helloworld.model.Person;
 import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.jboss.logging.Logger;
 import org.springframework.stereotype.Repository;
-
 
 @Repository("fakeDao")
 public class FakePersonDataAccessService implements PersonDao {
