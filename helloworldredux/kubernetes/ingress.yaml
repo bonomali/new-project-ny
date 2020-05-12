@@ -8,11 +8,11 @@ spec:
   rules:
   - http:
       paths:
-      - path: /api
+      - path: /api/(.*)
         backend:
           serviceName: hwr-backend-service
           servicePort: 8080
-      - path: /.*
+      - path: /(.*)
         backend:
           serviceName: hwr-frontend-service
           servicePort: 80
