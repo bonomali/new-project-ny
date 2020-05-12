@@ -2,7 +2,6 @@ package org.google.helloworld;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.google.helloworld.dao.FakePersonDataAccessService;
@@ -43,11 +42,7 @@ class HelloworldApplicationTests {
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(p)))
       .andExpect(status().isOk());
-    } catch (JsonProcessingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
