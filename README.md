@@ -49,7 +49,7 @@ cmb-web-5bd6c94b98-8dlfp     1/1     Running   0          61s
 To run tests:
 
 * `./gradlew appName:test` - Runs (backend) tests for the specified `appName`.
-* `./gradelw -i appName:test` - Same as above and prints application logs to test output.
+* `./gradlew -i appName:test` - Same as above and prints application logs to test output.
 
 ## Source Code Headers
 

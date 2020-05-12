@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest 
 // Create a MockMvc class and inject it into SpringBoot's dependency management system
 @AutoConfigureMockMvc 
-class HelloworldApplicationTests {
+class DemoPersonApiTests {
 
   @Autowired
   private MockMvc mockMvc;
