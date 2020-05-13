@@ -3,41 +3,33 @@ const yargs = require('yargs');
 
 const hostname = 'http://192.168.64.3:31209';
 
-main();
-
-function main() {
-    console.log("running CLI script")
-    simulation.sendReservation(hostname)
-}
-
 const argv = yargs
-    .command('lyr', 'Tells whether an year is leap year or not', {
-        year: {
-            description: 'the year to check for',
-            alias: 'y',
-            type: 'number',
-        }
+    .option('callsPerHour', {
+        alias: 'callsPerHour',
+        description: 'Number of calls that should be sent per hour',
+        type: 'number',
     })
-    .option('time', {
-        alias: 't',
-        description: 'Tell the present Time',
-        type: 'boolean',
+    .option('speedUpFactor', {
+        alias: 'speedUpFactor',
+        description: 'The factor by which real time should be sped up',
+        type: 'number',
     })
     .help()
     .alias('help', 'h')
     .argv;
 
-if (argv.time) {
-    console.log('The current time is: ', new Date().toLocaleTimeString());
-}
+main();
 
-if (argv._.includes('lyr')) {
-    const year = argv.year || new Date().getFullYear();
-    if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-        console.log(`${year} is a Leap Year`);
-    } else {
-        console.log(`${year} is NOT a Leap Year`);
+function main() {
+    const sendReservations = () => {
+        for (i = 0; i < argv.callsPerHour; i++) {
+            simulation.sendReservation(hostname)
+        }
     }
+    let delay = 3600000 // 3600000 milliseconds = 1 hour
+    if (argv.speedUpFactor) {
+        delay = delay / argv.speedUpFactor
+    }
+    sendReservations() // run once to start
+    setInterval(() => { sendReservations() }, delay)
 }
-
-console.log(argv);

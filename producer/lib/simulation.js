@@ -1,4 +1,5 @@
 const axios = require('axios');
+const faker = require('faker');
 
 function sendReservation(hostname) {
     const queries =
@@ -6,8 +7,8 @@ function sendReservation(hostname) {
          'I need help with small business aid',
          'How can I renew my license when the DMV is closed?']
     const reservation = {
-        //preferredName: faker.name.findName(),
-        contactPhone: Math.floor(100000000 + Math.random() * 900000000).toString(),
+        preferredName: faker.name.findName(),
+        contactPhone: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
         query: queries[Math.round(Math.random()*(queries.length-1))],
     };
     axios.post(hostname+'/api/v1/reservations', reservation)
