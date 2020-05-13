@@ -1,13 +1,12 @@
 package org.google.callmeback.api;
 
-/** Represents a type of event in the reservation history. */
-public enum ReservationEvent {
-  /** Call was attempted but did not connect (busy, no answer, voicemail). */
-  ATTEMPTED,
-  /** Call connected and conversation started. */
-  CONNECTED,
-  /** Call was disrupted and conversation cut off (call failure, hangup). */
-  DISRUPTED,
-  /** Call was completed and conversation ended. */
-  COMPLETED
+import java.util.Date;
+
+/** Represents an event in the reservation history. */
+public class ReservationEvent {
+  /** The date/time when this event occurred. */
+  public Date date;
+
+  /** The event type. */
+  public ReservationEventType type;
 }
