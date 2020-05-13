@@ -8,16 +8,19 @@ const argv = yargs
         alias: 'callsPerHour',
         description: 'Number of calls that should be sent per hour',
         type: 'number',
+        default: 10,
     })
     .option('speedUpFactor', {
         alias: 'speedUpFactor',
         description: 'The factor by which real time should be sped up',
         type: 'number',
+        default: 1, // wall clock time
     })
-    .option('hostname', {
-        alias: 'hostname',
+    .option('apiHostname', {
+        alias: 'apiHostname',
         description: 'The hostname the call me back API is running on',
         type: 'string',
+        required: true,
     })
     .help()
     .alias('help', 'h')
