@@ -29,6 +29,6 @@ ENV APP_HOME=/usr/app
 
 # Copy all the JAR file over
 COPY --from=builder --chown=node:node $APP_HOME $APP_HOME
-EXPOSE 80
+EXPOSE 3000
 WORKDIR $APP_HOME
-ENTRYPOINT ["npm", "run", "server"]
+ENTRYPOINT ["npm", "start"]

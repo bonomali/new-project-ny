@@ -15,4 +15,4 @@ spec:
       - path: /(.*)
         backend:
           serviceName: hwr-frontend-service
-          servicePort: 80
+          servicePort: 3000
