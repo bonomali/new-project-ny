@@ -1,8 +1,8 @@
 const simulation = require('./lib/simulation');
 const yargs = require('yargs');
 
-const hostname = 'http://192.168.64.3:31209';
-
+// command line arguments
+// sample call: node main.js --callsPerHour 100 --speedUpFactor 120 --hostname 'http://192.168.64.3:31209'
 const argv = yargs
     .option('callsPerHour', {
         alias: 'callsPerHour',
@@ -14,6 +14,11 @@ const argv = yargs
         description: 'The factor by which real time should be sped up',
         type: 'number',
     })
+    .option('hostname', {
+        alias: 'hn',
+        description: 'The hostname the call me back API is running on',
+        type: 'string',
+    })
     .help()
     .alias('help', 'h')
     .argv;
@@ -23,7 +28,7 @@ main();
 function main() {
     const sendReservations = () => {
         for (i = 0; i < argv.callsPerHour; i++) {
-            simulation.sendReservation(hostname)
+            simulation.sendReservation(argv.hostname)
         }
     }
     let delay = 3600000 // 3600000 milliseconds = 1 hour
