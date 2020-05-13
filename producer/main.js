@@ -2,7 +2,7 @@ const simulation = require('./lib/simulation');
 const yargs = require('yargs');
 
 // command line arguments
-// sample call: node main.js --callsPerHour 100 --speedUpFactor 120 --hostname 'http://192.168.64.3:31209'
+// sample call: node main.js --callsPerHour 100 --speedUpFactor 120 --hostname 'http://192.168.64.4:31442'
 const argv = yargs
     .option('callsPerHour', {
         alias: 'callsPerHour',
@@ -15,7 +15,7 @@ const argv = yargs
         type: 'number',
     })
     .option('hostname', {
-        alias: 'hn',
+        alias: 'hostname',
         description: 'The hostname the call me back API is running on',
         type: 'string',
     })

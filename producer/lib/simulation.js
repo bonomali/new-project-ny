@@ -8,7 +8,7 @@ function sendReservation(hostname) {
          'How can I renew my license when the DMV is closed?']
     const reservation = {
         preferredName: faker.name.findName(),
-        contactPhone: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
+        contactPhone: Math.floor(1000000000 + Math.random() * 9000000000).toString(), // random 10-digit number that doesnt start with 0
         query: queries[Math.round(Math.random()*(queries.length-1))],
     };
     axios.post(hostname+'/api/v1/reservations', reservation)
