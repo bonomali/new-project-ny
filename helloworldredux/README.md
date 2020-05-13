@@ -17,7 +17,10 @@ on the team's understanding of ITS's preferred infrastructure. The app contains:
 
   * A local Kubernetes cluster
     * Mac: [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
-      * [Allowing Ingress in Docker](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac) - Run kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/cloud/deploy.yaml
+      * [Allowing Ingress in Docker](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac) - Run:
+       ```
+       kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/cloud/deploy.yaml
+       ```
         * This may need to be re-run if you blow up your Kubernetes configuration 
     * Linux: [minikube](https://minikube.sigs.k8s.io/docs/start/)
   * [Tilt](https://docs.tilt.dev/install.html)
