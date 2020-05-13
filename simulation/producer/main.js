@@ -2,7 +2,7 @@ const simulation = require('./lib/simulation');
 const yargs = require('yargs');
 
 // command line arguments
-// sample call: node main.js --callsPerHour 100 --speedUpFactor 120 --hostname 'http://192.168.64.4:31442'
+// sample call: node main.js --callsPerHour 100 --speedUpFactor 120 --apiUrl 'http://192.168.64.4:31442'
 const argv = yargs
     .option('callsPerHour', {
         alias: 'callsPerHour',
@@ -16,9 +16,9 @@ const argv = yargs
         type: 'number',
         default: 1, // wall clock time
     })
-    .option('apiHostname', {
-        alias: 'apiHostname',
-        description: 'The hostname the call me back API is running on',
+    .option('apiUrl', {
+        alias: 'apiUrl',
+        description: 'The URL (host + port) the call me back API is running on',
         type: 'string',
         required: true,
     })
@@ -31,13 +31,14 @@ main();
 function main() {
     const sendReservations = () => {
         for (i = 0; i < argv.callsPerHour; i++) {
-            simulation.sendReservation(argv.hostname)
+            simulation.sendReservation(argv.apiUrl)
         }
     }
     let delay = 3600000 // 3600000 milliseconds = 1 hour
     if (argv.speedUpFactor) {
         delay = delay / argv.speedUpFactor
     }
+    // TODO: Take into account speedUpFactor when adding call request times
     sendReservations() // run once to start
-    setInterval(() => { sendReservations() }, delay)
+    setInterval(sendReservations, delay)
 }
