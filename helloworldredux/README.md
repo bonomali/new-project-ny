@@ -17,8 +17,14 @@ on the team's understanding of ITS's preferred infrastructure. The app contains:
 
   * A local Kubernetes cluster
     * Mac: [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+      * [Allowing Ingress in Docker](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac) - Run:
+       ```
+       kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/cloud/deploy.yaml
+       ```
+        * This may need to be re-run if you blow up your Kubernetes configuration 
     * Linux: [minikube](https://minikube.sigs.k8s.io/docs/start/)
   * [Tilt](https://docs.tilt.dev/install.html)
+    * Mac: May need to update homebrew permissions to have write access to /usr/local/bin directory (prompts with necessary commands will surface on the terminal if so)
 
 ## Building and running
 
@@ -26,7 +32,7 @@ on the team's understanding of ITS's preferred infrastructure. The app contains:
 
 #### Mac
 
-TBD
+Enabling Kubernetes in Docker (as in the Tilt instructions) allows this to work. Nothing additional needs to be run.
 
 #### Linux
 
@@ -40,14 +46,7 @@ minikube start
 tilt up
 ```
 
-Then get the IP address for the app and connect to it on port 80
-
-#### Mac
-
-TBD
-
-#### Linux
-
-```bash
-minikube ip
+Then get the IP address for the app and connect to it on port 80:
+```
+kubectl describe ingress
 ```
