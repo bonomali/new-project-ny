@@ -19,12 +19,12 @@ public class Reservation {
   /** The date/time when this reservation was modified. Auto-generated. */
   @LastModifiedDate public Date updatedDate;
 
-  /** The simulated date/time when this reservation was created.
-   ** Because the simulation can be sped up and run faster than wall clock time, the value
-   ** provided to represent the simulated time of the reservation may not be the same as the
-   ** wall clock time that the reservation is written to the database. 
+  /** The client-specified date/time when this reservation was created.
+   ** For reservations created in real time through the app, this will be the same as the createdDate.
+   ** Reservations can also be simulated to where their simulated create date may not be the same
+   ** as the wall clock time when the reservation is written to the database. 
   */
-  public Date simulatedCreateDate;
+  public Date reservationCreateDate;
 
   /** The telephone number where the resident would like to be called. */
   public String contactPhone;
