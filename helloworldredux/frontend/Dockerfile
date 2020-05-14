@@ -17,7 +17,7 @@ WORKDIR $APP_HOME
 COPY build.gradle settings.gradle gradlew $APP_HOME/
 COPY gradle $APP_HOME/gradle
 COPY package.json package-lock.json $APP_HOME/
-RUN ./gradlew --no-daemon npmInstall || return 0
+RUN ./gradlew --no-daemon npmInstall
 
 # Now copy everything else and build it as a separte step.
 COPY . .
