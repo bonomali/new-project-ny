@@ -1,4 +1,6 @@
-import '../styles/global.css'
+import '../styles/index.css'
+import '../styles/style.css'
+import 'semantic-ui-css/semantic.min.css'
 
 // This default export is required in a new `pages/_app.js` file.
 export default function MyApp({ Component, pageProps }) {
