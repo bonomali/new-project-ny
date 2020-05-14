@@ -16,23 +16,6 @@ function sendReservation(apiUrl) {
         .catch((error) => console.log(error))
 }
 
-function startCall(apiUrl) {
-    return axios.patch(apiUrl + '/api/v1/{newEndpoint}', reservation)
-        .then((response) =>  console.log(response))
-        .catch((error) => console.log(error));
-}
-
-function endCall(apiUrl, reservationId) {
-    const callStatusUpdate = {
-        status: "CALL_COMPLETED",
-    }
-
-    return axios.patch(apiUrl + `/api/v1/reservation/${reservationId}`, callStatusUpdate)
-        .then((response) => console.log(response))
-        .catch((error) => console.log(error))
-}
-
-
 module.exports = {
     sendReservation,
     startCall,

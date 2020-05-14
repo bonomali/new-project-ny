@@ -2,7 +2,6 @@ const simulation = require('./lib/simulation');
 const yargs = require('yargs');
 
 // command line arguments
-// sample call: node main.js --calls 100 --period 60 --speed-up 120 --api-url 'http://192.168.64.4:31442'
 const argv = yargs
     .option('callLength', {
         alias: 'length',
@@ -12,7 +11,7 @@ const argv = yargs
     })
     .option('callPeriod', {
         alias: 'period',
-        description: 'Frequency in minutes that a new call is started',
+        description: 'Amount of time in minutes between calls',
         type: 'number',
         default: 5
     })
@@ -28,27 +27,37 @@ const argv = yargs
 
 main();
 
-const promiseTimeout = time => () => new Promise(resolve => setTimeout(resolve, time));
+/**
+ * Returns a function that passes a result into a Promise, delaying the propagation
+ * of that result through the Promise for `time` milliseconds. Designed to be used
+ * in a promise chain, e.g. the following prints '10' after 1 second:
+ * 
+ * Promise.resolve(10).then(promiseWait(1000)).then((value) => console.log(value));
+ * 
+ * @param {number} time 
+ */
+function promiseWait(time) {
+    return result => new Promise(resolve => setTimeout(resolve, time, result));
+} 
 
-function processCall() {
+/**
+ * Consumer script for handling calls. To ensure that the database does not receive
+ * a massive backlog of unaddressed calls, make sure that the --length and --period
+ * parameters will process the same volume of calls being introduced into the system
+ * by the script at ../producer/main.js.
+ * 
+ * sample call: node main.js --length 1 --period .5 --api-url 'http://192.168.64.4:31442'
+ */
+function main() {
     simulation.startCall(argv.apiUrl)
-        .then((response) => response.data.id)
-        .then((reservationId) => promiseTimeout(simulation.endCall, argv.callLength, argv.apiUrl, reservationId))
-        .then ((response) => console.log(response))
+        .then((response) => response.data)
+        .then(promiseWait(argv.callLength * 60 * 1000)) // simulated call duration
+        .then((reservation) => simulation.endCall(argv.apiUrl, reservation.id, reservation.events))
+        .then((response) => console.log(response))
         .catch((error) => console.log(error));
 
-    // simulation.startCall(argv.apiUrl)
-    //     .then((response) => {
-    //         const reservationId = response.data.id;
-    //         return promiseTimeout(simulation.endCall(argv.apiUrl, reservationId), argv.callLength);
-    //     })
-    //     .then ((response) => console.log(response))
-    //     .catch((error) => console.log(error));
-}
-
-function main() {
-    processCall(argv.apiUrl);
-
-    const periodMs = argv.callPeriod * 1000;
-    setTimeout(processCall, periodMs, argv.apiUrl);
+    // The next call should start after the next callPeriod regardless of how 
+    // long the above promise takes to complete.
+    const periodMs = argv.callPeriod * 60 * 1000;
+    setTimeout(main, periodMs);
 }
