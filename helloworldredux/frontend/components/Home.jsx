@@ -9,7 +9,7 @@ function Home() {
   useEffect(() => {
     const fetchPeople = async () => {
       try {
-        const res = await axios.get("/api/v1/person");
+        const res = await axios.get("/api/persons");
         setPeople(res.data);
       }
       catch (error) {
@@ -24,7 +24,7 @@ function Home() {
   const handleSubmit = (evt) => {
     const addPerson = async () => {
       try {
-        const res = await axios.post('/api/v1/person', { name: name });
+        const res = await axios.post('/api/persons', { name: name });
         setPeople(people.concat(res.data))
       }
       catch (error) {
