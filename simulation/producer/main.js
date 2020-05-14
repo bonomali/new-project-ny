@@ -1,4 +1,4 @@
-const simulation = require('./lib/simulation');
+const simulation = require('../lib/simulation');
 const yargs = require('yargs');
 
 // command line arguments
