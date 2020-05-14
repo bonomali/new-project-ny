@@ -26,7 +26,8 @@ public class ReservationRepositoryTest {
     Reservation reservation = reservationRepository.save(unsavedReservation);
 
     assertThat(reservation.id).isNotNull();
-    assertThat(reservationRepository.findAll().size()).isEqualTo(1);
+    assertThat(reservationRepository.findAll())
+        .containsExactlyInAnyOrder(reservation);
   }
 
   @Test
@@ -39,8 +40,10 @@ public class ReservationRepositoryTest {
 
     assertThat(reservation.id).isNotNull();
     assertThat(reservation.topic).isEqualTo(businessTopic);
-    assertThat(reservationRepository.findByTopic(businessTopic).size()).isEqualTo(1);
-    assertThat(reservationRepository.findByTopic(unemploymentTopic).size()).isEqualTo(0);
+    assertThat(reservationRepository.findByTopic(businessTopic))
+        .containsExactlyInAnyOrder(reservation);
+    assertThat(reservationRepository.findByTopic(unemploymentTopic))
+        .isEmpty();
   }
 
   @Test
@@ -57,9 +60,10 @@ public class ReservationRepositoryTest {
     reservation3.topic = unemploymentTopic;
     reservation3 = reservationRepository.save(reservation3);
 
-    // TODO: Confirm the correct reservation is in the list
-    assertThat(reservationRepository.findByTopic(businessTopic).size()).isEqualTo(2);
-    assertThat(reservationRepository.findByTopic(unemploymentTopic).size()).isEqualTo(1);
-    assertThat(reservationRepository.findByTopic(dmvTopic).size()).isEqualTo(0);
+    assertThat(reservationRepository.findByTopic(businessTopic))
+        .containsExactlyInAnyOrder(reservation1, reservation2);
+    assertThat(reservationRepository.findByTopic(unemploymentTopic))
+        .containsExactlyInAnyOrder(reservation3);
+    assertThat(reservationRepository.findByTopic(dmvTopic)).isEmpty();
   }
 }

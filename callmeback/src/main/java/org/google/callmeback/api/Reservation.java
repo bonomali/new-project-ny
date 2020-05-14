@@ -2,6 +2,8 @@ package org.google.callmeback.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -54,5 +56,27 @@ public class Reservation {
   /** The resident's feedback about the service experience. */
   public ReservationWindow getWindow() {
     return new ReservationWindow();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Reservation)) {
+      return false;
+    }
+    Reservation reservation = (Reservation) obj;
+    return Objects.equals(reservation.id, this.id);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 0;
+    result = (int) (Integer.parseInt(id, 16) / 11);
+    return result;
   }
 }
