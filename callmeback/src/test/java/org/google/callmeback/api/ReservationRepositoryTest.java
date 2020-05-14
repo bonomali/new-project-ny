@@ -85,6 +85,23 @@ public class ReservationRepositoryTest {
   }
 
   @Test
+  public void testStartNextCall_noCallToStart() {
+    Reservation res = new Reservation();
+    Date date = new Date();
+    res.reservationCreatedDate = date;
+    res.events = new ArrayList<ReservationEvent>();
+    ReservationEvent resEvent = new ReservationEvent();
+    resEvent.date = new Date();
+    resEvent.type = ReservationEventType.CONNECTED;
+    res.events.add(resEvent);
+    reservationRepository.save(res);
+
+    Reservation reservation = reservationRepository.startNextCall();
+    assertThat(reservation).isNull();
+
+  }
+
+  @Test
   public void testStartNextCall_setsEventForMostRecentUnresolvedCall() {
     Reservation res1 = new Reservation();
     Date date1 = new Date();
@@ -112,6 +129,7 @@ public class ReservationRepositoryTest {
     assertThat(reservation.events).isNotNull();
     assertThat(reservation.events.size()).isEqualTo(1);
     assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
+    assertThat(reservation.events.get(0).date).isNotNull();
 
     Reservation reservation2 = reservationRepository.startNextCall();
     assertThat(reservation2.id).isEqualTo(res3.id);
@@ -119,5 +137,6 @@ public class ReservationRepositoryTest {
     assertThat(reservation2.events).isNotNull();
     assertThat(reservation2.events.size()).isEqualTo(1);
     assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
+    assertThat(reservation2.events.get(0).date).isNotNull();
   }
 }

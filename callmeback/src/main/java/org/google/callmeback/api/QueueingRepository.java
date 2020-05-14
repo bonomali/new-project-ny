@@ -17,7 +17,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
  * reservations inside of a queue.
  */
 interface QueueingRepository {
-    /** startNextCall gets the first caller in line and starts their call. */
+    /** Gets the first caller in line (has the earliest reservation create time of
+     * all reservations that do not have any ReservationEvents, i.e. have not
+     * already been contacted by an agent) and starts their call.
+     */
     public Reservation startNextCall();
 }
 
