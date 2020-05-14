@@ -78,7 +78,7 @@ public class ReservationRepositoryTest {
     assertThat(reservation.reservationCreatedDate).isEqualTo(currentDate);
     assertThat(reservation.events).isNotNull();
     assertThat(reservation.events.size()).isEqualTo(1);
-    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.ATTEMPTED);
+    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.INPROGRESS);
   }
 
   @Test
@@ -89,7 +89,7 @@ public class ReservationRepositoryTest {
     res1.events = new ArrayList<ReservationEvent>();
     ReservationEvent resEvent = new ReservationEvent();
     resEvent.date = new Date();
-    resEvent.type = ReservationEventType.ATTEMPTED;
+    resEvent.type = ReservationEventType.INPROGRESS;
     res1.events.add(resEvent);
     reservationRepository.save(res1);
   
@@ -108,13 +108,13 @@ public class ReservationRepositoryTest {
     assertThat(reservation.reservationCreatedDate).isEqualTo(date2);
     assertThat(reservation.events).isNotNull();
     assertThat(reservation.events.size()).isEqualTo(1);
-    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.ATTEMPTED);
+    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.INPROGRESS);
 
     Reservation reservation2 = reservationRepository.startNextCall();
     assertThat(reservation2.id).isNotNull();
     assertThat(reservation2.reservationCreatedDate).isEqualTo(date3);
     assertThat(reservation2.events).isNotNull();
     assertThat(reservation2.events.size()).isEqualTo(1);
-    assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.ATTEMPTED);
+    assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.INPROGRESS);
   }
 }

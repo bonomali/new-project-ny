@@ -33,7 +33,7 @@ class CustomReservationRepositoryImpl implements CustomReservationRepository {
         List<ReservationEvent> resEvents = new ArrayList<ReservationEvent>();
         ReservationEvent resEvent = new ReservationEvent();
         resEvent.date = new Date();
-        resEvent.type = ReservationEventType.ATTEMPTED;
+        resEvent.type = ReservationEventType.INPROGRESS;
         resEvents.add(resEvent);
         Update update = new Update().set("events", resEvents);
 
