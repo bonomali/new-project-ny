@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,6 +37,7 @@ class CustomReservationRepositoryImpl implements CustomReservationRepository {
         resEvents.add(resEvent);
         Update update = new Update().set("events", resEvents);
 
-        mongoTemplate.findAndModify(query, update, null, Reservation.class, "reservations");
+        Reservation updatedRes = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options(), Reservation.class, "reservations");
+        System.out.println(updatedRes);
     }
 }
