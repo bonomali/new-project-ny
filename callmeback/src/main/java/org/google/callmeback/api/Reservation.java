@@ -74,8 +74,6 @@ public class Reservation {
 
   @Override
   public int hashCode() {
-    int result = 0;
-    result = (int) (Integer.parseInt(id, 16) / 11);
-    return result;
+    return Objects.hashCode(id);
   }
 }
