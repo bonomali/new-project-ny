@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Date;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,12 +110,12 @@ public class ReservationRepositoryTest {
     resEvent.type = ReservationEventType.CONNECTED;
     res1.events.add(resEvent);
     reservationRepository.save(res1);
-  
+
     Reservation res2 = new Reservation();
     Date date2 = new Date();
     res2.reservationCreatedDate = date2;
     reservationRepository.save(res2);
-  
+
     Reservation res3 = new Reservation();
     Date date3 = new Date();
     res3.reservationCreatedDate = date3;
