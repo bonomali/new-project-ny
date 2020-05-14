@@ -17,7 +17,7 @@ public class ReservationRepositoryTest {
 
   @BeforeEach
   public void setUp() {
-      reservationRepository.deleteAll();
+    reservationRepository.deleteAll();
   }
 
   @Test
@@ -32,38 +32,38 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testFindByTopic_singleReservation() {
-      String businessTopic = "Business";
-      String unemploymentTopic = "Unemployment";
-      Reservation unsavedReservation = new Reservation();
-      unsavedReservation.topic = businessTopic;
-      Reservation reservation = reservationRepository.save(unsavedReservation);
+    String businessTopic = "Business";
+    String unemploymentTopic = "Unemployment";
+    Reservation unsavedReservation = new Reservation();
+    unsavedReservation.topic = businessTopic;
+    Reservation reservation = reservationRepository.save(unsavedReservation);
 
-      assertThat(reservation.id).isNotNull();
-      assertThat(reservation.topic).isEqualTo(businessTopic);
-      assertThat(reservationRepository.findByTopic(businessTopic))
-          .containsExactlyInAnyOrder(reservation);
-      assertThat(reservationRepository.findByTopic(unemploymentTopic))
-          .isEmpty();
+    assertThat(reservation.id).isNotNull();
+    assertThat(reservation.topic).isEqualTo(businessTopic);
+    assertThat(reservationRepository.findByTopic(businessTopic))
+        .containsExactlyInAnyOrder(reservation);
+    assertThat(reservationRepository.findByTopic(unemploymentTopic))
+        .isEmpty();
   }
 
   @Test
   public void testFindByTopic_multipleReservations() {
-      Reservation reservation1 = new Reservation();
-      reservation1.topic = businessTopic;
-      reservation1 = reservationRepository.save(reservation1);
+    Reservation reservation1 = new Reservation();
+    reservation1.topic = businessTopic;
+    reservation1 = reservationRepository.save(reservation1);
 
-      Reservation reservation2 = new Reservation();
-      reservation2.topic = businessTopic;
-      reservation2 = reservationRepository.save(reservation2);
+    Reservation reservation2 = new Reservation();
+    reservation2.topic = businessTopic;
+    reservation2 = reservationRepository.save(reservation2);
 
-      Reservation reservation3 = new Reservation();
-      reservation3.topic = unemploymentTopic;
-      reservation3 = reservationRepository.save(reservation3);
+    Reservation reservation3 = new Reservation();
+    reservation3.topic = unemploymentTopic;
+    reservation3 = reservationRepository.save(reservation3);
 
-      assertThat(reservationRepository.findByTopic(businessTopic))
-          .containsExactlyInAnyOrder(reservation1, reservation2);
-      assertThat(reservationRepository.findByTopic(unemploymentTopic))
-          .containsExactlyInAnyOrder(reservation3);
-      assertThat(reservationRepository.findByTopic(dmvTopic)).isEmpty();
+    assertThat(reservationRepository.findByTopic(businessTopic))
+        .containsExactlyInAnyOrder(reservation1, reservation2);
+    assertThat(reservationRepository.findByTopic(unemploymentTopic))
+        .containsExactlyInAnyOrder(reservation3);
+    assertThat(reservationRepository.findByTopic(dmvTopic)).isEmpty();
   }
 }
