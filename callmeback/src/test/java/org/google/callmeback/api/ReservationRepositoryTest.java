@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
+
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +27,7 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testSave_setsId() {
-    Reservation unsavedReservation = new Reservation();
-    Reservation reservation = reservationRepository.save(unsavedReservation);
+    Reservation reservation = createAndPersistReservation(businessTopic);
 
     assertThat(reservation.id).isNotNull();
     assertThat(reservationRepository.findAll()).containsExactlyInAnyOrder(reservation);
@@ -33,32 +35,21 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testFindByTopic_singleReservation() {
-    String businessTopic = "Business";
-    String unemploymentTopic = "Unemployment";
-    Reservation unsavedReservation = new Reservation();
-    unsavedReservation.topic = businessTopic;
-    Reservation reservation = reservationRepository.save(unsavedReservation);
+    Reservation reservation = createAndPersistReservation(businessTopic);
 
     assertThat(reservation.id).isNotNull();
     assertThat(reservation.topic).isEqualTo(businessTopic);
     assertThat(reservationRepository.findByTopic(businessTopic))
         .containsExactlyInAnyOrder(reservation);
     assertThat(reservationRepository.findByTopic(unemploymentTopic)).isEmpty();
+    assertThat(reservationRepository.findByTopic(dmvTopic)).isEmpty();
   }
 
   @Test
   public void testFindByTopic_multipleReservations() {
-    Reservation reservation1 = new Reservation();
-    reservation1.topic = businessTopic;
-    reservation1 = reservationRepository.save(reservation1);
-
-    Reservation reservation2 = new Reservation();
-    reservation2.topic = businessTopic;
-    reservation2 = reservationRepository.save(reservation2);
-
-    Reservation reservation3 = new Reservation();
-    reservation3.topic = unemploymentTopic;
-    reservation3 = reservationRepository.save(reservation3);
+    Reservation reservation1 = createAndPersistReservation(businessTopic);
+    Reservation reservation2 = createAndPersistReservation(businessTopic);
+    Reservation reservation3 = createAndPersistReservation(unemploymentTopic);
 
     assertThat(reservationRepository.findByTopic(businessTopic))
         .containsExactlyInAnyOrder(reservation1, reservation2);
@@ -69,10 +60,8 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testStartNextCall_setsEventForSingleCall() {
-    Reservation unsavedReservation = new Reservation();
     Date currentDate = new Date();
-    unsavedReservation.reservationCreatedDate = currentDate;
-    reservationRepository.save(unsavedReservation);
+    createAndPersistReservation(currentDate);
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation.id).isNotNull();
@@ -85,15 +74,7 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testStartNextCall_noCallToStart() {
-    Reservation res = new Reservation();
-    Date date = new Date();
-    res.reservationCreatedDate = date;
-    res.events = new ArrayList<ReservationEvent>();
-    ReservationEvent resEvent = new ReservationEvent();
-    resEvent.date = new Date();
-    resEvent.type = ReservationEventType.CONNECTED;
-    res.events.add(resEvent);
-    reservationRepository.save(res);
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation).isNull();
@@ -101,25 +82,14 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testStartNextCall_setsEventForMostRecentUnresolvedCall() {
-    Reservation res1 = new Reservation();
     Date date1 = new Date();
-    res1.reservationCreatedDate = date1;
-    res1.events = new ArrayList<ReservationEvent>();
-    ReservationEvent resEvent = new ReservationEvent();
-    resEvent.date = new Date();
-    resEvent.type = ReservationEventType.CONNECTED;
-    res1.events.add(resEvent);
-    reservationRepository.save(res1);
+    createAndPersistReservation(date1, Optional.of(ReservationEventType.CONNECTED));
 
-    Reservation res2 = new Reservation();
     Date date2 = new Date();
-    res2.reservationCreatedDate = date2;
-    reservationRepository.save(res2);
+    Reservation res2 = createAndPersistReservation(date2);
 
-    Reservation res3 = new Reservation();
     Date date3 = new Date();
-    res3.reservationCreatedDate = date3;
-    reservationRepository.save(res3);
+    Reservation res3 = createAndPersistReservation(date3);
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation.id).isEqualTo(res2.id);
@@ -136,5 +106,52 @@ public class ReservationRepositoryTest {
     assertThat(reservation2.events.size()).isEqualTo(1);
     assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
     assertThat(reservation2.events.get(0).date).isNotNull();
+  }
+
+  @Test
+  public void testCountByEventsNullAndReservationCreatedDateLessThan() {
+    // Two reservations before the test date without events, and one with events.
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
+
+    // One reservation with equivalent test date.
+    Date testDate = new Date();
+    createAndPersistReservation(testDate);
+
+    // One reservation after the test date without events, and one with events.
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+
+    assertThat(reservationRepository.countByEventsNullAndReservationCreatedDateLessThan(testDate))
+        .isEqualTo(2);
+  }
+
+  // TODO Create a builder to handle the creation of Reservations.
+  private Reservation createAndPersistReservation(String topic) {
+    return createAndPersistReservation(new Date(), topic, Optional.empty());
+  }
+
+  private Reservation createAndPersistReservation(Date reservationCreatedDate) {
+    return createAndPersistReservation(reservationCreatedDate, businessTopic, Optional.empty());
+  }
+
+  private Reservation createAndPersistReservation(Date reservationCreatedDate,
+      Optional<ReservationEventType> reservationEventType) {
+    return createAndPersistReservation(reservationCreatedDate, businessTopic, reservationEventType);
+  }
+  
+  private Reservation createAndPersistReservation(Date reservationCreatedDate, String topic,
+      Optional<ReservationEventType> reservationEventType) {
+    Reservation reservation = new Reservation();
+    reservation.reservationCreatedDate = reservationCreatedDate;
+    reservation.topic = topic;
+    if (reservationEventType.isPresent()) {
+      ReservationEvent event = new ReservationEvent();
+      event.date = new Date();
+      event.type = reservationEventType.get();
+      reservation.events = Lists.newArrayList(event);
+    }
+    return reservationRepository.save(reservation);
   }
 }
