@@ -9,9 +9,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface ReservationRepository
     extends MongoRepository<Reservation, String>, QueueingRepository {
-  /**
-   * Returns a list of Reservations with the specified topic.
-   */
+  /** Returns a list of Reservations with the specified topic. */
   List<Reservation> findByTopic(@Param("topic") String topic);
 
   /**

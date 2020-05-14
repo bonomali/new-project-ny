@@ -2,10 +2,8 @@ package org.google.callmeback.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
-
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,12 +134,14 @@ public class ReservationRepositoryTest {
     return createAndPersistReservation(reservationCreatedDate, businessTopic, Optional.empty());
   }
 
-  private Reservation createAndPersistReservation(Date reservationCreatedDate,
-      Optional<ReservationEventType> reservationEventType) {
+  private Reservation createAndPersistReservation(
+      Date reservationCreatedDate, Optional<ReservationEventType> reservationEventType) {
     return createAndPersistReservation(reservationCreatedDate, businessTopic, reservationEventType);
   }
-  
-  private Reservation createAndPersistReservation(Date reservationCreatedDate, String topic,
+
+  private Reservation createAndPersistReservation(
+      Date reservationCreatedDate,
+      String topic,
       Optional<ReservationEventType> reservationEventType) {
     Reservation reservation = new Reservation();
     reservation.reservationCreatedDate = reservationCreatedDate;
