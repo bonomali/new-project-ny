@@ -17,6 +17,7 @@ interface CustomReservationRepository {
     public Reservation startNextCall();
 }
 
+// TODO: Add to the CallMeBackController to map this functionality to a route.
 @Component
 class CustomReservationRepositoryImpl implements CustomReservationRepository {
     private final MongoTemplate mongoTemplate;
