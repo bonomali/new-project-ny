@@ -26,8 +26,7 @@ public class ReservationRepositoryTest {
     Reservation reservation = reservationRepository.save(unsavedReservation);
 
     assertThat(reservation.id).isNotNull();
-    assertThat(reservationRepository.findAll())
-        .containsExactlyInAnyOrder(reservation);
+    assertThat(reservationRepository.findAll()).containsExactlyInAnyOrder(reservation);
   }
 
   @Test
@@ -42,8 +41,7 @@ public class ReservationRepositoryTest {
     assertThat(reservation.topic).isEqualTo(businessTopic);
     assertThat(reservationRepository.findByTopic(businessTopic))
         .containsExactlyInAnyOrder(reservation);
-    assertThat(reservationRepository.findByTopic(unemploymentTopic))
-        .isEmpty();
+    assertThat(reservationRepository.findByTopic(unemploymentTopic)).isEmpty();
   }
 
   @Test
