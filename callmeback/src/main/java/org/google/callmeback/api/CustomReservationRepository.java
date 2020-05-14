@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 interface CustomReservationRepository {
-    public void startNextCall();
+    public Reservation startNextCall();
 }
 
 @Component
@@ -26,7 +26,7 @@ class CustomReservationRepositoryImpl implements CustomReservationRepository {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public void startNextCall() {
+    public Reservation startNextCall() {
         Sort sort = Sort.by("reservationCreatedDate").ascending();
         Query query = new Query(Criteria.where("events").is(null)).with(sort).limit(1);
 
@@ -37,7 +37,10 @@ class CustomReservationRepositoryImpl implements CustomReservationRepository {
         resEvents.add(resEvent);
         Update update = new Update().set("events", resEvents);
 
-        Reservation updatedRes = mongoTemplate.findAndModify(query, update, FindAndModifyOptions.options(), Reservation.class, "reservations");
-        System.out.println(updatedRes);
+        FindAndModifyOptions opts = FindAndModifyOptions.options();
+        opts.returnNew(true);
+
+        Reservation updatedRes = mongoTemplate.findAndModify(query, update, opts, Reservation.class, "reservation");
+        return updatedRes;
     }
 }
