@@ -22,12 +22,12 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testSave_setsId() {
-      Reservation unsavedReservation = new Reservation();
-      Reservation reservation = reservationRepository.save(unsavedReservation);
+    Reservation unsavedReservation = new Reservation();
+    Reservation reservation = reservationRepository.save(unsavedReservation);
 
-      assertThat(reservation.id).isNotNull();
-      assertThat(reservationRepository.findAll())
-          .containsExactlyInAnyOrder(reservation);
+    assertThat(reservation.id).isNotNull();
+    assertThat(reservationRepository.findAll())
+        .containsExactlyInAnyOrder(reservation);
   }
 
   @Test
