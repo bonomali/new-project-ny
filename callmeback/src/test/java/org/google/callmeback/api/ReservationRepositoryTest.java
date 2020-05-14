@@ -114,7 +114,7 @@ public class ReservationRepositoryTest {
     assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
 
     Reservation reservation2 = reservationRepository.startNextCall();
-    assertThat(reservation.id).isEqualTo(res3.id);
+    assertThat(reservation2.id).isEqualTo(res3.id);
     assertThat(reservation2.reservationCreatedDate).isEqualTo(date3);
     assertThat(reservation2.events).isNotNull();
     assertThat(reservation2.events.size()).isEqualTo(1);
