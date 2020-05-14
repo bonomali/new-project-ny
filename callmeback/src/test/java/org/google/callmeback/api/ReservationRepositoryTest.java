@@ -98,7 +98,6 @@ public class ReservationRepositoryTest {
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation).isNull();
-
   }
 
   @Test
