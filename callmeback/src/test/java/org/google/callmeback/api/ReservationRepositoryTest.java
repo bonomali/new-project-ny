@@ -42,8 +42,10 @@ public class ReservationRepositoryTest {
 
         assertThat(reservation.id).isNotNull();
         assertThat(reservation.topic).isEqualTo(businessTopic);
-        assertThat(reservationRepository.findByTopic(businessTopic).size()).isEqualTo(1);
-        assertThat(reservationRepository.findByTopic(unemploymentTopic).size()).isEqualTo(0);
+        assertThat(reservationRepository.findByTopic(businessTopic).size())
+            .isEqualTo(1);
+        assertThat(reservationRepository.findByTopic(unemploymentTopic).size())
+            .isEqualTo(0);
     }
 
 
@@ -62,8 +64,11 @@ public class ReservationRepositoryTest {
         reservation3 = reservationRepository.save(reservation3);
 
         // TODO: Confirm the correct reservation is in the list
-        assertThat(reservationRepository.findByTopic(businessTopic).size()).isEqualTo(2);
-        assertThat(reservationRepository.findByTopic(unemploymentTopic).size()).isEqualTo(1);
-        assertThat(reservationRepository.findByTopic(dmvTopic).size()).isEqualTo(0);
+        assertThat(reservationRepository.findByTopic(businessTopic).size())
+            .isEqualTo(2);
+        assertThat(reservationRepository.findByTopic(unemploymentTopic).size())
+            .isEqualTo(1);
+        assertThat(reservationRepository.findByTopic(dmvTopic).size())
+            .isEqualTo(0);
     }
 }
