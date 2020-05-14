@@ -7,7 +7,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource
-public interface ReservationRepository extends MongoRepository<Reservation, String> {
+public interface ReservationRepository
+    extends MongoRepository<Reservation, String>, QueueingRepository {
   /**
    * Returns a list of Reservations with the specified topic.
    */

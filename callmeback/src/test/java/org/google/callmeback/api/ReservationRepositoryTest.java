@@ -2,6 +2,7 @@ package org.google.callmeback.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -55,6 +56,56 @@ public class ReservationRepositoryTest {
     assertThat(reservationRepository.findByTopic(unemploymentTopic))
         .containsExactlyInAnyOrder(reservation3);
     assertThat(reservationRepository.findByTopic(dmvTopic)).isEmpty();
+  }
+
+  @Test
+  public void testStartNextCall_setsEventForSingleCall() {
+    Date currentDate = new Date();
+    createAndPersistReservation(currentDate);
+
+    Reservation reservation = reservationRepository.startNextCall();
+    assertThat(reservation.id).isNotNull();
+    assertThat(reservation.reservationCreatedDate).isEqualTo(currentDate);
+    assertThat(reservation.events).isNotNull();
+    assertThat(reservation.events.size()).isEqualTo(1);
+    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
+    assertThat(reservation.events.get(0).date).isNotNull();
+  }
+
+  @Test
+  public void testStartNextCall_noCallToStart() {
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
+
+    Reservation reservation = reservationRepository.startNextCall();
+    assertThat(reservation).isNull();
+  }
+
+  @Test
+  public void testStartNextCall_setsEventForMostRecentUnresolvedCall() {
+    Date date1 = new Date();
+    createAndPersistReservation(date1, Optional.of(ReservationEventType.CONNECTED));
+
+    Date date2 = new Date();
+    Reservation res2 = createAndPersistReservation(date2);
+
+    Date date3 = new Date();
+    Reservation res3 = createAndPersistReservation(date3);
+
+    Reservation reservation = reservationRepository.startNextCall();
+    assertThat(reservation.id).isEqualTo(res2.id);
+    assertThat(reservation.reservationCreatedDate).isEqualTo(date2);
+    assertThat(reservation.events).isNotNull();
+    assertThat(reservation.events.size()).isEqualTo(1);
+    assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
+    assertThat(reservation.events.get(0).date).isNotNull();
+
+    Reservation reservation2 = reservationRepository.startNextCall();
+    assertThat(reservation2.id).isEqualTo(res3.id);
+    assertThat(reservation2.reservationCreatedDate).isEqualTo(date3);
+    assertThat(reservation2.events).isNotNull();
+    assertThat(reservation2.events.size()).isEqualTo(1);
+    assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
+    assertThat(reservation2.events.get(0).date).isNotNull();
   }
 
   @Test
