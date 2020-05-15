@@ -21,6 +21,8 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
   testImplementation('org.junit.jupiter:junit-jupiter:5.4.0')
+  // For running in VSCode
+  testImplementation('org.junit.platform:junit-platform-launcher:1.5.2')
 }
 
 test {
