@@ -18,6 +18,4 @@ function sendReservation(apiUrl) {
 
 module.exports = {
     sendReservation,
-    startCall,
-    endCall,
 }

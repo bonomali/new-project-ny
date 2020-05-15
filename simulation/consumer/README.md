@@ -18,12 +18,14 @@ where the api-url is the URL (host + port) where the Call Me Back API is running
 
 There are other optional flags:
 
-* --flag = description
+* --length = duration of each simulated call in minutes
+* --period = time in minutes between attempts to handle the next call
 
 For example,
 
 ```bash
-node main.js --flag description --api-url 'http://192.168.64.4:31442'
+node main.js --length 1 --period .5 --api-url 'http://192.168.64.4:31442'
 ```
 
-would run the script with ...
+would handle two calls per minute, and each of those calls would be simulated for 1 minute before
+being marked as resolved.
