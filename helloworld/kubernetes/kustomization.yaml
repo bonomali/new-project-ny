@@ -1,7 +1,9 @@
 secretGenerator:
-  - name: hw-mongo-pass
+  - name: hwr-mongo-pass
     literals:
       - password=ABADIDEA
 resources:
   - mongodb.yaml
-  - web.yaml
+  - frontend.yaml
+  - backend.yaml
+  - ingress.yaml
