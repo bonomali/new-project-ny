@@ -1,8 +1,0 @@
-# Ignore node dependency caches -- we want to install these fresh.
-**/node_modules
-
-# Exclude local build cache.
-.gradle
-
-# kubernetes config files are never needed.
-kubernetes

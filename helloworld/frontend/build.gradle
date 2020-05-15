@@ -29,5 +29,5 @@ task build(type: NpmTask) {
 
 task clean {
   description = "Cleans build artifacts."
-  delete build
+  delete '.next', 'out'
 }
