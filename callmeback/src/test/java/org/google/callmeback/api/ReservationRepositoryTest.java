@@ -131,6 +131,9 @@ public class ReservationRepositoryTest {
     Reservation reservation = createAndPersistReservation(requestedDate);
     ReservationWindow window = reservation.window;
     assertThat(window).isNotNull();
+    assertThat(window.min).isNotNull();
+    assertThat(window.exp).isNotNull();
+    assertThat(window.max).isNotNull();
   }
 
   // TODO Create a builder to handle the creation of Reservations.

@@ -37,7 +37,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
-    Query query = new Query(Criteria.where("events").is(null));
+    Query query = new Query(
+        Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
     long countReservations = mongoTemplate.count(query, Reservation.class);
     Date current = new Date();
     long expectedWaitTimeMins = countReservations * 10;
