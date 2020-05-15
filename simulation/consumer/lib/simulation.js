@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 function startCall(apiUrl) {
-    return axios.patch(apiUrl + '/api/v1/{newEndpoint}', reservation)
+    return axios.patch(apiUrl + '/api/v1/reservations/search/startNextCall', reservation)
         .then((response) =>  { 
             console.log(response); 
             return response;
