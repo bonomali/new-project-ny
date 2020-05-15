@@ -41,6 +41,17 @@ function promiseWait(time) {
 } 
 
 /**
+ * Asynchronous method for completing a call reservation.
+ */
+function processCall() {
+    simulation.startCall(argv.apiUrl)
+        .then((response) => response.data)
+        .then(promiseWait(argv.callLength * 60 * 1000)) // simulated call duration
+        .then(simulation.endCall)
+        .catch((error) => console.log(error));
+}
+
+/**
  * Consumer script for handling calls. To ensure that the database does not receive
  * a massive backlog of unaddressed calls, make sure that the --length and --period
  * parameters will process the same volume of calls being introduced into the system
@@ -49,14 +60,7 @@ function promiseWait(time) {
  * sample call: node main.js --length 1 --period .5 --api-url 'http://192.168.64.4:31442'
  */
 function main() {
-    simulation.startCall(argv.apiUrl)
-        .then((response) => response.data)
-        .then(promiseWait(argv.callLength * 60 * 1000)) // simulated call duration
-        .then((reservation) => simulation.endCall(reservation))
-        .catch((error) => console.log(error));
-
-    // The next call should start after the next callPeriod regardless of how 
-    // long the above promise takes to complete.
+    processCall();
     const periodMs = argv.callPeriod * 60 * 1000;
-    setTimeout(main, periodMs);
+    setInterval(processCall, periodMs);
 }
