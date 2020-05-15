@@ -18,7 +18,7 @@ COPY build.gradle settings.gradle gradlew $APP_HOME/
 COPY gradle $APP_HOME/gradle
 RUN ./gradlew --no-daemon build || echo "Build failed...this is expected."
 
-# Now copy everything else and build it as a separte step.
+# Now copy everything else and build it as a separate step.
 COPY . .
 RUN ./gradlew --no-daemon build
 

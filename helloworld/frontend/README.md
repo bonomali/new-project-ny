@@ -19,3 +19,9 @@ npx create-next-app --example with-jest
 ```bash
 npm test
 ```
+
+or
+
+```bash
+yarn test
+```
