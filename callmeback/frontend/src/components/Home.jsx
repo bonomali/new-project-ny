@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Container, Button, Form, Input, Header } from 'semantic-ui-react'
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import moment from 'moment';
 
 function Home(props) {
   const [name, setName] = useState('')
@@ -29,6 +30,7 @@ function Home(props) {
       preferredName: name,
       contactPhone: number,
       query: query,
+      reservationCreatedDate: moment(),
     };
     axios.post('/api/v1/reservations', reservation)
     .then((response) => {
