@@ -27,7 +27,7 @@ interface QueueingRepository {
 }
 
 @Component
-class QueueingRepositoryImpl<T, ID> implements QueueingRepository {
+class QueueingRepositoryImpl implements QueueingRepository {
   private final MongoTemplate mongoTemplate;
 
   @Autowired
