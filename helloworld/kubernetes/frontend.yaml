@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hwr-frontend-service
+  name: hw-frontend-service
   labels:
     app: hello-world
 spec:
@@ -15,7 +15,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hwr-frontend
+  name: hw-frontend
   labels:
     app: hello-world
 spec:
@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - image: google-org/hello-world-frontend:dev
-          name: hwr-frontend
+          name: hw-frontend
           ports:
             - containerPort: 3000
               name: frontend
