@@ -3,3 +3,5 @@ spring:
         mongodb:
             database: Person
             authentication-database: admin
+        rest:
+          base-path: /
