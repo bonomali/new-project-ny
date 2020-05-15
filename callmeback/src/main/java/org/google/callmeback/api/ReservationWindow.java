@@ -13,17 +13,13 @@ public class ReservationWindow {
   @Autowired
   private ReservationRepository reservationRepository;
 
-  public ReservationWindow() {
-    Date current = new Date();
-    this.min = Date.from(current.toInstant().plus(Duration.ofMinutes(20)));
-    this.exp = Date.from(current.toInstant().plus(Duration.ofMinutes(30)));
-    this.max = Date.from(current.toInstant().plus(Duration.ofMinutes(40)));
-  }
-
-  public Date getExpectedDate(Date requestDate) {
+  public ReservationWindow(Date requestDate) {
     int countReservations =
         reservationRepository.countByEventsNullAndReservationCreatedDateLessThan(requestDate);
     Date current = new Date();
-    return Date.from(current.toInstant().plus(Duration.ofMinutes(10 * countReservations)));
+    long expectedWaitTimeMins = countReservations * 10;
+    this.min = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins - 10)));
+    this.exp = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins)));
+    this.max = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins + 10)));
   }
 }

@@ -54,11 +54,7 @@ public class Reservation {
 
   /** The resident's feedback about the service experience. */
   public ReservationWindow getWindow() {
-    ReservationWindow window = new ReservationWindow();
-    window.min = window.getExpectedDate(reservationCreatedDate);
-    window.max = window.getExpectedDate(reservationCreatedDate);
-    window.exp = window.getExpectedDate(reservationCreatedDate);
-    return window;
+    return new ReservationWindow(reservationCreatedDate);
   }
 
   @Override
