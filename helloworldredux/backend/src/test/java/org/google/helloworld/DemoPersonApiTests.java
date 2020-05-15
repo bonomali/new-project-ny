@@ -38,7 +38,7 @@ class DemoPersonApiTests {
 
     try {
       mockMvc.perform(
-        post("/api/v1/person")
+        post("/v1/person")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(p)))
       .andExpect(status().isOk());
