@@ -52,8 +52,7 @@ function main() {
     simulation.startCall(argv.apiUrl)
         .then((response) => response.data)
         .then(promiseWait(argv.callLength * 60 * 1000)) // simulated call duration
-        .then((reservation) => simulation.endCall(argv.apiUrl, reservation.id, reservation.events))
-        .then((response) => console.log(response))
+        .then((reservation) => simulation.endCall(reservation))
         .catch((error) => console.log(error));
 
     // The next call should start after the next callPeriod regardless of how 
