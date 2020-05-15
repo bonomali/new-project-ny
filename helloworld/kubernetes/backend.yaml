@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: hwr-backend-service
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   ports:
     - port: 8080
   selector:
-    app: hello-world-redux
+    app: hello-world
     tier: web
   type: NodePort
 ---
@@ -17,22 +17,22 @@ kind: Deployment
 metadata:
   name: hwr-backend
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   selector:
     matchLabels:
-      app: hello-world-redux
+      app: hello-world
       tier: web
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: hello-world-redux
+        app: hello-world
         tier: web
     spec:
       containers:
-        - image: google-org/hello-world-redux-backend:dev
+        - image: google-org/hello-world-backend:dev
           name: hwr-backend
           env:
             - name: MONGODB_HOST
