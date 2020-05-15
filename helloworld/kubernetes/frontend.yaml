@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: hwr-frontend-service
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   ports:
     - port: 3000
   selector:
-    app: hello-world-redux
+    app: hello-world
     tier: web
   type: NodePort
 ---
@@ -17,22 +17,22 @@ kind: Deployment
 metadata:
   name: hwr-frontend
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   selector:
     matchLabels:
-      app: hello-world-redux
+      app: hello-world
       tier: web
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: hello-world-redux
+        app: hello-world
         tier: web
     spec:
       containers:
-        - image: google-org/hello-world-redux-frontend:dev
+        - image: google-org/hello-world-frontend:dev
           name: hwr-frontend
           ports:
             - containerPort: 3000

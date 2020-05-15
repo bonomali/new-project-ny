@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: hwr-mongo-service
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   ports:
     - port: 27017
   selector:
-    app: hello-world-redux
+    app: hello-world
     tier: mongo
   type: NodePort
 ---
@@ -17,7 +17,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: hwr-mongo-pv-claim
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   accessModes:
     - ReadWriteOnce
@@ -30,18 +30,18 @@ kind: Deployment
 metadata:
   name: hwr-mongo
   labels:
-    app: hello-world-redux
+    app: hello-world
 spec:
   selector:
     matchLabels:
-      app: hello-world-redux
+      app: hello-world
       tier: mongo
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: hello-world-redux
+        app: hello-world
         tier: mongo
     spec:
       containers:
