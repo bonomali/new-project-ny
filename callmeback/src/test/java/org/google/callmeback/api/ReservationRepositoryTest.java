@@ -125,6 +125,14 @@ public class ReservationRepositoryTest {
         .isEqualTo(2);
   }
 
+  @Test
+  public void testReservationWindow() {
+    Date requestedDate = new Date();
+    Reservation reservation = createAndPersistReservation(requestedDate);
+    ReservationWindow window = reservation.window;
+    assertThat(window).isNotNull();
+  }
+
   // TODO Create a builder to handle the creation of Reservations.
   private Reservation createAndPersistReservation(String topic) {
     return createAndPersistReservation(new Date(), topic, Optional.empty());

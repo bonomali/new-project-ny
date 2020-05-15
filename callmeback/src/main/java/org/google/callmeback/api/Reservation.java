@@ -3,6 +3,7 @@ package org.google.callmeback.api;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /** Represents a resident's reservation for a call from an operator. */
 @Document
 public class Reservation {
+
   /** The unique identifier for the reservation. Auto-generated. */
   @Id public String id;
 
@@ -53,9 +55,7 @@ public class Reservation {
   public ReservationFeedback feedback;
 
   /** The resident's feedback about the service experience. */
-  public ReservationWindow getWindow() {
-    return new ReservationWindow(reservationCreatedDate);
-  }
+  public ReservationWindow window;
 
   @Override
   public boolean equals(Object obj) {
