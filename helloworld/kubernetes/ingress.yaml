@@ -10,9 +10,9 @@ spec:
       paths:
       - path: /api/(.*)
         backend:
-          serviceName: hwr-backend-service
+          serviceName: hw-backend-service
           servicePort: 8080
       - path: /(.*)
         backend:
-          serviceName: hwr-frontend-service
+          serviceName: hw-frontend-service
           servicePort: 3000
