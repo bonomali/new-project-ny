@@ -14,7 +14,7 @@ function sendReservation(apiUrl) {
         reservationCreatedDate: moment(),
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
-        .then((response) => console.log(response))
+        .then((response) => console.log(response.data))
         .catch((error) => console.log(error))
 }
 
