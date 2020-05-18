@@ -1,42 +1,42 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hw-backend-service
+  name: cmb-backend-service
   labels:
-    app: hello-world
+    app: call-me-back
 spec:
   ports:
     - port: 8080
   selector:
-    app: hello-world
+    app: call-me-back
     tier: web
   type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hw-backend
+  name: cmb-backend
   labels:
-    app: hello-world
+    app: call-me-back
 spec:
   selector:
     matchLabels:
-      app: hello-world
+      app: call-me-back
       tier: web
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: hello-world
+        app: call-me-back
         tier: web
     spec:
       containers:
-        - image: google-org/hello-world-backend:dev
-          name: hw-backend
+        - image: google-org/call-me-back-backend:dev
+          name: cmb-backend
           env:
             - name: MONGODB_HOST
-              value: hw-mongo-service
+              value: cmb-mongo-service
             - name: MONGODB_PORT
               value: '27017'
             - name: MONGODB_USER
@@ -44,7 +44,7 @@ spec:
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: hw-mongo-pass
+                  name: cmb-mongo-pass
                   key: password
           ports:
             - containerPort: 8080
