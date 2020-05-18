@@ -8,7 +8,7 @@ import axios from 'axios';
 function Reservation(props) {
     const { id } = useParams();
 
-    const convertReservationToState = (reservation) => {
+    const convertReservationToState = useCallback((reservation) => {
         const expCallStartMin = new Date(reservation.window.min)
         const expCallStartMax = new Date(reservation.window.max)
 
@@ -18,7 +18,7 @@ function Reservation(props) {
             resolved: reservation.resolution != null,
             expCallStartMin, expCallStartMax,
         };
-    };
+    }, [id]);
 
     const [reservationDetails, setReservationDetails] = useState(() => {
         if (!!props && !!props.location.state) {
