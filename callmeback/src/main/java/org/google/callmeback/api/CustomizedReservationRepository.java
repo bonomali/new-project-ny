@@ -37,7 +37,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   // (Hard-coded) Average time it takes for a call to be taken off the queue, after a reservation is
   // made
-  private static final int AVERAGE_CALL_HANDLING_MINS = 10;
+  private static final int AVERAGE_WAIT_TIME_MINS = 10;
 
   // (Hard-coded) Length of the expected reservation window
   private static final int WINDOW_LENGTH_MINS = 30;
@@ -66,7 +66,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     Query query = new Query(
         Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
     long countReservations = mongoTemplate.count(query, Reservation.class);
-    long expectedWaitTimeMins = countReservations * AVERAGE_CALL_HANDLING_MINS;
+    long expectedWaitTimeMins = countReservations * AVERAGE_WAIT_TIME_MINS;
 
     Instant requestDateInstant = requestDate.toInstant();
     window.min = Date.from(requestDateInstant.plus(
