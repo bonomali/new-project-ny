@@ -126,14 +126,47 @@ public class ReservationRepositoryTest {
   }
 
   @Test
-  public void testReservationWindow() {
+  public void testReservationWindow_singleReservation() {
     Date requestedDate = new Date();
     Reservation reservation = createAndPersistReservation(requestedDate);
     ReservationWindow window = reservation.window;
-    assertThat(window).isNotNull();
-    assertThat(window.min).isNotNull();
-    assertThat(window.exp).isNotNull();
-    assertThat(window.max).isNotNull();
+    assertThat(window.min).isAfter(reservation.reservationCreatedDate);
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+
+    Reservation reservationById = reservationRepository.findById(reservation.id).get();
+    window = reservationById.window;
+    assertThat(window.min).isAfter(reservationById.reservationCreatedDate);
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+  }
+
+  @Test
+  public void testReservationWindow_multipleReservations() {
+    Reservation olderReservationWithNoEvents = createAndPersistReservation(new Date());
+    Reservation olderReservationWithEvents =
+        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
+    
+    Reservation reservationUnderTest = createAndPersistReservation(new Date());
+    Reservation newerReservationWithNoEvents = createAndPersistReservation(new Date());
+    Reservation newerReservationWithEvents =
+        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+
+    Reservation reservationById = reservationRepository.findById(reservationUnderTest.id).get();
+    ReservationWindow window = reservationById.window;
+    assertThat(window.min).isAfter(reservationById.reservationCreatedDate);
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+
+    Reservation olderReservationById =
+        reservationRepository.findById(olderReservationWithNoEvents.id).get();
+    ReservationWindow olderWindow = olderReservationById.window;
+    assertThat(olderWindow.min).isAfter(olderReservationById.reservationCreatedDate);
+    assertThat(olderWindow.exp).isAfter(olderWindow.min);
+    assertThat(olderWindow.max).isAfter(olderWindow.exp);
+    assertThat(olderWindow.min).isBefore(window.min);
+    assertThat(olderWindow.exp).isBefore(window.exp);
+    assertThat(olderWindow.max).isBefore(window.max);
   }
 
   // TODO Create a builder to handle the creation of Reservations.

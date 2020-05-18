@@ -9,9 +9,18 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+/** A ReservationRepository that overrides various methods of MongoRepository. */
 public interface CustomizedReservationRepository<T, ID> {
+  /**
+   * Returns a Reservation by the specified ID, including populating the ReservationWindow, based
+   * on the number of reservations in the system.
+   */
   Optional<T> findById(ID id);
 
+  /**
+   * Persists and returns the specified Reservation, with the ReservationWindow populated, based on
+   * the number of reservations in the system.
+   */
   <S extends T> S save(S entity);
 }
 
@@ -19,6 +28,9 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired
   private MongoTemplate mongoTemplate;
+
+  private static final int AVERAGE_CALL_DURATION_MINUTES = 10;
+  private static final int WINDOW_LENGTH_MINUTES = 30;
 
   @Override
   public Optional<T> findById(ID id) {
@@ -35,16 +47,23 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     return (S) reservation;
   }
 
+  /**
+   * Returns a ReservationWindow, incorporating the number of reservations created prior to the
+   * specified date, which do not currently have any reservation events associated.
+   */
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
     Query query = new Query(
         Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
     long countReservations = mongoTemplate.count(query, Reservation.class);
+    long expectedWaitTimeMins = countReservations * AVERAGE_CALL_DURATION_MINUTES;
+
     Date current = new Date();
-    long expectedWaitTimeMins = countReservations * 10;
-    window.min = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins - 10)));
-    window.exp = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins)));
-    window.max = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins + 10)));
+    window.min = Date.from(current.toInstant().plus(Duration.ofMinutes(expectedWaitTimeMins)));
+    window.exp = Date.from(current.toInstant().plus(
+        Duration.ofMinutes(expectedWaitTimeMins + (WINDOW_LENGTH_MINUTES / 2))));
+    window.max = Date.from(current.toInstant().plus(
+        Duration.ofMinutes(expectedWaitTimeMins + WINDOW_LENGTH_MINUTES)));
     return window;
   }
 }
