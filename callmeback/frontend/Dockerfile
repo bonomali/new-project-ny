@@ -31,4 +31,4 @@ ENV APP_HOME=/usr/app
 COPY --from=builder --chown=node:node $APP_HOME $APP_HOME
 EXPOSE 3000
 WORKDIR $APP_HOME
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npm", "run", "server"]
