@@ -1,0 +1,194 @@
+plugins {
+  id "com.bmuschko.docker-remote-api" version "6.4.0"
+  id 'com.github.node-gradle.node' version '2.2.3'
+  id "com.google.cloud.tools.minikube" version "1.0.0-alpha.3"
+  id 'org.springframework.boot' version '2.2.6.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+  id 'java'
+}
+
+group = 'org.google'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+import com.bmuschko.gradle.docker.tasks.image.*
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+  implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+  runtimeOnly 'com.h2database:h2'
+  testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
+  testImplementation('org.junit.platform:junit-platform-launcher:1.5.2')
+  compile 'org.springframework.data:spring-data-rest-hal-browser'
+  testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
+}
+
+node {
+  version = '14.0.0'
+  npmVersion = '6.14.4'
+  download = true
+  nodeModulesDir = file('frontend')
+}
+
+test {
+  useJUnitPlatform()
+}
+
+task buildFrontend(type: NpmTask) {
+  group = "React App"
+  description = "Builds production version of the React app"
+  dependsOn npmInstall
+  inputs.files(fileTree(
+      dir: 'frontend',
+      excludes: ['build', 'node_modules']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  outputs.dir('frontend/build')
+    .withPropertyName('outputDir')
+  args = ['run', 'build']
+}
+
+task packFrontend(type: Copy) {
+  group = "React App"
+  description = "Adds compiled React app to Jar path"
+  dependsOn buildFrontend
+
+  // Create React App creates different hashed cache files each build, these can
+  // cause clutter or potentially show old caches so we make sure we delete
+  // them if there are any changes.
+  doFirst {
+    delete 'build/node/public'
+  }
+  from 'frontend/build'
+  into 'build/node/public'
+}
+
+sourceSets {
+  main {
+    resources {
+      compiledBy packFrontend
+      srcDirs 'build/node'
+    }
+  }
+}
+
+// Convenience check to see if we should start minikube. Getting the docker
+// environment details returns a non-zero exit code which throws an exception.
+// We use that to trigger a start if that happens.
+minikubeStart.onlyIf {
+  def needsStart = false
+  try {
+    minikube.getDockerEnv('minikube')
+  } catch (Exception e) {
+    println "Looks like minikube is not running, starting..."
+    needsStart = true
+  }
+  return needsStart
+}
+
+// We need to run the initialization of the docker environment separately
+// because of the way gradle configures and evaluates tasks. If we just put the
+// getDockerEnv() call in the task closure, it would cause any build to fail
+// that doesn't have minikube installed. This is fine for the dev builds that
+// use minikube but it means that prod image builds will also break (which don't
+// need minikube to work).
+task configureMinikube {
+  dependsOn minikubeStart
+  doFirst {
+    def dockerEnv = minikube.getDockerEnv('minikube')
+    docker.url.set(dockerEnv.DOCKER_HOST)
+    docker.certPath.set(file(dockerEnv.DOCKER_CERT_PATH))
+    docker.apiVersion.set(dockerEnv.DOCKER_API_VERSION)
+  }
+}
+
+task buildImage(type: DockerBuildImage) {
+  group = "Docker / k8s"
+  description = "Builds an image for a local run"
+  dependsOn bootJar
+  dependsOn configureMinikube
+  inputs.files(fileTree(
+      dir: '.',
+      includes: ['build/lib/*.jar', '*Dockerfile*']))
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  inputDir = file('.')
+  dockerFile = file('dev.Dockerfile')
+  images.add('google-org/call-me-back:dev')
+}
+
+task applyChanges(type: Exec) {
+  dependsOn buildImage
+  inputs.dir('kubernetes')
+    .withPropertyName('sourceFiles')
+    .withPathSensitivity(PathSensitivity.RELATIVE)
+  commandLine 'kubectl', 'apply', '-k', 'kubernetes'
+
+  // Kubernetes does not update the images of running pods even if the image is
+  // updated. The way we can do that is by forcing a scale operation.
+  //
+  // H/T to pagid on StackOverflow for the suggestion
+  // https://stackoverflow.com/questions/41735829/update-a-deployment-image-in-kubernetes
+  doLast {
+    exec {
+      commandLine 'kubectl', 'scale', '--replicas=0', '--all', 'deployments'
+    }
+    exec {
+      commandLine 'kubectl', 'scale', '--replicas=1', '--all', 'deployments'
+    }
+  }
+}
+
+task start(type: Exec) {
+  group = "Docker / k8s"
+  description = "Starts the app locally"
+  dependsOn applyChanges
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Call Me Back App is running at'
+  }
+  commandLine 'minikube', 'service', '--url', 'cmb-web-service'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
+task stop(type: Exec) {
+  group = "Docker / k8s"
+  description = "Stops the running app"
+  doFirst {
+    println '---------------------------------------------------'
+    println ''
+    println 'Stopping app'
+  }
+  commandLine 'kubectl', 'delete', '-k', 'kubernetes'
+  doLast {
+    println ''
+    println '---------------------------------------------------'
+  }
+}
+
+task buildProdImage(type: DockerBuildImage) {
+  group = "Docker / k8s"
+  description = "Builds a hermetic prod image"
+  inputDir = file('.')
+  images.add('google-org/call-me-back:prod')
+}
+
+classes {
+  dependsOn packFrontend
+}
+
+clean {
+  dependsOn minikubeDelete
+  delete 'frontend/build'
+}

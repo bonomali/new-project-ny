@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hw-mongo-service
+  name: cmb-mongo-service
   labels:
-    app: hello-world
+    app: call-me-back
 spec:
   ports:
     - port: 27017
   selector:
-    app: hello-world
+    app: call-me-back
     tier: mongo
-  type: NodePort
+  clusterIP: None
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hw-mongo-pv-claim
+  name: cmb-mongo-pv-claim
   labels:
-    app: hello-world
+    app: call-me-back
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,32 +28,32 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hw-mongo
+  name: cmb-mongo
   labels:
-    app: hello-world
+    app: call-me-back
 spec:
   selector:
     matchLabels:
-      app: hello-world
+      app: call-me-back
       tier: mongo
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: hello-world
+        app: call-me-back
         tier: mongo
     spec:
       containers:
         - image: mongo:4.2.6
-          name: hw-mongo
+          name: cmb-mongo
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: root
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: hw-mongo-pass
+                  name: cmb-mongo-pass
                   key: password
           ports:
             - containerPort: 27017
@@ -64,4 +64,4 @@ spec:
       volumes:
         - name: mongo-persistent-storage
           persistentVolumeClaim:
-            claimName: hw-mongo-pv-claim
+            claimName: cmb-mongo-pv-claim

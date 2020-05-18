@@ -1,32 +1,25 @@
 {
-  "name": "web",
+  "name": "frontend",
   "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.9.12",
-    "@material-ui/icons": "^4.9.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "axios": "^0.19.2",
-    "history": "^4.10.1",
-    "jest-environment-jsdom-sixteen": "^1.0.3",
-    "moment": "^2.24.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-moment": "^0.9.7",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
-    "semantic-ui-react": "^0.88.2"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --coverage --env=jest-environment-jsdom-sixteen",
-    "eject": "react-scripts eject"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest --watch",
+    "test:ci": "jest --ci"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "dependencies": {
+    "axios": "^0.19.2",
+    "file-loader": "^6.0.0",
+    "history": "^4.10.1",
+    "next": "^9.3.6",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
+    "react-router-dom": "^5.1.2",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
+    "style-loader": "^1.2.1",
+    "url-loader": "^4.1.0"
   },
   "browserslist": {
     "production": [
@@ -41,6 +34,11 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/dom": "^7.5.1"
+    "@testing-library/jest-dom": "^5.1.0",
+    "@testing-library/react": "^9.4.0",
+    "babel-jest": "^25.1.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^25.1.0",
+    "react-test-renderer": "^16.12.0"
   }
 }
