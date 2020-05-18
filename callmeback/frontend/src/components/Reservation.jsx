@@ -7,7 +7,6 @@ import axios from 'axios';
 
 function Reservation(props) {
     const { id } = useParams();
-    const now = new Date();
 
     const convertReservationToState = (reservation) => {
         const expCallStartMin = new Date(reservation.window.min)
@@ -19,7 +18,7 @@ function Reservation(props) {
             resolved: reservation.resolution != null,
             expCallStartMin, expCallStartMax,
         };
-    }
+    };
 
     const [reservationDetails, setReservationDetails] = useState(() => {
         if (!!props && !!props.location.state) {
@@ -37,7 +36,7 @@ function Reservation(props) {
         catch (error) {
             console.log(error); // Add other error handling.
         }
-    }, [id]);
+    }, [id, convertReservationToState]);
 
     useEffect(() => {
         fetchReservation(); // Run this once upfront to get the data.
