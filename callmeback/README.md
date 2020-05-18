@@ -71,3 +71,8 @@ Then get the IP address for the app and connect to it on port 80:
 ```
 kubectl describe ingress
 ```
+
+## Known Issues
+
+* The HAL Browser redirect doesn't quite work properly if you go to `/api/v1`.
+  * Workaround: Go to `/api/v1/browser/index.html`.
