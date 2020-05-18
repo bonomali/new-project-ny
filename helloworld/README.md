@@ -29,6 +29,12 @@ on the team's understanding of ITS's preferred infrastructure. The app contains:
 
 Enabling Kubernetes in Docker (as in the Tilt instructions) allows this to work. Nothing additional needs to be run.
 
+You may need to set Docker as your Kubernetes context:
+
+```sh
+kubectl config set-context docker-desktop
+```
+
 #### Linux
 
 ```bash
