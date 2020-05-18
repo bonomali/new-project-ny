@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
  * A ReservationRepository that overrides various methods of MongoRepository.
  * 
  * @param <T> the domain the type repository manages, specifically Reservation
- * @param <ID> the type of hte id of the entity the repository manages, specifically String
+ * @param <ID> the type of the id of the entity the repository manages, specifically String
  */
 public interface CustomizedReservationRepository<T, ID> {
   /**
