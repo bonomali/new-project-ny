@@ -47,11 +47,12 @@ test('renders call queue form', async () => {
   fireEvent.submit(submit)
 
   await waitFor(() => expect(axiosMock.post).toHaveBeenCalledTimes(1))
-  expect(axiosMock.post).toHaveBeenCalledWith("/api/v1/reservations", {
+  expect(axiosMock.post).toHaveBeenCalledWith("/api/v1/reservations",
+  expect.objectContaining({
     preferredName: 'mockname',
     contactPhone: '1234567890',
     query: 'mockquery',
-  })
+  }))
   expect(historyAdd).toBe("/reservations/res-id");
 
 });

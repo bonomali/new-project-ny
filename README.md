@@ -46,6 +46,11 @@ cmb-web-5bd6c94b98-8dlfp     1/1     Running   0          61s
 # logs begin streaming from the selected container
 ```
 
+To run tests:
+
+* `./gradlew appName:test` - Runs (backend) tests for the specified `appName`.
+* `./gradlew -i appName:test` - Same as above and prints application logs to test output.
+
 ## Source Code Headers
 
 Every file containing source code must include copyright and license

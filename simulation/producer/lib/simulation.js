@@ -1,5 +1,6 @@
 const axios = require('axios');
 const faker = require('faker');
+const moment = require('moment');
 
 function sendReservation(apiUrl) {
     const queries =
@@ -10,9 +11,10 @@ function sendReservation(apiUrl) {
         preferredName: faker.name.findName(),
         contactPhone: faker.phone.phoneNumber(),
         query: queries[Math.round(Math.random()*(queries.length-1))],
+        reservationCreatedDate: moment(),
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
-        .then((response) => console.log(response))
+        .then((response) => console.log(response.data))
         .catch((error) => console.log(error))
 }
 
