@@ -18,6 +18,7 @@ npmInstall.onlyIf { !project.hasProperty('assumeDeps') }
 
 task test(type: NpmTask) {
   description = "Runs all the React tests."
+  dependsOn build
   args = ['test', '--', '--watchAll=false']
 }
 
