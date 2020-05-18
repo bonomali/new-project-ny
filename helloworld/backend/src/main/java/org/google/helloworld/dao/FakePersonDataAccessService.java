@@ -37,7 +37,7 @@ public class FakePersonDataAccessService implements PersonDao {
 
   @Override
   public Optional<Person> selectPersonById(UUID id) {
-    logger.info(Arrays.toString(DB.toArray())); 
+    logger.info(Arrays.toString(DB.toArray()));
     return DB.stream().filter(person -> person.getId().equals(id)).findFirst();
   }
 
