@@ -3,7 +3,6 @@ package org.google.callmeback.api;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;

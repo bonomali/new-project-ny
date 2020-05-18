@@ -125,7 +125,7 @@ public class ReservationRepositoryTest {
     Reservation olderReservationWithNoEvents = createAndPersistReservation(new Date());
     Reservation olderReservationWithEvents =
         createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
-    
+
     Reservation reservationUnderTest = createAndPersistReservation(new Date());
     Reservation newerReservationWithNoEvents = createAndPersistReservation(new Date());
     Reservation newerReservationWithEvents =
