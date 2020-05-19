@@ -122,14 +122,15 @@ public class ReservationRepositoryTest {
 
   @Test
   public void testReservationWindow_multipleReservations() {
+    // Older reservation with and without events
     Reservation olderReservationWithNoEvents = createAndPersistReservation(new Date());
-    Reservation olderReservationWithEvents =
-        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
 
     Reservation reservationUnderTest = createAndPersistReservation(new Date());
-    Reservation newerReservationWithNoEvents = createAndPersistReservation(new Date());
-    Reservation newerReservationWithEvents =
-        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+
+    // Newer reservations with and without events
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
 
     Reservation reservationById = reservationRepository.findById(reservationUnderTest.id).get();
     ReservationWindow window = reservationById.window;
@@ -146,7 +147,6 @@ public class ReservationRepositoryTest {
     assertThat(olderWindow.max).isBefore(window.max);
   }
 
-  // TODO Create a builder to handle the creation of Reservations.
   private Reservation createAndPersistReservation(String topic) {
     return createAndPersistReservation(new Date(), topic, Optional.empty());
   }
