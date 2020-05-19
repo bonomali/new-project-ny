@@ -9,6 +9,7 @@ function sendReservation(apiUrl) {
     const reservation = {
         preferredName: faker.name.findName(),
         contactPhone: faker.phone.phoneNumber(),
+        reservationCreatedDate: faker.date.recent(1),
         query: queries[Math.round(Math.random()*(queries.length-1))],
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
