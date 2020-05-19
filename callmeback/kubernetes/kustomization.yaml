@@ -4,4 +4,6 @@ secretGenerator:
       - password=ABADIDEA
 resources:
   - mongodb.yaml
-  - web.yaml
+  - frontend.yaml
+  - backend.yaml
+  - ingress.yaml
