@@ -67,10 +67,15 @@ minikube addons enable ingress
 tilt up
 ```
 
-Then get the IP address for the app and connect to it on port 80:
+Then get the IP address for the app and connect to it in your browser over HTTP:
+
 ```
-kubectl describe ingress
+kubectl get ingress -o go-template --template="{{(index .items
+0).status.loadBalancer.ingress}}"
 ```
+
+If this doesn't return anything then you may have not enabled the ingress
+controller above.
 
 ## Known Issues
 

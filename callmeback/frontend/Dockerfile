@@ -19,7 +19,7 @@ COPY gradle $APP_HOME/gradle
 COPY package.json package-lock.json $APP_HOME/
 RUN ./gradlew --no-daemon npmInstall
 
-# Now copy everything else and build it as a separte step.
+# Now copy everything else and build it as a separate step.
 COPY . .
 RUN ./gradlew --no-daemon build -PassumeDeps
 
