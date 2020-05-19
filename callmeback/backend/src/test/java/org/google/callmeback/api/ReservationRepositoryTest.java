@@ -111,7 +111,7 @@ public class ReservationRepositoryTest {
     Date requestedDate = new Date();
     Reservation reservation = createAndPersistReservation(requestedDate);
 
-    // There are no other reservations in the system, so the window.min should be equivalent to the 
+    // There are no other reservations in the system, so the window.min should be equivalent to the
     // window.exp
     ReservationWindow window = reservation.window;
     assertThat(window.exp).isEqualTo(window.min);
