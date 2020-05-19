@@ -41,6 +41,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   private static final int WINDOW_LENGTH_MINS = 30;
 
   @Override
+  @SuppressWarnings("unchecked")
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
     reservation.window = getWindow(reservation.reservationCreatedDate);
@@ -48,6 +49,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <S extends T> S save(S entity) {
     Reservation reservation = (Reservation) entity;
     mongoTemplate.save(reservation);
