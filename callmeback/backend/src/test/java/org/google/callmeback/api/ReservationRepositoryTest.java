@@ -110,43 +110,68 @@ public class ReservationRepositoryTest {
   public void testReservationWindow_singleReservation() {
     Date requestedDate = new Date();
     Reservation reservation = createAndPersistReservation(requestedDate);
+
+    // There are no other reservations in the system, so the window.min should be equivalent to the 
+    // window.exp
     ReservationWindow window = reservation.window;
-    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.exp).isEqualTo(window.min);
     assertThat(window.max).isAfter(window.exp);
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window;
-    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.exp).isEqualTo(window.min);
     assertThat(window.max).isAfter(window.exp);
   }
 
   @Test
   public void testReservationWindow_multipleReservations() {
+    // Older reservations with and without events
     Reservation olderReservationWithNoEvents = createAndPersistReservation(new Date());
-    Reservation olderReservationWithEvents =
-        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
 
-    Reservation reservationUnderTest = createAndPersistReservation(new Date());
-    Reservation newerReservationWithNoEvents = createAndPersistReservation(new Date());
-    Reservation newerReservationWithEvents =
-        createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+    // Reservations made with one and then two reservations in the queue
+    Reservation reservationWithOneInQueue = createAndPersistReservation(new Date());
+    Reservation reservationWithTwoInQueue = createAndPersistReservation(new Date());
 
-    Reservation reservationById = reservationRepository.findById(reservationUnderTest.id).get();
-    ReservationWindow window = reservationById.window;
+    // Newer reservations with and without events
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+
+    // Verify first reservation has same window minimum as expected callback, because there are no
+    // reservations in the queue
+    ReservationWindow window = olderReservationWithNoEvents.window;
+    assertThat(window.exp).isEqualTo(window.min);
+    assertThat(window.max).isAfter(window.exp);
+    window = reservationRepository.findById(olderReservationWithNoEvents.id).get().window;
+    assertThat(window.exp).isEqualTo(window.min);
+    assertThat(window.max).isAfter(window.exp);
+
+    // Verify reservation with one in the queue has the expected callback occur between the minimum
+    // and maximum, because we're currently in the middle of the window
+    window = reservationWithOneInQueue.window;
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+    window = reservationRepository.findById(reservationWithOneInQueue.id).get().window;
     assertThat(window.exp).isAfter(window.min);
     assertThat(window.max).isAfter(window.exp);
 
-    Reservation olderReservationById =
-        reservationRepository.findById(olderReservationWithNoEvents.id).get();
-    ReservationWindow olderWindow = olderReservationById.window;
-    assertThat(olderWindow.exp).isAfter(olderWindow.min);
-    assertThat(olderWindow.max).isAfter(olderWindow.exp);
-    assertThat(olderWindow.min).isBefore(window.min);
-    assertThat(olderWindow.exp).isBefore(window.exp);
-    assertThat(olderWindow.max).isBefore(window.max);
+    // Verify reservation with two in the queue has the expected callback occur between the minimum
+    // and maximum, because we're currently before the window
+    window = reservationWithTwoInQueue.window;
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+    window = reservationRepository.findById(reservationWithTwoInQueue.id).get().window;
+    assertThat(window.exp).isAfter(window.min);
+    assertThat(window.max).isAfter(window.exp);
+
+    // Verify that older reservation window occurs before the more recent reservations
+    ReservationWindow olderWindow = olderReservationWithNoEvents.window;
+    ReservationWindow newerWindow = reservationWithTwoInQueue.window;
+    assertThat(olderWindow.min).isBefore(newerWindow.min);
+    assertThat(olderWindow.exp).isBefore(newerWindow.exp);
+    assertThat(olderWindow.max).isBefore(newerWindow.max);
   }
 
-  // TODO Create a builder to handle the creation of Reservations.
   private Reservation createAndPersistReservation(String topic) {
     return createAndPersistReservation(new Date(), topic, Optional.empty());
   }
