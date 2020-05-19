@@ -33,8 +33,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private MongoTemplate mongoTemplate;
 
-  // (Hard-coded) Average time it takes for a call to be taken off the queue, after a reservation is
-  // made
+  // (Hard-coded) Average amount of time between individual calls being taken off the queue
   private static final int AVERAGE_WAIT_TIME_MINS = 10;
 
   // (Hard-coded) Length of the expected reservation window
@@ -63,20 +62,32 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    */
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
+
+    // Query for the count of reservations without any events which were created earlier than the
+    // specified requestDate.
     Query query =
         new Query(Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
     long countReservations = mongoTemplate.count(query, Reservation.class);
-    long expectedWaitTimeMins = countReservations * AVERAGE_WAIT_TIME_MINS;
 
-    Instant requestDateInstant = requestDate.toInstant();
-    window.min =
+    // Set expected value based on count of open reservations and average wait time.
+    long expectedWaitTimeMins = countReservations * AVERAGE_WAIT_TIME_MINS;
+    Date currentDate = new Date();
+    Instant currentDateInstant = currentDate.toInstant();
+    window.exp = Date.from(currentDateInstant.plus(Duration.ofMinutes(expectedWaitTimeMins)));
+
+    // Set window minimum as the greater value of expected time minus half of the hard-coded window
+    // length and the current time. This ensures the current time is always within the window.
+    Date calculatedWindowMinimum =
         Date.from(
-            requestDateInstant.plus(
-                Duration.ofMinutes(expectedWaitTimeMins - (WINDOW_LENGTH_MINS / 2))));
-    window.exp = Date.from(requestDateInstant.plus(Duration.ofMinutes(expectedWaitTimeMins)));
+            currentDateInstant.plus(
+                Duration.ofMinutes(expectedWaitTimeMins - WINDOW_LENGTH_MINS / 2)));
+    window.min =
+        calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
+
+    // Set window maximum as expected time plus half of the hard-coded window length
     window.max =
         Date.from(
-            requestDateInstant.plus(
+            currentDateInstant.plus(
                 Duration.ofMinutes(expectedWaitTimeMins + (WINDOW_LENGTH_MINS / 2))));
     return window;
   }
