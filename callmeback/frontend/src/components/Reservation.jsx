@@ -8,21 +8,9 @@ import axios from 'axios';
 function Reservation(props) {
     const { id } = useParams();
 
-    const convertReservationToState = useCallback((reservation) => {
-        const expCallStartMin = new Date(reservation.window.min)
-        const expCallStartMax = new Date(reservation.window.max)
-
-        return {
-            id: id,
-            topic: "Business", // Not in response yet, hard coded for demo.
-            resolved: reservation.resolution != null,
-            expCallStartMin, expCallStartMax,
-        };
-    }, [id]);
-
     const [reservationDetails, setReservationDetails] = useState(() => {
         if (!!props && !!props.location.state) {
-            return convertReservationToState(props.location.state.reservation)
+            return convertReservationToState(props.location.state.reservation, id)
         }
         return {}
     });
@@ -30,13 +18,13 @@ function Reservation(props) {
     const fetchReservation = useCallback(async () => {
         try {
             const response = await axios.get("/api/v1/reservations/" + id);
-            const reservation = convertReservationToState(response.data);
+            const reservation = convertReservationToState(response.data, id);
             setReservationDetails(reservation);
         }
         catch (error) {
             console.log(error); // Add other error handling.
         }
-    }, [id, convertReservationToState]);
+    }, [id]);
 
     useEffect(() => {
         fetchReservation(); // Run this once upfront to get the data.
@@ -59,5 +47,17 @@ function Reservation(props) {
         </Container>
     )
 }
+
+function convertReservationToState(reservation, id) {
+    const expCallStartMin = new Date(reservation.window.min)
+    const expCallStartMax = new Date(reservation.window.max)
+
+    return {
+        id: id,
+        topic: "Business", // Not in response yet, hard coded for demo.
+        resolved: reservation.resolution != null,
+        expCallStartMin, expCallStartMax,
+    };
+};
 
 export default Reservation;
