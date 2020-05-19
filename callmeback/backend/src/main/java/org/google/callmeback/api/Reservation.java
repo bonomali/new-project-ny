@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /** Represents a resident's reservation for a call from an operator. */
 @Document
 public class Reservation {
+
   /** The unique identifier for the reservation. Auto-generated. */
   @Id public String id;
 
@@ -53,9 +54,7 @@ public class Reservation {
   public ReservationFeedback feedback;
 
   /** The resident's feedback about the service experience. */
-  public ReservationWindow getWindow() {
-    return new ReservationWindow();
-  }
+  public ReservationWindow window;
 
   @Override
   public boolean equals(Object obj) {

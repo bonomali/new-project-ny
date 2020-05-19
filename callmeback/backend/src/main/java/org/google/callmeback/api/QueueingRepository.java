@@ -25,7 +25,6 @@ interface QueueingRepository {
   public Reservation startNextCall();
 }
 
-// TODO: Add to the CallMeBackController to map this functionality to a route.
 @Component
 class QueueingRepositoryImpl implements QueueingRepository {
   private final MongoTemplate mongoTemplate;
