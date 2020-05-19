@@ -3,14 +3,22 @@ package org.google.callmeback.api;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.google.callmeback.extensions.CustomMongoAggregation;
+import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.query.Criteria.*;
 
 /**
  * QueueingRepository is a custom repository with methods for interacting with reservations inside
@@ -23,15 +31,64 @@ interface QueueingRepository {
    * starts their call.
    */
   public Reservation startNextCall();
+
+  public List<MovingAverageAggregate> movingAverage();
 }
 
 @Component
 class QueueingRepositoryImpl implements QueueingRepository {
   private final MongoTemplate mongoTemplate;
 
+  private final Logger logger = LoggerFactory.logger(QueueingRepository.class);
+
   @Autowired
   public QueueingRepositoryImpl(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
+  }
+  
+  public List<MovingAverageAggregate> movingAverage() {
+    /**
+     * db.rez.aggregate(
+     * {$match: {events: {$size: 0}}},
+     * {$sort: {requestDate: 1}}, 
+     * {$limit: 1},
+     * {$lookup: 
+     *   {from: 'rez', 
+     *    pipeline: [
+     *      {$unwind: '$events'}, 
+     *      {$sort: {'events.eventDate': -1}}, 
+     *      {$limit: 1}, 
+     *      {$project: {_id: 0, age: {$subtract: ['$events.eventDate', '$requestDate']}}}
+     *    ], 
+     *    as: 'recent'}}, 
+     * {$unwind: '$recent'}).pretty()
+     */
+
+
+    Aggregation agg = Aggregation.newAggregation(
+      match(where("events").size(0)),
+      sort(Sort.Direction.ASC, "reservationCreatedDate"),
+      limit(1),
+      new CustomMongoAggregation(
+          "{$lookup:"
+          + "{from: 'reservations',"
+          + "pipeline: ["
+          + "{$unwind: '$events'},"
+          + "{$sort: {'events.eventDate': -1}},"
+          + "{$limit: 1},"
+          + "{$project: {_id: 0, waitTimeMovingAvg: 1}}"
+          + "],"
+          + "as: 'previousAverage'}}"
+      ),
+      unwind("previousAverage")
+    );
+
+    logger.info("Query: " + agg.toString());
+    
+    AggregationResults<MovingAverageAggregate> results =  
+      mongoTemplate.aggregate(agg, "reservations", MovingAverageAggregate.class);
+    
+    return results.getMappedResults();
   }
 
   public Reservation startNextCall() {
@@ -42,7 +99,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
      * Once those callers are handled, we should consider whether they should re-enter the queue and
      * be able to be selected by agents here, or if they should be handled separately.
      */
-    Query query = new Query(Criteria.where("events").is(null)).with(sort).limit(1);
+    Query query = new Query(where("events").is(null)).with(sort).limit(1);
 
     List<ReservationEvent> resEvents = new ArrayList<ReservationEvent>();
     ReservationEvent resEvent = new ReservationEvent();
