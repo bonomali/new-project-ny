@@ -129,19 +129,37 @@ public class ReservationRepositoryTest {
     Reservation reservation = new Reservation();
     reservation.reservationCreatedDate = new Date();
     reservation.topic = "Business";
-    // ReservationEvent event = new ReservationEvent();
-    // event.date = Date.from(
-    //     reservation.reservationCreatedDate.toInstant().plus(Duration.ofMinutes(10)));
-    // event.type = ReservationEventType.CONNECTED;
-    // ReservationEvent event2 = new ReservationEvent();
-    // event2.date = Date.from(
-    //     reservation.reservationCreatedDate.toInstant().plus(Duration.ofMinutes(20)));
-    // event2.type = ReservationEventType.CONNECTED;
-    // reservation.events = Lists.newArrayList(event, event2);
+    ReservationEvent event = new ReservationEvent();
+    event.date = Date.from(
+        reservation.reservationCreatedDate.toInstant().plus(Duration.ofMinutes(10)));
+    event.type = ReservationEventType.CONNECTED;
+    ReservationEvent event2 = new ReservationEvent();
+    event2.date = Date.from(
+        reservation.reservationCreatedDate.toInstant().plus(Duration.ofMinutes(20)));
+    event2.type = ReservationEventType.CONNECTED;
+    reservation.events = Lists.newArrayList(event, event2);
     Reservation savedReservation = reservationRepository.save(reservation);
-
     ReservationWindow window = savedReservation.window;
     assertThat(window.exp).isNotNull();
+
+    Reservation reservation3 = new Reservation();
+    reservation3.reservationCreatedDate = new Date();
+    reservation3.topic = "Business";
+    Reservation savedReservation3 = reservationRepository.save(reservation3);
+    ReservationWindow window3 = savedReservation3.window;
+    assertThat(window3.exp).isNotNull();
+
+    Reservation reservation2 = new Reservation();
+    reservation2.reservationCreatedDate = new Date();
+    reservation2.topic = "Business";
+    ReservationEvent event3 = new ReservationEvent();
+    event3.date = Date.from(
+        reservation2.reservationCreatedDate.toInstant().plus(Duration.ofMinutes(20)));
+    event3.type = ReservationEventType.CONNECTED;
+    reservation2.events = Lists.newArrayList(event3);
+    Reservation savedReservation2 = reservationRepository.save(reservation2);
+    ReservationWindow window2 = savedReservation2.window;
+    assertThat(window2.exp).isNotNull();
   }
 
   @Test
