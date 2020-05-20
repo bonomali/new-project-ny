@@ -30,7 +30,7 @@ function Home(props) {
       preferredName: name,
       contactPhone: number,
       query: query,
-      reservationCreatedDate: moment(),
+      requestDate: moment(),
     };
     axios.post('/api/v1/reservations', reservation)
     .then((response) => {
