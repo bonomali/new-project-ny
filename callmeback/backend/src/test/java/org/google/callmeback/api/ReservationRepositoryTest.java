@@ -212,6 +212,9 @@ public class ReservationRepositoryTest {
 
   private Reservation createAndPersistReservation(
     Date requestDate, Optional<ReservationEventType> reservationEventType, Optional<Date> reservationEventDate) {
+    if (!reservationEventType.isPresent() || !reservationEventDate.isPresent()) {
+      return createAndPersistReservation(requestDate, businessTopic, Optional.empty());
+    }
     ReservationEvent event = new ReservationEvent();
     event.type = reservationEventType.get();
     event.date = reservationEventDate.get();

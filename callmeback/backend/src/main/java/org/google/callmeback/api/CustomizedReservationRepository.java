@@ -127,6 +127,6 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // TODO: Return stddev as well and use that rather than a hardcoded window length.
   
     Double avgWaitTime = (Double) output.getUniqueMappedResult().get("avgWait");
-    return avgWaitTime == null ? Optional.empty() : Optional.ofNullable(avgWaitTime.longValue());
+    return avgWaitTime == null ? Optional.empty() : Optional.of(avgWaitTime.longValue());
   }
 }
