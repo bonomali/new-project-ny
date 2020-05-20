@@ -24,11 +24,20 @@ function WaitDetails(props) {
         waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{naiveExpCallStartMax}</Moment>;
     } else {
         waitTimeEstimate =
+            <div>
             <span>
                 <Moment fromNow ago>{naiveExpCallStartMin}</Moment>
                 {' '} - {' '}
                 <Moment fromNow ago>{naiveExpCallStartMax}</Moment>
             </span>
+            <br/>
+            {!!maExpCallStartMax &&
+            <span>
+                <Moment fromNow ago>{maExpCallStartMin}</Moment>
+                {' '} - {' '}
+                <Moment fromNow ago>{maExpCallStartMax}</Moment>
+            </span>}
+            </div>
     }
 
     return (
