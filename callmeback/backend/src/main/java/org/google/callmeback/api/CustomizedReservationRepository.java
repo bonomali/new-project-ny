@@ -39,7 +39,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @Autowired private MongoTemplate mongoTemplate;
 
   // (Hard-coded) Length of the expected reservation window
-  private static final int WINDOW_LENGTH_MILLIS = 600000;
+  public static final int WINDOW_LENGTH_MILLIS = 600000;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -78,10 +78,11 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     Date currentDate = new Date();
     Date calculatedWindowMinimum =
         Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
-    window.min = calculatedWindowMinimum;
     if (calculatedWindowMinimum.before(currentDate)) {
       window.min = currentDate;
       window.exp = currentDate;
+    } else {
+      window.min = calculatedWindowMinimum;
     }
 
     // Set window maximum as the window minimum plus the window length
