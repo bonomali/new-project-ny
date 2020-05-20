@@ -1,9 +1,11 @@
 package org.google.callmeback.api;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.google.callmeback.extensions.CustomMongoAggregation;
 import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.jboss.logging.Logger;
@@ -33,7 +35,7 @@ interface QueueingRepository {
    */
   public Reservation startNextCall();
 
-  public List<MovingAverageAggregate> movingAverage();
+  public MovingAverageAggregate movingAverage();
 }
 
 @Component
@@ -47,10 +49,16 @@ class QueueingRepositoryImpl implements QueueingRepository {
     this.mongoTemplate = mongoTemplate;
   }
   
-  public List<MovingAverageAggregate> movingAverage() {
+  public MovingAverageAggregate movingAverage() {
+    /**
+     * Note: This query only pulls callers who have no associated events. For the current scope, we
+     * don't handle here (or elsewhere) calls that were ATTEMPTED or DISRUPTED but not completed.
+     * Once those callers are handled, we should consider whether they should re-enter the queue and
+     * be able to be selected by agents here, or if they should be handled separately.
+     */
     Aggregation agg = Aggregation.newAggregation(
       match(new Criteria().orOperator(where("events").exists(false), where("events").size(0))),
-      sort(Sort.Direction.ASC, "reservationCreatedDate"),
+      sort(Sort.Direction.ASC, "requestDate"),
       limit(1),
       new CustomMongoAggregation(
           "{$lookup:"
@@ -59,11 +67,10 @@ class QueueingRepositoryImpl implements QueueingRepository {
           + "{$unwind: '$events'},"
           + "{$sort: {'events.date': -1}},"
           + "{$limit: 1},"
-          + "{$project: {_id: 0, waitTimeMovingAvg: 1}}"
+          + "{$project: {_id: 0, previousAverage: 1}}"
           + "],"
           + "as: 'previousAverage'}}"
-      ),
-      unwind("previousAverage")
+      )
     );
 
     logger.info("Query: " + agg.toString());
@@ -71,18 +78,28 @@ class QueueingRepositoryImpl implements QueueingRepository {
     AggregationResults<MovingAverageAggregate> results =  
       mongoTemplate.aggregate(agg, "reservation", MovingAverageAggregate.class);
     
-    return results.getMappedResults();
+    List<MovingAverageAggregate> resultList = results.getMappedResults();
+    return resultList.stream().findFirst().orElse(null);
+  }
+
+  /**
+   * Calculate the current exponential moving average.
+   * 
+   * @param smoothingFactor The most common choice is '2'. As this is increased, more recent
+   * events have a higher impact on the moving average.
+   * @param period the amount of time that the moving average should consider, expressed in units used
+   * when the previousMovingAverage was calculated
+   * @param newValue the actual value being measured at this point in time
+   * @param previousMovingAverage the exponential moving average that was calculated during the previous period
+   */
+  private double exponentialMovingAverage(double smoothingFactor, double period, double newValue, double previousMovingAverage) {
+    double multiplier = smoothingFactor / (1 + period);
+    return newValue * multiplier + previousMovingAverage * (1 - multiplier);
   }
 
   public Reservation startNextCall() {
-    Sort sort = Sort.by("requestDate").ascending();
-    /**
-     * Note: This query only pulls callers who have no associated events. For the current scope, we
-     * don't handle here (or elsewhere) calls that were ATTEMPTED or DISRUPTED but not completed.
-     * Once those callers are handled, we should consider whether they should re-enter the queue and
-     * be able to be selected by agents here, or if they should be handled separately.
-     */
-    Query query = new Query(where("events").is(null)).with(sort).limit(1);
+    // Get next reservation to handle, simultaneously looking up the previous moving average.
+    MovingAverageAggregate reservation = movingAverage();
 
     List<ReservationEvent> resEvents = new ArrayList<ReservationEvent>();
     ReservationEvent resEvent = new ReservationEvent();
@@ -98,10 +115,24 @@ class QueueingRepositoryImpl implements QueueingRepository {
     resEvents.add(resEvent);
     Update update = new Update().set("events", resEvents);
 
+    double previousAverage = reservation.previousAverage.waitTimeMovingAvg;
+    double waitTime = Duration.between(reservation.requestDate.toInstant(), resEvent.date.toInstant()).toMinutes();
+
+    // Determine period for exponential moving average (?)
+    double period = 10;
+    double smoothingFactor = 2;
+
+    // Get exponential moving average
+    double newMovingAverage = exponentialMovingAverage(smoothingFactor, period, waitTime, previousAverage);
+
+    // Add exponential moving average to database update.
+    update.set("previousAverage.waitTimeMovingAverage", newMovingAverage);
+
+    Query query = new Query(where("_id").is(new ObjectId(reservation.id)));
     FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
     /** Returns the updated reservation */
     Reservation updatedRes =
-        mongoTemplate.findAndModify(query, update, opts, Reservation.class, "reservation");
+         mongoTemplate.findAndModify(query, update, opts, MovingAverageAggregate.class, "reservation");
     return updatedRes;
   }
 }

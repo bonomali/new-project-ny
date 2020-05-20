@@ -76,6 +76,25 @@ kubectl get ingress -o go-template --template="{{(index .items 0).status.loadBal
 If this doesn't return anything then you may have not enabled the ingress
 controller above.
 
+### Access Mongo shell
+
+Once the app has started:
+
+```
+# get the name of the pod starting with cmb-mongo-
+kubectl get pods
+
+# open a bash shell in the mongo pod
+kubectl exec -it {pod-name} -- /bin/bash
+
+# start the mongo CLI. replace <password> with the password value in kustomization.yaml.
+mongo -u root -p <password>
+
+# print all documents to console, confirming a successful CLI session
+use test
+db.reservation.find()
+```
+
 ## Known Issues
 
 * The HAL Browser redirect doesn't quite work properly if you go to `/api/v1`.
