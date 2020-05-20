@@ -43,7 +43,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @SuppressWarnings("unchecked")
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
-    reservation.window = getWindow(reservation.reservationCreatedDate);
+    reservation.window = getWindow(reservation.requestDate);
     return Optional.of((T) reservation);
   }
 
@@ -52,7 +52,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   public <S extends T> S save(S entity) {
     Reservation reservation = (Reservation) entity;
     mongoTemplate.save(reservation);
-    reservation.window = getWindow(reservation.reservationCreatedDate);
+    reservation.window = getWindow(reservation.requestDate);
     return (S) reservation;
   }
 
@@ -66,7 +66,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // Query for the count of reservations without any events which were created earlier than the
     // specified requestDate.
     Query query =
-        new Query(Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
+        new Query(Criteria.where("events").is(null).and("requestDate").lt(requestDate));
     long countReservations = mongoTemplate.count(query, Reservation.class);
 
     // Set expected value based on count of open reservations and average wait time.
