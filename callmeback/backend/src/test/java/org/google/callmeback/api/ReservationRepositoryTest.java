@@ -2,6 +2,8 @@ package org.google.callmeback.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
 import org.assertj.core.util.Lists;
@@ -124,52 +126,75 @@ public class ReservationRepositoryTest {
   }
 
   @Test
-  public void testReservationWindow_multipleReservations() {
-    // Older reservations with and without events
-    Reservation olderReservationWithNoEvents = createAndPersistReservation(new Date());
-    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.CONNECTED));
-
-    // Reservations made with one and then two reservations in the queue
-    Reservation reservationWithOneInQueue = createAndPersistReservation(new Date());
-    Reservation reservationWithTwoInQueue = createAndPersistReservation(new Date());
-
-    // Newer reservations with and without events
-    createAndPersistReservation(new Date());
+  public void testReservationWindow_multipleReservationsWithMultipleEvents() {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  
+    // Add reservations with and without events and with different delays between them.
+    // Reservations with no events (will not be factored in to avg wait time calculation).
+    Date date1 = new Date();
+    Reservation res1WithNoEventsInSystem = createAndPersistReservation(date1);
     createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+    Reservation res2WithNoEventsInSystem = createAndPersistReservation(date1);
+  
+    // Check that the reservations added so far have expected wait time of 0 (exp = min).
+    assertThat(res1WithNoEventsInSystem.window.exp).isEqualTo(res1WithNoEventsInSystem.window.min);
+    assertThat(res1WithNoEventsInSystem.window.max).isEqualTo(Date.from(res1WithNoEventsInSystem.window.min.toInstant().plus(Duration.ofMillis(600000))));
+    assertThat(res2WithNoEventsInSystem.window.exp).isEqualTo(res2WithNoEventsInSystem.window.min);
+    assertThat(res2WithNoEventsInSystem.window.max).isEqualTo(Date.from(res2WithNoEventsInSystem.window.min.toInstant().plus(Duration.ofMillis(600000))));
 
-    // Verify first reservation has same window minimum as expected callback, because there are no
-    // reservations in the queue
-    ReservationWindow window = olderReservationWithNoEvents.window;
-    assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
-    window = reservationRepository.findById(olderReservationWithNoEvents.id).get().window;
-    assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
+    // Reservation with multiple events and 10 minute wait time until first connect.
+    Date date2 = new Date();
+    Reservation connectedRes = createAndPersistReservation(
+        date2,
+        Optional.of(ReservationEventType.ATTEMPTED),
+        Optional.of(Date.from(date2.toInstant().plus(Duration.ofMinutes(5)))));
+    // Add a second connected event.
+    ReservationEvent event = new ReservationEvent();
+    event.date = Date.from(date2.toInstant().plus(Duration.ofMinutes(10)));
+    event.type = ReservationEventType.CONNECTED;
+    // Add an attempted event.
+    ReservationEvent event2 = new ReservationEvent();
+    event2.date = Date.from(date2.toInstant().plus(Duration.ofMinutes(15)));
+    event2.type = ReservationEventType.CONNECTED;
+    connectedRes.events.add(event);
+    connectedRes.events.add(event2);
+    reservationRepository.save(connectedRes);
 
-    // Verify reservation with one in the queue has the expected callback occur between the minimum
-    // and maximum, because we're currently in the middle of the window
-    window = reservationWithOneInQueue.window;
-    assertThat(window.naiveExp).isAfter(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
-    window = reservationRepository.findById(reservationWithOneInQueue.id).get().window;
-    assertThat(window.naiveExp).isAfter(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
+    // New reservation should have exp wait time of 10 minutes.
+    Date date3 = new Date();
+    Reservation resWithOnePriorConnectedRes = createAndPersistReservation(date3);
+    
+    assertThat(dateFormat.format(resWithOnePriorConnectedRes.window.exp))
+        .isEqualTo(dateFormat.format(Date.from(date3.toInstant().plus(Duration.ofMinutes(10)))));
 
-    // Verify reservation with two in the queue has the expected callback occur between the minimum
-    // and maximum, because we're currently before the window
-    window = reservationWithTwoInQueue.window;
-    assertThat(window.naiveExp).isAfter(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
-    window = reservationRepository.findById(reservationWithTwoInQueue.id).get().window;
-    assertThat(window.naiveExp).isAfter(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
-
-    // Verify that older reservation window occurs before the more recent reservations
-    ReservationWindow olderWindow = olderReservationWithNoEvents.window;
-    ReservationWindow newerWindow = reservationWithTwoInQueue.window;
-    assertThat(olderWindow.naiveMin).isBefore(newerWindow.naiveMin);
-    assertThat(olderWindow.naiveExp).isBefore(newerWindow.naiveExp);
-    assertThat(olderWindow.naiveMax).isBefore(newerWindow.naiveMax);
+    // Reservation with connected event and 20 minute wait time.
+    Date date4 = new Date();
+    createAndPersistReservation(
+        date4,
+        Optional.of(ReservationEventType.CONNECTED),
+        Optional.of(Date.from(date4.toInstant().plus(Duration.ofMinutes(20)))));
+    
+    // New reservation should have expected wait time of 15 minutes.
+    Date date5 = new Date();
+    Reservation resWithMultiplePriorConnectedRes = createAndPersistReservation(date5);
+    assertThat(dateFormat.format(resWithMultiplePriorConnectedRes.window.exp))
+        .isEqualTo(dateFormat.format(Date.from(date5.toInstant().plus(Duration.ofMinutes(15)))));
+    assertThat(dateFormat.format(resWithMultiplePriorConnectedRes.window.min))
+        .isEqualTo(dateFormat.format(Date.from(date5.toInstant().plus(Duration.ofMinutes(15).minus(Duration.ofMillis(300000))))));
+  
+    // Old reservations should have updated wait times.
+    Optional<Reservation> originalRes = reservationRepository.findById(res1WithNoEventsInSystem.id);
+    assertThat(dateFormat.format(originalRes.get().window.exp))
+        .isEqualTo(dateFormat.format(Date.from(date1.toInstant().plus(Duration.ofMinutes(15)))));
+  
+    // Minimum callback time is before the current time so exp and min time are set to current.
+    Date date6 = Date.from(date1.toInstant().minus(Duration.ofMinutes(20)));
+    Date timeCreatingRes = new Date();
+    Reservation resWithWaitTimePassed = createAndPersistReservation(date6);
+    assertThat(resWithWaitTimePassed.window.exp).isEqualTo(resWithWaitTimePassed.window.min);
+    assertThat(resWithWaitTimePassed.window.exp).isAfter(dateFormat.format(Date.from(date6.toInstant().plus(Duration.ofMinutes(15)))));
+    assertThat(resWithWaitTimePassed.window.exp).isAfter(timeCreatingRes);
+    assertThat(resWithWaitTimePassed.window.exp).isBefore(new Date());
   }
 
   private Reservation createAndPersistReservation(String topic) {
@@ -182,19 +207,29 @@ public class ReservationRepositoryTest {
 
   private Reservation createAndPersistReservation(
       Date requestDate, Optional<ReservationEventType> reservationEventType) {
-    return createAndPersistReservation(requestDate, businessTopic, reservationEventType);
+    return createAndPersistReservation(requestDate, reservationEventType, Optional.of(new Date()));
   }
 
   private Reservation createAndPersistReservation(
-      Date requestDate, String topic, Optional<ReservationEventType> reservationEventType) {
+    Date requestDate, Optional<ReservationEventType> reservationEventType, Optional<Date> reservationEventDate) {
+    if (!reservationEventType.isPresent() || !reservationEventDate.isPresent()) {
+      return createAndPersistReservation(requestDate, businessTopic, Optional.empty());
+    }
+    ReservationEvent event = new ReservationEvent();
+    event.type = reservationEventType.get();
+    event.date = reservationEventDate.get();
+    return createAndPersistReservation(requestDate, businessTopic, Optional.of(event));
+  }
+
+  private Reservation createAndPersistReservation(
+      Date requestDate,
+      String topic,
+      Optional<ReservationEvent> reservationEvent) {
     Reservation reservation = new Reservation();
     reservation.requestDate = requestDate;
     reservation.topic = topic;
-    if (reservationEventType.isPresent()) {
-      ReservationEvent event = new ReservationEvent();
-      event.date = new Date();
-      event.type = reservationEventType.get();
-      reservation.events = Lists.newArrayList(event);
+    if (reservationEvent.isPresent()) {
+      reservation.events = Lists.newArrayList(reservationEvent.get());
     }
     return reservationRepository.save(reservation);
   }
