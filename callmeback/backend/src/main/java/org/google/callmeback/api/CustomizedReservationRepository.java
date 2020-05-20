@@ -72,19 +72,16 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
-    // length and the current time. This ensures the current time is always within the window.
-    // Date calculatedWindowMinimum =
-    //     Date.from(
-    //         currentDateInstant.plus(
-    //             Duration.ofMillis(expectedWaitTimeMillis - WINDOW_LENGTH_MILLIS / 2)));
-    // window.min =
-    //     calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
+    // length and the current time. This ensures the window is either inclusive of or later than the
+    // current time.
+    Date currentDate = new Date();
+    Date calculatedWindowMinimum =
+        Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
+    window.min =
+        calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
 
-    // // Set window maximum as expected time plus half of the hard-coded window length
-    // window.max =
-    //     Date.from(
-    //         currentDateInstant.plus(
-    //             Duration.ofMillis(expectedWaitTimeMillis + (WINDOW_LENGTH_MILLIS / 2))));
+    // Set window maximum as the window minimum plus the window length
+    window.max = Date.from(window.min.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
     return window;
   }
 
