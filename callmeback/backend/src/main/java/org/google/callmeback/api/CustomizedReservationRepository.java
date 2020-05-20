@@ -3,22 +3,19 @@ package org.google.callmeback.api;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators.Cond;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 /**
  * A ReservationRepository that overrides various methods of MongoRepository.
@@ -44,14 +41,14 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private MongoTemplate mongoTemplate;
 
-  // (Hard-coded) Average time it takes for a call to be taken off the queue, after a reservation is
-  // made
-  private static final int AVERAGE_WAIT_TIME_MINS = 10;
+  // (Hard-coded) Average amount of time between individual calls being taken off the queue
+  //private static final int AVERAGE_WAIT_TIME_MINS = 10;
 
   // (Hard-coded) Length of the expected reservation window
-  private static final int WINDOW_LENGTH_MINS = 30;
+  private static final int WINDOW_LENGTH_MILLIS = 1800000;
 
   @Override
+  @SuppressWarnings("unchecked")
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
     reservation.window = getWindow(reservation.reservationCreatedDate);
@@ -59,6 +56,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public <S extends T> S save(S entity) {
     Reservation reservation = (Reservation) entity;
     mongoTemplate.save(reservation);
@@ -70,59 +68,51 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    * Returns a ReservationWindow, incorporating the number of reservations created prior to the
    * specified date, which do not currently have any reservation events associated.
    */
+  @SuppressWarnings({ "rawtypes" })
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
-    Query eventsQuery =
-        new Query(Criteria.where("events").is(null).and("reservationCreatedDate").lt(requestDate));
-    long countReservations = mongoTemplate.count(eventsQuery, Reservation.class);
-  
-    /* db.rez.aggregate(
-      [{$set:
-        {connects:
-          {$arrayElemAt: [{$filter: {input: '$events', as: 'e', cond: {$eq: ['$$e.eventType', 'CONNECTED']}}}, 0]}
-        }
-      },
-      {$group:
-        {_id: 'ALL', avg_age: {$avg: {$subtract: ['$connects.eventDate', '$requestDate']}}}
-      }]).pretty()
-    */
-    /* filter example
-    new AggregationExpression() {
-                @Override
-                public DBObject toDbObject(AggregationOperationContext aggregationOperationContext) {
-                    DBObject filterExpression = new BasicDBObject();
-                    filterExpression.put("input", "$devices");
-                    filterExpression.put("as", "device");
-                    filterExpression.put("cond", new BasicDBObject("$eq", Arrays.<Object> asList("$$device.evaluationDate", date)));
-                    return new BasicDBObject("$filter", filterExpression);
-                }
-            }
-    */
 
-    ProjectionOperation projectStage =
-      Aggregation.project("requestDate").and("events").filter("e", Cond.when(Criteria.where("e.eventType")).equals("CONNECTED")).arrayElementAt(0).as("connected");
-    ProjectionOperation waitTime =
-      Aggregation.project().andExpression("connected.eventDate - requestDate").as("waitTime");
-    GroupOperation avgWait = Aggregation.group("id")            
-      .avg("waitTime").as("avgWait");
-            
-    Aggregation aggregation 
-      = Aggregation.newAggregation(projectStage, waitTime, avgWait);
+    ProjectionOperation connectedEventsStage =
+        Aggregation.project("reservationCreatedDate")
+            .and(ArrayOperators.Filter.filter("events")
+                .as("events")
+                .by(ComparisonOperators.Eq.valueOf(
+                  "events.type").equalToValue("CONNECTED"))).as("connectedEvents");
+    ProjectionOperation connectedEventStage =
+        Aggregation.project("reservationCreatedDate")
+            .and(ArrayOperators.ArrayElemAt.arrayOf("connectedEvents").elementAt(0))
+                .as("connectedEvent");
+    ProjectionOperation waitTimeStage =
+        Aggregation.project("reservationCreatedDate", "connectedEvent.date")
+            .and("connectedEvent.date").minus("reservationCreatedDate").as("waitTime");
+    GroupOperation avgWaitGroup = Aggregation.group().avg("waitTime").as("avgWait");
+
+    Aggregation aggregation = Aggregation.newAggregation(
+        connectedEventsStage, connectedEventStage, waitTimeStage, avgWaitGroup);
     
-    long avgWaitTime = mongoTemplate.aggregate(aggregation, "reservations");
+    AggregationResults<Map> output =
+        mongoTemplate.aggregate(aggregation, "reservation", Map.class);    
+    long expectedWaitTimeMillis = output.getMappedResults().isEmpty() ?
+        0L : ((Double) output.getUniqueMappedResult().get("avgWait")).longValue();
 
-    long expectedWaitTimeMins = avgWaitTime - requestDate;
+    Date currentDate = new Date();
+    Instant currentDateInstant = currentDate.toInstant();
+    window.exp = Date.from(currentDateInstant.plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
-    Instant requestDateInstant = requestDate.toInstant();
-    window.min =
+    // Set window minimum as the greater value of expected time minus half of the hard-coded window
+    // length and the current time. This ensures the current time is always within the window.
+    Date calculatedWindowMinimum =
         Date.from(
-            requestDateInstant.plus(
-                Duration.ofMinutes(expectedWaitTimeMins - (WINDOW_LENGTH_MINS / 2))));
-    window.exp = Date.from(requestDateInstant.plus(Duration.ofMinutes(expectedWaitTimeMins)));
+            currentDateInstant.plus(
+                Duration.ofMillis(expectedWaitTimeMillis - WINDOW_LENGTH_MILLIS / 2)));
+    window.min =
+        calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
+
+    // Set window maximum as expected time plus half of the hard-coded window length
     window.max =
         Date.from(
-            requestDateInstant.plus(
-                Duration.ofMinutes(expectedWaitTimeMins + (WINDOW_LENGTH_MINS / 2))));
+            currentDateInstant.plus(
+                Duration.ofMillis(expectedWaitTimeMillis + (WINDOW_LENGTH_MILLIS / 2))));
     return window;
   }
 }
