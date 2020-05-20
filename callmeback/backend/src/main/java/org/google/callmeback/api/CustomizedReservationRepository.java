@@ -68,7 +68,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // Set expected value as the reservation request time plus the expected wait time
     Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
     long expectedWaitTimeMillis = 
-        (!averageWaitTimeMillis.isPresent()) ? averageWaitTimeMillis.get().longValue() : 0L;
+        averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get().longValue() : 0L;
     window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
@@ -124,7 +124,9 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     AggregationResults<Map> output =
         mongoTemplate.aggregate(aggregation, "reservation", Map.class);
 
-    // TODO: Return stddev as well and use that rather than a hardcoded window length.   
-    return Optional.of((Long) output.getUniqueMappedResult().get("avgWait"));
+    // TODO: Return stddev as well and use that rather than a hardcoded window length.
+  
+    Double avgWaitTime = (Double) output.getUniqueMappedResult().get("avgWait");
+    return avgWaitTime == null ? Optional.empty() : Optional.ofNullable(avgWaitTime.longValue());
   }
 }
