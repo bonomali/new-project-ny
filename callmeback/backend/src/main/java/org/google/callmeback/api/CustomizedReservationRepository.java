@@ -39,7 +39,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @Autowired private MongoTemplate mongoTemplate;
 
   // (Hard-coded) Length of the expected reservation window
-  private static final int WINDOW_LENGTH_MILLIS = 1800000;
+  private static final int WINDOW_LENGTH_MILLIS = 600000;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -72,13 +72,17 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
-    // length and the current time. This ensures the window is either inclusive of or later than the
-    // current time.
+    // length and the current time. If it is set to the current time, update window.exp to the current
+    // time as well. This ensures the window is either inclusive of or later than the current time
+    // and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
     Date calculatedWindowMinimum =
         Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
-    window.min =
-        calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
+    window.min = calculatedWindowMinimum;
+    if (calculatedWindowMinimum.before(currentDate)) {
+      window.min = currentDate;
+      window.exp = currentDate;
+    }
 
     // Set window maximum as the window minimum plus the window length
     window.max = Date.from(window.min.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
