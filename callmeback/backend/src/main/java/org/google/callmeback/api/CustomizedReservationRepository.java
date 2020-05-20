@@ -1,13 +1,18 @@
 package org.google.callmeback.api;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 
 /**
  * A ReservationRepository that overrides various methods of MongoRepository.
@@ -33,11 +38,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private MongoTemplate mongoTemplate;
 
-  // (Hard-coded) Average amount of time between individual calls being taken off the queue
-  private static final int AVERAGE_WAIT_TIME_MINS = 10;
-
   // (Hard-coded) Length of the expected reservation window
-  private static final int WINDOW_LENGTH_MINS = 30;
+  public static final int WINDOW_LENGTH_MILLIS = 600000;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -63,31 +65,68 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
 
-    // Query for the count of reservations without any events which were created earlier than the
-    // specified requestDate.
-    Query query = new Query(Criteria.where("events").is(null).and("requestDate").lt(requestDate));
-    long countReservations = mongoTemplate.count(query, Reservation.class);
-
-    // Set expected value based on count of open reservations and average wait time.
-    long expectedWaitTimeMins = countReservations * AVERAGE_WAIT_TIME_MINS;
-    Date currentDate = new Date();
-    Instant currentDateInstant = currentDate.toInstant();
-    window.exp = Date.from(currentDateInstant.plus(Duration.ofMinutes(expectedWaitTimeMins)));
+    // Set expected value as the reservation request time plus the expected wait time
+    Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
+    long expectedWaitTimeMillis = 
+        averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get().longValue() : 0L;
+    window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
-    // length and the current time. This ensures the current time is always within the window.
+    // length and the current time. If it is set to the current time, update window.exp to the current
+    // time as well. This ensures the window is either inclusive of or later than the current time
+    // and that the expected time is not earlier than the current time.
+    Date currentDate = new Date();
     Date calculatedWindowMinimum =
-        Date.from(
-            currentDateInstant.plus(
-                Duration.ofMinutes(expectedWaitTimeMins - WINDOW_LENGTH_MINS / 2)));
-    window.min =
-        calculatedWindowMinimum.before(currentDate) ? currentDate : calculatedWindowMinimum;
+        Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
+    if (calculatedWindowMinimum.before(currentDate)) {
+      window.min = currentDate;
+      window.exp = currentDate;
+    } else {
+      window.min = calculatedWindowMinimum;
+    }
 
-    // Set window maximum as expected time plus half of the hard-coded window length
-    window.max =
-        Date.from(
-            currentDateInstant.plus(
-                Duration.ofMinutes(expectedWaitTimeMins + (WINDOW_LENGTH_MINS / 2))));
+    // Set window maximum as the window minimum plus the window length
+    window.max = Date.from(window.min.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
     return window;
+  }
+
+  /**
+   * Returns the average wait time (i.e. the amount of time between the reservation being requested
+   * and the first CONNECTED event) for all reservations in the database. Note that the return value
+   * can be null if there are no reservations in the database that have been taken off the queue.
+   */
+  @SuppressWarnings({ "rawtypes" })
+  private Optional<Long> getAverageWaitTimeMillis() {
+    // TODO: Try to chain pipeline operators instead of having 4 distinct stages.
+    // Stage 1: All events with connected status
+    ProjectionOperation connectedEventsStage =
+        Aggregation.project("requestDate")
+            .and(ArrayOperators.Filter.filter("events")
+                .as("events")
+                .by(ComparisonOperators.Eq.valueOf(
+                  "events.type").equalToValue("CONNECTED"))).as("connectedEvents");
+
+    // Stage 2: The first connected event
+    ProjectionOperation connectedEventStage =
+        Aggregation.project("requestDate")
+            .and(ArrayOperators.ArrayElemAt.arrayOf("connectedEvents").elementAt(0))
+                .as("connectedEvent");
+    
+    // Stage 3: The time difference between the request time and the first connected event 
+    ProjectionOperation waitTimeStage =
+        Aggregation.project("requestDate", "connectedEvent.date")
+            .and("connectedEvent.date").minus("requestDate").as("waitTime");
+
+    // Stage 4: The average of those time differences
+    GroupOperation avgWaitGroup = Aggregation.group().avg("waitTime").as("avgWait");
+    Aggregation aggregation = Aggregation.newAggregation(
+        connectedEventsStage, connectedEventStage, waitTimeStage, avgWaitGroup);
+    AggregationResults<Map> output =
+        mongoTemplate.aggregate(aggregation, "reservation", Map.class);
+
+    // TODO: Return stddev as well and use that rather than a hardcoded window length.
+  
+    Double avgWaitTime = (Double) output.getUniqueMappedResult().get("avgWait");
+    return avgWaitTime == null ? Optional.empty() : Optional.of(avgWaitTime.longValue());
   }
 }
