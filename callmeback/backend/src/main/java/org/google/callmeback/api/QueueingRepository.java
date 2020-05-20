@@ -75,7 +75,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
 
   public Reservation startNextCall() {
-    Sort sort = Sort.by("reservationCreatedDate").ascending();
+    Sort sort = Sort.by("requestDate").ascending();
     /**
      * Note: This query only pulls callers who have no associated events. For the current scope, we
      * don't handle here (or elsewhere) calls that were ATTEMPTED or DISRUPTED but not completed.
