@@ -222,7 +222,7 @@ public class ReservationRepositoryTest {
   }
 
   private Reservation createAndPersistReservation(
-      Date reservationCreatedDate,
+      Date requestDate,
       String topic,
       Optional<ReservationEvent> reservationEvent) {
     Reservation reservation = new Reservation();
