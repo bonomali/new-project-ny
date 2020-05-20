@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
@@ -47,34 +48,16 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
   
   public List<MovingAverageAggregate> movingAverage() {
-    /**
-     * db.rez.aggregate(
-     * {$match: {events: {$size: 0}}},
-     * {$sort: {requestDate: 1}}, 
-     * {$limit: 1},
-     * {$lookup: 
-     *   {from: 'rez', 
-     *    pipeline: [
-     *      {$unwind: '$events'}, 
-     *      {$sort: {'events.eventDate': -1}}, 
-     *      {$limit: 1}, 
-     *      {$project: {_id: 0, age: {$subtract: ['$events.eventDate', '$requestDate']}}}
-     *    ], 
-     *    as: 'recent'}}, 
-     * {$unwind: '$recent'}).pretty()
-     */
-
-
     Aggregation agg = Aggregation.newAggregation(
-      match(where("events").size(0)),
+      match(new Criteria().orOperator(where("events").exists(false), where("events").size(0))),
       sort(Sort.Direction.ASC, "reservationCreatedDate"),
       limit(1),
       new CustomMongoAggregation(
           "{$lookup:"
-          + "{from: 'reservations',"
+          + "{from: 'reservation',"
           + "pipeline: ["
           + "{$unwind: '$events'},"
-          + "{$sort: {'events.eventDate': -1}},"
+          + "{$sort: {'events.date': -1}},"
           + "{$limit: 1},"
           + "{$project: {_id: 0, waitTimeMovingAvg: 1}}"
           + "],"
@@ -86,7 +69,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
     logger.info("Query: " + agg.toString());
     
     AggregationResults<MovingAverageAggregate> results =  
-      mongoTemplate.aggregate(agg, "reservations", MovingAverageAggregate.class);
+      mongoTemplate.aggregate(agg, "reservation", MovingAverageAggregate.class);
     
     return results.getMappedResults();
   }
