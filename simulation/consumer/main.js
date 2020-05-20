@@ -47,7 +47,7 @@ function processCall() {
     simulation.startCall(argv.apiUrl)
         .then((response) => response.data)
         .then(promiseWait(argv.callLength * 60 * 1000)) // simulated call duration
-        .then(simulation.endCall)
+        .then((reservation) => simulation.endCall(argv.apiUrl, reservation))
         .catch((error) => console.log(error));
 }
 
