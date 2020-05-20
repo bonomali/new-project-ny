@@ -186,9 +186,7 @@ public class ReservationRepositoryTest {
   }
 
   private Reservation createAndPersistReservation(
-      Date requestDate,
-      String topic,
-      Optional<ReservationEventType> reservationEventType) {
+      Date requestDate, String topic, Optional<ReservationEventType> reservationEventType) {
     Reservation reservation = new Reservation();
     reservation.requestDate = requestDate;
     reservation.topic = topic;
