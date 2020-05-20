@@ -66,9 +66,9 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     ReservationWindow window = new ReservationWindow();
 
     // Set expected value as the reservation request time plus the expected wait time
-    Double averageWaitTimeMillis = getAverageWaitTimeMillis();
-    long expectedWaitTimeMillis =
-        (averageWaitTimeMillis != null) ? averageWaitTimeMillis.longValue() : 0L;
+    Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
+    long expectedWaitTimeMillis = 
+        (!averageWaitTimeMillis.isPresent()) ? averageWaitTimeMillis.get().longValue() : 0L;
     window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
@@ -96,7 +96,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    * can be null if there are no reservations in the database that have been taken off the queue.
    */
   @SuppressWarnings({ "rawtypes" })
-  private Double getAverageWaitTimeMillis() {
+  private Optional<Long> getAverageWaitTimeMillis() {
+    // TODO: Try to chain pipeline operators instead of having 4 distinct stages.
     // Stage 1: All events with connected status
     ProjectionOperation connectedEventsStage =
         Aggregation.project("requestDate")
@@ -121,7 +122,9 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     Aggregation aggregation = Aggregation.newAggregation(
         connectedEventsStage, connectedEventStage, waitTimeStage, avgWaitGroup);
     AggregationResults<Map> output =
-        mongoTemplate.aggregate(aggregation, "reservation", Map.class);   
-    return (Double) output.getUniqueMappedResult().get("avgWait");
+        mongoTemplate.aggregate(aggregation, "reservation", Map.class);
+
+    // TODO: Return stddev as well and use that rather than a hardcoded window length.   
+    return Optional.of((Long) output.getUniqueMappedResult().get("avgWait"));
   }
 }
