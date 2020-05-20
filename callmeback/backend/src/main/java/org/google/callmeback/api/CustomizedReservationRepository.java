@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -67,12 +66,13 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
     // Set expected value as the reservation request time plus the expected wait time
     Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
-    long expectedWaitTimeMillis = 
+    long expectedWaitTimeMillis =
         averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get().longValue() : 0L;
     window.exp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
-    // length and the current time. If it is set to the current time, update window.exp to the current
+    // length and the current time. If it is set to the current time, update window.exp to the
+    // current
     // time as well. This ensures the window is either inclusive of or later than the current time
     // and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
@@ -95,37 +95,40 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    * and the first CONNECTED event) for all reservations in the database. Note that the return value
    * can be null if there are no reservations in the database that have been taken off the queue.
    */
-  @SuppressWarnings({ "rawtypes" })
+  @SuppressWarnings({"rawtypes"})
   private Optional<Long> getAverageWaitTimeMillis() {
     // TODO: Try to chain pipeline operators instead of having 4 distinct stages.
     // Stage 1: All events with connected status
     ProjectionOperation connectedEventsStage =
         Aggregation.project("requestDate")
-            .and(ArrayOperators.Filter.filter("events")
-                .as("events")
-                .by(ComparisonOperators.Eq.valueOf(
-                  "events.type").equalToValue("CONNECTED"))).as("connectedEvents");
+            .and(
+                ArrayOperators.Filter.filter("events")
+                    .as("events")
+                    .by(ComparisonOperators.Eq.valueOf("events.type").equalToValue("CONNECTED")))
+            .as("connectedEvents");
 
     // Stage 2: The first connected event
     ProjectionOperation connectedEventStage =
         Aggregation.project("requestDate")
             .and(ArrayOperators.ArrayElemAt.arrayOf("connectedEvents").elementAt(0))
-                .as("connectedEvent");
-    
-    // Stage 3: The time difference between the request time and the first connected event 
+            .as("connectedEvent");
+
+    // Stage 3: The time difference between the request time and the first connected event
     ProjectionOperation waitTimeStage =
         Aggregation.project("requestDate", "connectedEvent.date")
-            .and("connectedEvent.date").minus("requestDate").as("waitTime");
+            .and("connectedEvent.date")
+            .minus("requestDate")
+            .as("waitTime");
 
     // Stage 4: The average of those time differences
     GroupOperation avgWaitGroup = Aggregation.group().avg("waitTime").as("avgWait");
-    Aggregation aggregation = Aggregation.newAggregation(
-        connectedEventsStage, connectedEventStage, waitTimeStage, avgWaitGroup);
-    AggregationResults<Map> output =
-        mongoTemplate.aggregate(aggregation, "reservation", Map.class);
+    Aggregation aggregation =
+        Aggregation.newAggregation(
+            connectedEventsStage, connectedEventStage, waitTimeStage, avgWaitGroup);
+    AggregationResults<Map> output = mongoTemplate.aggregate(aggregation, "reservation", Map.class);
 
     // TODO: Return stddev as well and use that rather than a hardcoded window length.
-  
+
     Double avgWaitTime = (Double) output.getUniqueMappedResult().get("avgWait");
     return avgWaitTime == null ? Optional.empty() : Optional.of(avgWaitTime.longValue());
   }
