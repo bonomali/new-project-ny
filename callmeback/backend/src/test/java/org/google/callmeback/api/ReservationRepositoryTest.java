@@ -65,7 +65,7 @@ public class ReservationRepositoryTest {
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation.id).isNotNull();
-    assertThat(reservation.reservationCreatedDate).isEqualTo(currentDate);
+    assertThat(reservation.requestDate).isEqualTo(currentDate);
     assertThat(reservation.events).isNotNull();
     assertThat(reservation.events.size()).isEqualTo(1);
     assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
@@ -93,7 +93,7 @@ public class ReservationRepositoryTest {
 
     Reservation reservation = reservationRepository.startNextCall();
     assertThat(reservation.id).isEqualTo(res2.id);
-    assertThat(reservation.reservationCreatedDate).isEqualTo(date2);
+    assertThat(reservation.requestDate).isEqualTo(date2);
     assertThat(reservation.events).isNotNull();
     assertThat(reservation.events.size()).isEqualTo(1);
     assertThat(reservation.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
@@ -101,7 +101,7 @@ public class ReservationRepositoryTest {
 
     Reservation reservation2 = reservationRepository.startNextCall();
     assertThat(reservation2.id).isEqualTo(res3.id);
-    assertThat(reservation2.reservationCreatedDate).isEqualTo(date3);
+    assertThat(reservation2.requestDate).isEqualTo(date3);
     assertThat(reservation2.events).isNotNull();
     assertThat(reservation2.events.size()).isEqualTo(1);
     assertThat(reservation2.events.get(0).type).isEqualTo(ReservationEventType.CONNECTED);
@@ -201,8 +201,8 @@ public class ReservationRepositoryTest {
     return createAndPersistReservation(new Date(), topic, Optional.empty());
   }
 
-  private Reservation createAndPersistReservation(Date reservationCreatedDate) {
-    return createAndPersistReservation(reservationCreatedDate, businessTopic, Optional.empty());
+  private Reservation createAndPersistReservation(Date requestDate) {
+    return createAndPersistReservation(requestDate, businessTopic, Optional.empty());
   }
 
   private Reservation createAndPersistReservation(
@@ -226,7 +226,7 @@ public class ReservationRepositoryTest {
       String topic,
       Optional<ReservationEvent> reservationEvent) {
     Reservation reservation = new Reservation();
-    reservation.reservationCreatedDate = reservationCreatedDate;
+    reservation.requestDate = requestDate;
     reservation.topic = topic;
     if (reservationEvent.isPresent()) {
       reservation.events = Lists.newArrayList(reservationEvent.get());
