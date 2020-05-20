@@ -45,7 +45,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @SuppressWarnings("unchecked")
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
-    reservation.window = getWindow(reservation.reservationCreatedDate);
+    reservation.window = getWindow(reservation.requestDate);
     return Optional.of((T) reservation);
   }
 
@@ -54,7 +54,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   public <S extends T> S save(S entity) {
     Reservation reservation = (Reservation) entity;
     mongoTemplate.save(reservation);
-    reservation.window = getWindow(reservation.reservationCreatedDate);
+    reservation.window = getWindow(reservation.requestDate);
     return (S) reservation;
   }
 
@@ -94,7 +94,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   private Double getAverageWaitTimeMillis() {
     // Stage 1: All events with connected status
     ProjectionOperation connectedEventsStage =
-        Aggregation.project("reservationCreatedDate")
+        Aggregation.project("requestDate")
             .and(ArrayOperators.Filter.filter("events")
                 .as("events")
                 .by(ComparisonOperators.Eq.valueOf(
@@ -102,14 +102,14 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
     // Stage 2: The first connected event
     ProjectionOperation connectedEventStage =
-        Aggregation.project("reservationCreatedDate")
+        Aggregation.project("requestDate")
             .and(ArrayOperators.ArrayElemAt.arrayOf("connectedEvents").elementAt(0))
                 .as("connectedEvent");
     
     // Stage 3: The time difference between the request time and the first connected event 
     ProjectionOperation waitTimeStage =
-        Aggregation.project("reservationCreatedDate", "connectedEvent.date")
-            .and("connectedEvent.date").minus("reservationCreatedDate").as("waitTime");
+        Aggregation.project("requestDate", "connectedEvent.date")
+            .and("connectedEvent.date").minus("requestDate").as("waitTime");
 
     // Stage 4: The average of those time differences
     GroupOperation avgWaitGroup = Aggregation.group().avg("waitTime").as("avgWait");
