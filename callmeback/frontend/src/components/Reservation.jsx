@@ -9,7 +9,6 @@ function Reservation(props) {
     const { id } = useParams();
 
     const [reservationDetails, setReservationDetails] = useState(() => {
-        console.log("running useState with props: " + props)
         if (!!props && !!props.location.state) {
             return convertReservationToState(props.location.state.reservation, id)
         }
@@ -17,13 +16,10 @@ function Reservation(props) {
     });
 
     const fetchReservation = useCallback(async () => {
-        console.log('in fetchReservation')
         try {
             const response = await axios.get("/api/v1/reservations/" + id);
-            console.log("response: " + response.data)
             const reservation = convertReservationToState(response.data, id);
             setReservationDetails(reservation);
-            console.log("state on reservation: " + reservationDetails)
         }
         catch (error) {
             console.log(error); // Add other error handling.
@@ -55,7 +51,6 @@ function Reservation(props) {
 function convertReservationToState(reservation, id) {
     const naiveExpCallStartMin = new Date(reservation.window.naiveMin)
     const naiveExpCallStartMax = new Date(reservation.window.naiveMax)
-    console.log("naiveExpCallStartMin " + naiveExpCallStartMin)
     const maExpCallStartMin = new Date(reservation.window.movingAvgMin)
     const maExpCallStartMax = new Date(reservation.window.movingAvgMax)
 
