@@ -1,11 +1,36 @@
 k8s_yaml(kustomize('kubernetes'))
 
+# TODO - add live update to backend once frontend works
 docker_build(
   'google-org/call-me-back-backend',
   'backend',
+  live_update = [
+    # Sync allows multiple Docker images that depend on each other to be identified
+    # so this would mean that changes to backend/src rely on backend/gradle.
+    # Multiple rules can (and should) be added here.
+    sync('./backend/src', '/backend/gradle'),
+
+    # Not sure what re-run is needed.
+    # run('', trigger=''),
+
+    # Restart the Docker containers to pick up the changed files.
+    restart_container(),
+  ]
 )
 
 docker_build(
   'google-org/call-me-back-frontend',
   'frontend',
+  live_update = [
+    # Sync allows multiple Docker images that depend on each other to be identified
+    # so this would mean that changes to frontend/src rely on frontend/gradle.
+    # Multiple rules can (and should) be added here.
+    sync('./frontend/src', '/frontend/gradle'),
+
+    # Re-run npm install whenever package.json changes.
+    run('npm i', trigger='./frontend/package.json'),
+
+    # Restart the Docker containers to pick up the changed files.
+    restart_container(),
+  ]
 )
