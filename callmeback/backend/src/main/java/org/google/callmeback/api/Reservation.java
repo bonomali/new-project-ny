@@ -53,7 +53,7 @@ public class Reservation {
   /** The resident's feedback about the service experience. */
   public ReservationFeedback feedback;
 
-  /** The resident's feedback about the service experience. */
+  /** The expected call back times for the resident. */
   public ReservationWindow window;
 
   @Override

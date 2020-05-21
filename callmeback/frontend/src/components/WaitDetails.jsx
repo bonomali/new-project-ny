@@ -6,35 +6,44 @@ import FaqAccordion from './FaqAccordion.jsx';
 import moment from 'moment';
 
 function WaitDetails(props) {
-    const {topic, expCallStartMin, expCallStartMax, id} = props.reservationDetails
+    const {topic, naiveExpCallStartMin, naiveExpCallStartMax, maExpCallStartMin, maExpCallStartMax, id} = props.reservationDetails
 
-    const callStartFormatted = <Moment format="h:mm A">{expCallStartMin}</Moment>
-    const callStartMaxFormatted = <Moment format="h:mm A">{expCallStartMax}</Moment>
+    const callStartFormatted = <Moment format="h:mm A">{naiveExpCallStartMin}</Moment>
+    const callStartMaxFormatted = <Moment format="h:mm A">{naiveExpCallStartMax}</Moment>
 
     const [checked, setCheckbox] = useState(false)
 
     const now = moment();
-    const callStartMaxMoment = moment(expCallStartMax);
+    const callStartMaxMoment = moment(naiveExpCallStartMax);
     const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
     const longWait = callStartMaxDuration.asHours() >= 24;
     const iconName = longWait ? 'calendar alternate outline' : 'clock';
 
     let waitTimeEstimate;
     if (longWait) {
-        waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{expCallStartMax}</Moment>;
+        waitTimeEstimate = <Moment format={'ddd, MMMM Do'}>{naiveExpCallStartMax}</Moment>;
     } else {
         waitTimeEstimate =
+            <div>
             <span>
-                <Moment fromNow ago>{expCallStartMin}</Moment>
+                <Moment fromNow ago>{naiveExpCallStartMin}</Moment>
                 {' '} - {' '}
-                <Moment fromNow ago>{expCallStartMax}</Moment>
+                <Moment fromNow ago>{naiveExpCallStartMax}</Moment>
             </span>
+            <br/>
+            {!!maExpCallStartMax &&
+            <span>
+                <Moment fromNow ago>{maExpCallStartMin}</Moment>
+                {' '} - {' '}
+                <Moment fromNow ago>{maExpCallStartMax}</Moment>
+            </span>}
+            </div>
     }
 
     return (
         <Container text className='paper'>
             {/* Ensure props are loaded before rendering the component */}
-            {!!expCallStartMin &&
+            {!!naiveExpCallStartMin &&
             <div>
                 <div style={{"textAlign":"center"}} >
                     <div style={{"fontSize":"20px"}}>
@@ -48,8 +57,8 @@ function WaitDetails(props) {
                         to={{
                             pathname: "/cancel",
                             state: {
-                                expCallStartMin: expCallStartMin,
-                                expCallStartMax: expCallStartMax,
+                                naiveExpCallStartMin: naiveExpCallStartMin,
+                                naiveExpCallStartMax: naiveExpCallStartMax,
                                 id: id,
                             }
                         }}
