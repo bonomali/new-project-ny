@@ -68,10 +68,12 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
     long expectedWaitTimeMillis =
         averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get().longValue() : 0L;
-    window.naiveExp = Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
+    window.naiveExp =
+        Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
-    // length and the current time. If it is set to the current time, update window.naiveExp to the current
+    // length and the current time. If it is set to the current time, update window.naiveExp to the
+    // current
     // time as well. This ensures the window is either inclusive of or later than the current time
     // and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
@@ -85,7 +87,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     }
 
     // Set window maximum as the window minimum plus the window length
-    window.naiveMax = Date.from(window.naiveMin.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
+    window.naiveMax =
+        Date.from(window.naiveMin.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
     return window;
   }
 
