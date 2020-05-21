@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -37,6 +38,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private MongoTemplate mongoTemplate;
 
+  @Autowired private AuditingHandler auditingHandler;
+
   // (Hard-coded) Length of the expected reservation window
   public static final int WINDOW_LENGTH_MILLIS = 600000;
 
@@ -45,6 +48,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
     reservation.window = getWindow(reservation.requestDate);
+    auditingHandler.markModified(reservation);
     return Optional.of((T) reservation);
   }
 

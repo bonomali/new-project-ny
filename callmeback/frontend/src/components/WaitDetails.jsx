@@ -7,6 +7,7 @@ import moment from 'moment';
 
 function WaitDetails(props) {
     const {topic, naiveExpCallStartMin, naiveExpCallStartMax, maExpCallStartMin, maExpCallStartMax, id} = props.reservationDetails
+    console.log("startmin: " + naiveExpCallStartMin + " startmax: " + naiveExpCallStartMax)
 
     const callStartFormatted = <Moment format="h:mm A">{naiveExpCallStartMin}</Moment>
     const callStartMaxFormatted = <Moment format="h:mm A">{naiveExpCallStartMax}</Moment>
