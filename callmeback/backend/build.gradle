@@ -29,5 +29,8 @@ dependencies {
 }
 
 test {
+  onlyIf {
+    gradle.getStartParameter().getTaskNames().contains("test")
+  }
 	useJUnitPlatform()
 }
