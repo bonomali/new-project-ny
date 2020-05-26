@@ -1,7 +1,6 @@
 package org.google.callmeback.api;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +43,20 @@ class QueueingRepositoryImpl implements QueueingRepository {
     this.mongoTemplate = mongoTemplate;
   }
 
+  public Reservation startNextCall() {
+    Reservation callToStart = getNextCall();
+    if(callToStart == null) return null;
+
+    MovingAverageAggregate storedAverage = getMovingAverage();
+    Update update = createCallStartDatabaseUpdate(callToStart, storedAverage);
+
+    Query idQuery = new Query(where("_id").is(new ObjectId(callToStart.id)));
+    FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
+    Reservation updatedRes = mongoTemplate.findAndModify(
+      idQuery, update, opts, MovingAverageAggregate.class, "reservation");
+    return updatedRes;
+  }
+
   private Reservation getNextCall() {
     /**
      * Note: This query only pulls callers who have no associated events. For the current scope, we
@@ -60,24 +73,6 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * Retrieves the existing moving average from the database.
    */
   private MovingAverageAggregate getMovingAverage() {
-    // Aggregation agg = Aggregation.newAggregation(
-    //   match(new Criteria().orOperator(where("events").exists(false), where("events").size(0))),
-    //   sort(Sort.Direction.ASC, "requestDate"),
-    //   limit(1),
-    //   new CustomMongoAggregation(
-    //       "{$lookup:"
-    //       + "{from: 'reservation',"
-    //       + "pipeline: ["
-    //       + "{$match: {'events':{$exists:true}}},"
-    //       + "{$unwind: '$events'},"
-    //       + "{$sort: {'events.date': -1}},"
-    //       + "{$limit: 1},"
-    //       + "{$project: {_id: 0, previousAverage: 1}}"
-    //       + "],"
-    //       + "as: 'previousAverage'}}"
-    //   )
-    // );
-
     Aggregation agg = Aggregation.newAggregation(
       match(where("events").exists(true)),
       unwind("events"),
@@ -98,25 +93,17 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * 
    * @param smoothingFactor The most common choice is '2'. As this is increased, more recent
    * events have a higher impact on the moving average.
-   * @param observedEvents the number of events that the moving average should consider, expressed in units used
-   * when the previousMovingAverage was calculated
+   * @param observedEvents the number of events that the moving average should consider, expressed 
+   * in units used when the previousMovingAverage was calculated
    * @param newValue the actual value being measured at this point in time
-   * @param previousMovingAverage the exponential moving average that was calculated during the previous period
+   * @param previousMovingAverage the exponential moving average that was calculated during the 
+   * previous period
    */
   private double exponentialMovingAverage(
     double smoothingFactor, double observedEvents, double newValue, double previousMovingAverage) {
 
     double multiplier = smoothingFactor / (1 + observedEvents);
     return newValue * multiplier + previousMovingAverage * (1 - multiplier);
-  }
-
-  private double updateMovingAverage(
-    Instant reservationRequestDate, Instant connectedEventDate, double previousAverage) {
-
-    double waitTime = Duration.between(reservationRequestDate, connectedEventDate).toMinutes();
-    double numberOfCallsToAverage = 10;
-    double smoothingFactor = 2;
-    return exponentialMovingAverage(smoothingFactor, numberOfCallsToAverage, waitTime, previousAverage);
   }
 
   private Update createCallStartDatabaseUpdate(
@@ -136,24 +123,15 @@ class QueueingRepositoryImpl implements QueueingRepository {
     resEvents.add(connectedEvent);
 
     double previousAverage = storedAverage == null ? 0 : storedAverage.previousAverage;
-    double newMovingAverage = updateMovingAverage(
-      callToStart.requestDate.toInstant(), connectedEvent.date.toInstant(), previousAverage);
+
+    double waitTime = 
+      Duration.between(callToStart.requestDate.toInstant(), connectedEvent.date.toInstant())
+        .toMinutes();
+    double numberOfCallsToAverage = 10;
+    double smoothingFactor = 2;
+    double newMovingAverage = exponentialMovingAverage(
+      smoothingFactor, numberOfCallsToAverage, waitTime, previousAverage);
 
     return new Update().set("events", resEvents).set("previousAverage", newMovingAverage);
-  }
-
-  public Reservation startNextCall() {
-    // Pull required information from database
-    Reservation callToStart = getNextCall();
-    MovingAverageAggregate storedAverage = getMovingAverage();
-
-    Update update = createCallStartDatabaseUpdate(callToStart, storedAverage);
-
-    // Store the update to the database and return the updated reservation
-    Query idQuery = new Query(where("_id").is(new ObjectId(callToStart.id)));
-    FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
-    Reservation updatedRes =
-         mongoTemplate.findAndModify(idQuery, update, opts, MovingAverageAggregate.class, "reservation");
-    return updatedRes;
   }
 }

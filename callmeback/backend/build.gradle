@@ -28,6 +28,6 @@ dependencies {
   testImplementation('org.junit.platform:junit-platform-launcher:1.5.2')
 }
 
-// test {
-// 	useJUnitPlatform()
-// }
+test {
+	useJUnitPlatform()
+}
