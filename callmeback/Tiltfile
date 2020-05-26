@@ -6,12 +6,17 @@ docker_build(
   'backend',
   live_update = [
     # Sync allows multiple Docker images that depend on each other to be identified
-    # so this would mean that changes to backend/src rely on backend/gradle.
-    # Multiple rules can (and should) be added here.
+    # so for example in the first rule below, changes to backend/src rely on backend/gradle.
     sync('./backend/src', '/backend/gradle'),
+    sync('./backend/src', '/build.gradle'),
+    sync('./backend/src', '/settings.gradle'),
 
-    # Not sure what re-run is needed.
-    # run('', trigger=''),
+    # Re-run Gradle and copy files.
+    run('./gradlew build'),
+    run('cp ./backend/build.gradle /usr/app/'),
+    run('cp ./backend/settings.gradle /usr/app/'),
+    run('cp ./backend/gradle /usr/app/gradle'),
+    run('cp ./build/libs/*.jar /usr/app/app.jar'),
 
     # Restart the Docker containers to pick up the changed files.
     restart_container(),
@@ -23,12 +28,20 @@ docker_build(
   'frontend',
   live_update = [
     # Sync allows multiple Docker images that depend on each other to be identified
-    # so this would mean that changes to frontend/src rely on frontend/gradle.
-    # Multiple rules can (and should) be added here.
+    # so for example in the first rule below, changes to frontend/src rely on frontend/gradle.
     sync('./frontend/src', '/frontend/gradle'),
+    sync('./frontend/src', '/build.gradle'),
+    sync('./frontend/src', '/settings.gradle'),
 
-    # Re-run npm install whenever package.json changes.
+    # Re-run npm install whenever package.json changes and Gradle always.
     run('npm i', trigger='./frontend/package.json'),
+    run('./gradlew build'),
+
+    # Copy to app home.
+    run('cp ./frontend/build.gradle /usr/app/'),
+    run('cp ./frontend/settings.gradle /usr/app/'),
+    run('cp ./frontend/package.json /usr/app/'),
+    run('cp ./frontend/package-lock.json /usr/app/'),
 
     # Restart the Docker containers to pick up the changed files.
     restart_container(),
