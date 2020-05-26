@@ -209,6 +209,7 @@ public class ReservationRepositoryTest {
     Optional<Reservation> originalRes = reservationRepository.findById(res1WithNoEventsInSystem.id);
     assertThat(dateFormat.format(originalRes.get().window.naiveExp))
         .isEqualTo(dateFormat.format(Date.from(date1.toInstant().plus(Duration.ofMinutes(15)))));
+    assertThat(originalRes.get().updatedDate).isAfter(res1WithNoEventsInSystem.updatedDate);
 
     // Minimum callback time is before the current time so exp and min time are set to current.
     Date date6 = Date.from(date1.toInstant().minus(Duration.ofMinutes(20)));
