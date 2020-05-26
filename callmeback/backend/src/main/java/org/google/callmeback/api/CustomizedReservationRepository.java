@@ -48,6 +48,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   public Optional<T> findById(ID id) {
     Reservation reservation = mongoTemplate.findById(id, Reservation.class);
     reservation.window = getWindow(reservation.requestDate);
+    // Indicate Reservation has changed so that the API caller can get the new window
+    // even if none of the saved fields have changed.
     auditingHandler.markModified(reservation);
     return Optional.of((T) reservation);
   }
