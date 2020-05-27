@@ -9,7 +9,7 @@ function startCall(apiUrl) {
         .catch((error) => console.log(error));
 }
 
-function endCall(apiUrl, reservation) {
+function endCall(reservation) {
     let reservationEvents = reservation.events;
     if(!reservationEvents) {
         reservationEvents = [];
@@ -33,9 +33,7 @@ function endCall(apiUrl, reservation) {
         resolution: resolution,
     };
     
-    let hrefArray = reservation._links.self.href.split('/');
-    let reservationId = hrefArray[hrefArray.length - 1];
-    return axios.patch(apiUrl + '/api/v1/reservations/' + reservationId, request)
+    return axios.patch(reservation._links.self.href, request)
         .then((response) => {
             console.log(JSON.stringify(response.data));
             return response;
