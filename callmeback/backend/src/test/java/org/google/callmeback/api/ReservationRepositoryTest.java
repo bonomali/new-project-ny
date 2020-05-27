@@ -211,7 +211,7 @@ public class ReservationRepositoryTest {
     createAndPersistReservation(new Date());
 
     reservationRepository.calculateAverageWaitTime();
-    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(1200000L);
+    assertThat(reservationRepository.getAverageWaitTimeMillis().getAsLong()).isEqualTo(1200000L);
   }
 
   @Test
@@ -228,7 +228,7 @@ public class ReservationRepositoryTest {
         requestedDate2, Optional.of(ReservationEventType.CONNECTED), Optional.of(connectedDate2));
 
     reservationRepository.calculateAverageWaitTime();
-    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(1500000L);
+    assertThat(reservationRepository.getAverageWaitTimeMillis().getAsLong()).isEqualTo(1500000L);
   }
 
   @Test
@@ -289,7 +289,7 @@ public class ReservationRepositoryTest {
 
     // Confirm the average wait time is now 10 minutes
     reservationRepository.calculateAverageWaitTime();
-    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(600000L);
+    assertThat(reservationRepository.getAverageWaitTimeMillis().getAsLong()).isEqualTo(600000L);
 
     // New reservation should have exp wait time of 10 minutes.
     Date date3 = new Date();
@@ -307,7 +307,7 @@ public class ReservationRepositoryTest {
 
     // Confirm the average wait time is now 15 minutes
     reservationRepository.calculateAverageWaitTime();
-    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(900000L);
+    assertThat(reservationRepository.getAverageWaitTimeMillis().getAsLong()).isEqualTo(900000L);
 
     // New reservation should have expected wait time of 15 minutes.
     Date date5 = new Date();

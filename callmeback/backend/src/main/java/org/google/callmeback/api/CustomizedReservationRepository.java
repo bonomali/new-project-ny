@@ -1,9 +1,10 @@
 package org.google.callmeback.api;
 
-import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +51,12 @@ public interface CustomizedReservationRepository<T, ID> {
    * Returns the average wait time for all reservations in the database. Note that this is visible
    * for testing.
    */
-  Optional<Long> getAverageWaitTimeMillis();
+  OptionalLong getAverageWaitTimeMillis();
 
   /**
    * Returns the moving average wait time. Note that this is visible for testing.
    */
-  Optional<Long> getMovingAverageWaitTimeMillis();
+  OptionalLong getMovingAverageWaitTimeMillis();
 }
 
 class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservationRepository<T, ID> {
@@ -64,10 +65,11 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private AuditingHandler auditingHandler;
 
+  // TODO: Move QueueingRepository functionality into CustomizedReservationRepository.
   @Autowired private QueueingRepository queueingRepository;
 
   // Average time between reservation request and the first connection event
-  public Optional<Long> averageWaitTimeMillis = Optional.empty();
+  public OptionalLong averageWaitTimeMillis = OptionalLong.empty();
 
   private static Logger logger = LoggerFactory.logger(CustomizedReservationRepository.class);
 
@@ -102,14 +104,12 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // pointing to two sets of Windows.
 
     // Set window using naive calculation
-    long expectedWaitTimeMillis =
-        averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L;
-    window.naiveWindow = calculateWindowFromExpWaitTime(expectedWaitTimeMillis, requestDate);
+    long expectedWaitTime = averageWaitTimeMillis.orElse(0L);
+    window.naiveWindow = calculateWindowFromExpWaitTime(expectedWaitTime, requestDate);
   
     // Set window using moving average calculation (right now uses different fields).
-    long expectedMovingAvgWaitTimeMillis =
-        getMovingAverageWaitTimeMillis().isPresent() ? getMovingAverageWaitTimeMillis().get() : 0L;
-    window.movingAvgWindow = calculateWindowFromExpWaitTime(expectedMovingAvgWaitTimeMillis, requestDate);
+    expectedWaitTime = getMovingAverageWaitTimeMillis().orElse(0L);
+    window.movingAvgWindow = calculateWindowFromExpWaitTime(expectedWaitTime, requestDate);
     return window;
   }
 
@@ -120,10 +120,9 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    * @param requestDate = date/time the call was requested
    * @return a Window with min, max, and exp call back times
    */
-  private Window calculateWindowFromExpWaitTime(long expectedWaitTimeMillis, Date requestDate) {
+  private Window calculateWindowFromExpWaitTime(long expectedWaitTime, Date requestDate) {
     Window window = new Window();
-    window.exp =
-        Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
+    window.exp = Date.from(requestDate.toInstant().plusMillis(expectedWaitTime));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
     // length and the current time. If it is set to the current time, update window.naiveExp to the
@@ -131,7 +130,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // current time and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
     Date calculatedWindowMinimum =
-        Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
+        Date.from(window.exp.toInstant().minusMillis(WINDOW_LENGTH_MILLIS / 2L));
     if (calculatedWindowMinimum.before(currentDate)) {
       window.min = currentDate;
       window.exp = currentDate;
@@ -141,7 +140,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
     // Set window maximum as the window minimum plus the window length
     window.max =
-        Date.from(window.min.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
+        Date.from(window.min.toInstant().plusMillis(WINDOW_LENGTH_MILLIS));
     return window;
   }
 
@@ -194,24 +193,25 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
             ? (Double) output.getUniqueMappedResult().get("avgWait")
             : null;
     averageWaitTimeMillis =
-        (avgWaitTime == null) ? Optional.empty() : Optional.of(avgWaitTime.longValue());
+        (avgWaitTime == null) ? OptionalLong.empty() : OptionalLong.of(avgWaitTime.longValue());
     logger.info(
         "Average wait time: "
-            + (averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L)
+            + (averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.getAsLong() : 0L)
             + " ms");
   }
 
   @Override
-  public Optional<Long> getAverageWaitTimeMillis() {
+  public OptionalLong getAverageWaitTimeMillis() {
     return averageWaitTimeMillis;
   }
 
   @Override
-  public Optional<Long> getMovingAverageWaitTimeMillis() {
-    if (queueingRepository.getMovingAverage() == null) {
-      return Optional.empty();
+  public OptionalLong getMovingAverageWaitTimeMillis() {
+    OptionalDouble waitTime = queueingRepository.getMovingAverage();
+    if (!waitTime.isPresent()) {
+      return OptionalLong.empty();
     }
-    Double movingAverage = (Double) queueingRepository.getMovingAverage().waitTimeMovingAverage;
-    return Optional.of(movingAverage.longValue());
+    Double movingAverage = (Double) waitTime.getAsDouble();
+    return OptionalLong.of(movingAverage.longValue());
   }
 }

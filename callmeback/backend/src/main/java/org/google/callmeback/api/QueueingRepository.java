@@ -37,9 +37,9 @@ interface QueueingRepository {
    * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
    * where that event is found.
    *
-   * @return an extension of Reservation with the most recently calculated moving average.
+   * @return the most recently calculated moving average.
    */
-  public ReservationWaitTime getMovingAverage();
+  public OptionalDouble getMovingAverage();
 }
 
 @Component
@@ -63,7 +63,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
       return null;
     }
 
-    ReservationWaitTime previousMovingAverage = getMovingAverage();
+    OptionalDouble previousMovingAverage = getMovingAverage();
 
     /**
      * Note: this makes the (unrealistic) assumption that an agent is immediately connected to the
@@ -99,7 +99,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
    * where that event is found.
    */
-  public ReservationWaitTime getMovingAverage() {
+  public OptionalDouble getMovingAverage() {
     Aggregation agg =
         Aggregation.newAggregation(
             Aggregation.unwind("events"),
@@ -112,7 +112,12 @@ class QueueingRepositoryImpl implements QueueingRepository {
         mongoTemplate.aggregate(agg, "reservation", ReservationWaitTime.class);
 
     List<ReservationWaitTime> resultList = results.getMappedResults();
-    return resultList.stream().findFirst().orElse(null);
+    ReservationWaitTime previousMovingAverage = resultList.stream().findFirst().orElse(null);
+    OptionalDouble waitTimeMovingAverage =
+        previousMovingAverage == null
+            ? OptionalDouble.empty()
+            : OptionalDouble.of(previousMovingAverage.waitTimeMovingAverage);
+    return waitTimeMovingAverage;
   }
 
   /**
@@ -162,12 +167,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
   private double getNewExponentialMovingAverage(
       Reservation reservation,
       ReservationEvent connectedEvent,
-      ReservationWaitTime previousMovingAverage) {
-
-    OptionalDouble waitTimeMovingAverage =
-        previousMovingAverage == null
-            ? OptionalDouble.empty()
-            : OptionalDouble.of(previousMovingAverage.waitTimeMovingAverage);
+      OptionalDouble waitTimeMovingAverage) {
 
     double waitTimeMs =
         Duration.between(reservation.requestDate.toInstant(), connectedEvent.date.toInstant())
