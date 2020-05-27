@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,7 +107,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
 
   /**
-   * Calculates the current exponential moving average. If {@code previousMovingAverage} is not 
+   * Calculates the current exponential moving average. If {@code previousMovingAverage} is not
    * present, returns {@code newValue}.
    *
    * @param smoothingFactor The most common choice is '2'. As this is increased, more recent events
@@ -117,7 +116,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
    *     in units used when the previousMovingAverage was calculated
    * @param newValue the actual value being measured at this point in time
    * @param previousMovingAverage the exponential moving average that was calculated during the
-   *     previous period. 
+   *     previous period.
    */
   private double exponentialMovingAverage(
       double smoothingFactor,

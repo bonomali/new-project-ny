@@ -10,14 +10,12 @@ public class ReservationEvent {
   /** The event type. */
   public ReservationEventType type;
 
-  /**
-   * Create an empty reservation event.
-   */
+  /** Create an empty reservation event. */
   public ReservationEvent() {}
 
   /**
    * Create a reservation event.
-   * 
+   *
    * @param date the timestamp indicating when the event occured.
    * @param type the type of event that occurred.
    */
