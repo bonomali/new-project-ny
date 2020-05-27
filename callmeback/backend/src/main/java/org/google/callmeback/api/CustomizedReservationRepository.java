@@ -212,6 +212,6 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
       return Optional.empty();
     }
     Double movingAverage = (Double) queueingRepository.getMovingAverage().waitTimeMovingAverage;
-    return Optional.of(movingAverage.longValue() * 60 * 1000); // ma is in minutes, convert to millis
+    return Optional.of(movingAverage.longValue());
   }
 }

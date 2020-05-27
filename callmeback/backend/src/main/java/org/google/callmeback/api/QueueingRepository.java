@@ -3,6 +3,7 @@ package org.google.callmeback.api;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalDouble;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,17 +39,17 @@ interface QueueingRepository {
    *
    * @return an extension of Reservation with the most recently calculated moving average.
    */
-  public MovingAverageAggregate getMovingAverage();
+  public ReservationWaitTime getMovingAverage();
 }
 
 @Component
 class QueueingRepositoryImpl implements QueueingRepository {
   private final MongoTemplate mongoTemplate;
 
-  @Value("${movingAverage.numberOfCalls}")
+  @Value("${defaults.movingAverage.numberOfCalls}")
   private int numberOfCallsToAverage;
 
-  @Value("${movingAverage.smoothingFactor}")
+  @Value("${defaults.movingAverage.smoothingFactor}")
   private int smoothingFactor;
 
   @Autowired
@@ -62,7 +63,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
       return null;
     }
 
-    MovingAverageAggregate previousMovingAverage = getMovingAverage();
+    ReservationWaitTime previousMovingAverage = getMovingAverage();
 
     /**
      * Note: this makes the (unrealistic) assumption that an agent is immediately connected to the
@@ -72,7 +73,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
      * caller, and later update the caller's ReservationEvents).
      */
     ReservationEvent connectedEvent = ReservationEvent.newConnectedEvent();
-    double newMovingAverage = 
+    double newMovingAverage =
         getNewExponentialMovingAverage(nextCall, connectedEvent, previousMovingAverage);
 
     return updateNextCall(nextCall, connectedEvent, newMovingAverage);
@@ -93,12 +94,12 @@ class QueueingRepositoryImpl implements QueueingRepository {
     return mongoTemplate.findOne(nextCallQuery, Reservation.class);
   }
 
-  /** 
+  /**
    * Retrieves the most recent moving average from the database. This means finding the most recent
    * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
    * where that event is found.
    */
-  public MovingAverageAggregate getMovingAverage() {
+  public ReservationWaitTime getMovingAverage() {
     Aggregation agg =
         Aggregation.newAggregation(
             Aggregation.unwind("events"),
@@ -107,15 +108,16 @@ class QueueingRepositoryImpl implements QueueingRepository {
             Aggregation.limit(1),
             Aggregation.project("waitTimeMovingAverage"));
 
-    AggregationResults<MovingAverageAggregate> results =
-        mongoTemplate.aggregate(agg, "reservation", MovingAverageAggregate.class);
+    AggregationResults<ReservationWaitTime> results =
+        mongoTemplate.aggregate(agg, "reservation", ReservationWaitTime.class);
 
-    List<MovingAverageAggregate> resultList = results.getMappedResults();
+    List<ReservationWaitTime> resultList = results.getMappedResults();
     return resultList.stream().findFirst().orElse(null);
   }
 
   /**
-   * Calculates the current exponential moving average.
+   * Calculates the current exponential moving average. If {@code previousMovingAverage} is not
+   * present, returns {@code newValue}.
    *
    * @param smoothingFactor The most common choice is '2'. As this is increased, more recent events
    *     have a higher impact on the moving average.
@@ -123,19 +125,27 @@ class QueueingRepositoryImpl implements QueueingRepository {
    *     in units used when the previousMovingAverage was calculated
    * @param newValue the actual value being measured at this point in time
    * @param previousMovingAverage the exponential moving average that was calculated during the
-   *     previous period
+   *     previous period.
    */
   private double exponentialMovingAverage(
-      double smoothingFactor, int observedEvents, double newValue, double previousMovingAverage) {
+      double smoothingFactor,
+      int observedEvents,
+      double newValue,
+      OptionalDouble previousMovingAverage) {
 
-    if (observedEvents < 0 ) { 
+    if (observedEvents < 0) {
       throw new IllegalArgumentException("Number of observed events must be positive.");
     } else if (observedEvents == Integer.MAX_VALUE) {
       throw new IllegalArgumentException("Number of observed events is too large.");
     }
 
     double multiplier = smoothingFactor / (1 + observedEvents);
-    return newValue * multiplier + previousMovingAverage * (1 - multiplier);
+
+    if (!previousMovingAverage.isPresent()) {
+      return newValue;
+    } else {
+      return newValue * multiplier + previousMovingAverage.getAsDouble() * (1 - multiplier);
+    }
   }
 
   /**
@@ -146,43 +156,46 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * @param reservation the Reservation representing the next call to be connected to an agent.
    * @param connectedEvent the ReservationEventType.CONNECTED event created for {$code nextCall}.
    * @param previousMovingAverage the most recent exponential moving average, required to calculate
-   * the new exponential moving average.
+   *     the new exponential moving average.
    * @return the new exponential moving average.
    */
   private double getNewExponentialMovingAverage(
-      Reservation reservation, 
-      ReservationEvent connectedEvent, 
-      MovingAverageAggregate previousMovingAverage) {
+      Reservation reservation,
+      ReservationEvent connectedEvent,
+      ReservationWaitTime previousMovingAverage) {
 
-    double waitTimeMovingAverage = 
-        previousMovingAverage == null ? 0 : previousMovingAverage.waitTimeMovingAverage;
+    OptionalDouble waitTimeMovingAverage =
+        previousMovingAverage == null
+            ? OptionalDouble.empty()
+            : OptionalDouble.of(previousMovingAverage.waitTimeMovingAverage);
 
-    double waitTime =
+    double waitTimeMs =
         Duration.between(reservation.requestDate.toInstant(), connectedEvent.date.toInstant())
-            .toMinutes();
+            .toMillis();
 
     return exponentialMovingAverage(
-        smoothingFactor, numberOfCallsToAverage, waitTime, waitTimeMovingAverage);
+        smoothingFactor, numberOfCallsToAverage, waitTimeMs, waitTimeMovingAverage);
   }
 
   /**
    * Saves the updated call Reservation to MongoDB, inclusive of the most recent wait time moving
    * average.
-   * 
+   *
    * @param nextCall the reservation that has been connected to an agent.
    * @param connectedEvent the event describing the reservation's connection to an agent.
    * @param waitTimeMovingAverage the estimated wait time as an exponential moving average.
    * @return the updated Reservation, with the connectedEvent and waitTimeMovingAverage embedded.
    */
-  private MovingAverageAggregate updateNextCall(
+  private ReservationWaitTime updateNextCall(
       Reservation nextCall, ReservationEvent connectedEvent, double waitTimeMovingAverage) {
 
     Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(nextCall.id)));
-    Update update = new Update()
-        .set("events", Arrays.asList(connectedEvent))
-        .set("waitTimeMovingAverage", waitTimeMovingAverage);
+    Update update =
+        new Update()
+            .set("events", Arrays.asList(connectedEvent))
+            .set("waitTimeMovingAverage", waitTimeMovingAverage);
     FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
     return mongoTemplate.findAndModify(
-        idQuery, update, opts, MovingAverageAggregate.class, "reservation");
+        idQuery, update, opts, ReservationWaitTime.class, "reservation");
   }
 }

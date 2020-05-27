@@ -7,7 +7,7 @@ spring:
             authentication-database: admin
         rest:
             base-path: /v1
-
-movingAverage:
-    numberOfCalls: 10
-    smoothingFactor: 2
+defaults:
+    movingAverage:
+        numberOfCalls: 10
+        smoothingFactor: 2

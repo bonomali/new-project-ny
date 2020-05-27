@@ -1,11 +1,11 @@
 {"properties": [
   {
-    "name": "movingAverage.number-of-calls",
+    "name": "defaults.movingAverage.numberOfCalls",
     "type": "java.lang.Integer",
     "description": "The number of calls to factor into the exponential moving average."
   },
   {
-    "name": "movingAverage.smoothingFactor",
+    "name": "defaults.movingAverage.smoothingFactor",
     "type": "java.lang.Integer",
     "description": "The smoothing factor for the exponential moving average of call wait time."
   }
