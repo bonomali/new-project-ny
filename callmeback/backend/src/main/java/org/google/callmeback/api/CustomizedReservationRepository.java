@@ -51,6 +51,11 @@ public interface CustomizedReservationRepository<T, ID> {
    * for testing.
    */
   Optional<Long> getAverageWaitTimeMillis();
+
+  /**
+   * Returns the moving average wait time. Note that this is visible for testing.
+   */
+  Optional<Long> getMovingAverageWaitTimeMillis();
 }
 
 class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservationRepository<T, ID> {
@@ -58,6 +63,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @Autowired private MongoTemplate mongoTemplate;
 
   @Autowired private AuditingHandler auditingHandler;
+
+  @Autowired private QueueingRepository queueingRepository;
 
   // Average time between reservation request and the first connection event
   public Optional<Long> averageWaitTimeMillis = Optional.empty();
@@ -85,16 +92,30 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   }
 
   /**
-   * Returns a ReservationWindow, incorporating the number of reservations created prior to the
-   * specified date, which do not currently have any reservation events associated.
+   * Returns a ReservationWindow using both types of "average wait time" calculations.
    */
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
 
-    // Set expected value as the reservation request time plus the expected wait time
+    // TODO: Only use one of these types of calculations, based on a passed URL
+    // parameter. Make reservation window hold min, max, exp directly rather than
+    // pointing to two sets of Windows.
+
+    // Set window using naive calculation
     long expectedWaitTimeMillis =
         averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L;
-    window.naiveExp =
+    window.naiveWindow = setWindowFromExpWaitTime(expectedWaitTimeMillis, requestDate);
+  
+    // Set window using moving average calculation (right now uses different fields).
+    long expectedMovingAvgWaitTimeMillis =
+        getMovingAverageWaitTimeMillis().isPresent() ? getMovingAverageWaitTimeMillis().get() : 0L;
+    window.movingAvgWindow = setWindowFromExpWaitTime(expectedMovingAvgWaitTimeMillis, requestDate);
+    return window;
+  }
+
+  private Window setWindowFromExpWaitTime(long expectedWaitTimeMillis, Date requestDate) {
+    Window window = new Window();
+    window.exp =
         Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
@@ -103,17 +124,17 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // current time and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
     Date calculatedWindowMinimum =
-        Date.from(window.naiveExp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
+        Date.from(window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
     if (calculatedWindowMinimum.before(currentDate)) {
-      window.naiveMin = currentDate;
-      window.naiveExp = currentDate;
+      window.min = currentDate;
+      window.exp = currentDate;
     } else {
-      window.naiveMin = calculatedWindowMinimum;
+      window.min = calculatedWindowMinimum;
     }
 
     // Set window maximum as the window minimum plus the window length
-    window.naiveMax =
-        Date.from(window.naiveMin.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
+    window.max =
+        Date.from(window.min.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)));
     return window;
   }
 
@@ -176,5 +197,14 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @Override
   public Optional<Long> getAverageWaitTimeMillis() {
     return averageWaitTimeMillis;
+  }
+
+  @Override
+  public Optional<Long> getMovingAverageWaitTimeMillis() {
+    if (queueingRepository.getMovingAverage() == null) {
+      return Optional.empty();
+    }
+    Double ma = (Double) queueingRepository.getMovingAverage().waitTimeMovingAverage;
+    return Optional.of(ma.longValue() * 60 * 1000); // ma is in minutes, convert to millis
   }
 }

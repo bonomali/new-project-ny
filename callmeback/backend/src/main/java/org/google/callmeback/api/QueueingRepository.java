@@ -31,6 +31,15 @@ interface QueueingRepository {
    * @return the call that was started, or null if there are no calls available to start.
    */
   public Reservation startNextCall();
+
+  /**
+   * Retrieves the most recent moving average from the database. This means finding the most recent
+   * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
+   * where that event is found.
+   *
+   * @return the most recently calculated moving average.
+   */
+  public MovingAverageAggregate getMovingAverage();
 }
 
 @Component
@@ -87,7 +96,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
    * where that event is found.
    */
-  private MovingAverageAggregate getMovingAverage() {
+  public MovingAverageAggregate getMovingAverage() {
     Aggregation agg =
         Aggregation.newAggregation(
             Aggregation.unwind("events"),
