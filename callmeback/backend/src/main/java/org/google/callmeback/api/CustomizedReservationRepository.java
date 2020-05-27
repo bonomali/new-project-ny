@@ -104,16 +104,23 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // Set window using naive calculation
     long expectedWaitTimeMillis =
         averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L;
-    window.naiveWindow = setWindowFromExpWaitTime(expectedWaitTimeMillis, requestDate);
+    window.naiveWindow = calculateWindowFromExpWaitTime(expectedWaitTimeMillis, requestDate);
   
     // Set window using moving average calculation (right now uses different fields).
     long expectedMovingAvgWaitTimeMillis =
         getMovingAverageWaitTimeMillis().isPresent() ? getMovingAverageWaitTimeMillis().get() : 0L;
-    window.movingAvgWindow = setWindowFromExpWaitTime(expectedMovingAvgWaitTimeMillis, requestDate);
+    window.movingAvgWindow = calculateWindowFromExpWaitTime(expectedMovingAvgWaitTimeMillis, requestDate);
     return window;
   }
 
-  private Window setWindowFromExpWaitTime(long expectedWaitTimeMillis, Date requestDate) {
+  /**
+   * Calculates the Window given the expected wait time and the reservation request time.
+   * 
+   * @param expectedWaitTimeMillis = expected wait time in milliseconds
+   * @param requestDate = date/time the call was requested
+   * @return a Window with min, max, and exp call back times
+   */
+  private Window calculateWindowFromExpWaitTime(long expectedWaitTimeMillis, Date requestDate) {
     Window window = new Window();
     window.exp =
         Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
@@ -204,7 +211,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     if (queueingRepository.getMovingAverage() == null) {
       return Optional.empty();
     }
-    Double ma = (Double) queueingRepository.getMovingAverage().waitTimeMovingAverage;
-    return Optional.of(ma.longValue() * 60 * 1000); // ma is in minutes, convert to millis
+    Double movingAverage = (Double) queueingRepository.getMovingAverage().waitTimeMovingAverage;
+    return Optional.of(movingAverage.longValue() * 60 * 1000); // ma is in minutes, convert to millis
   }
 }

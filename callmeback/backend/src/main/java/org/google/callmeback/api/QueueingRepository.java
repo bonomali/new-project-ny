@@ -36,7 +36,7 @@ interface QueueingRepository {
    * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
    * where that event is found.
    *
-   * @return the most recently calculated moving average.
+   * @return an extension of Reservation with the most recently calculated moving average.
    */
   public MovingAverageAggregate getMovingAverage();
 }
