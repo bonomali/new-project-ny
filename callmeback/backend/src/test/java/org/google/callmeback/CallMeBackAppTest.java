@@ -9,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class CallMeBackAppTest {
-  @Autowired
-  private ReservationRepository reservationRepository;
+  @Autowired private ReservationRepository reservationRepository;
 
   @Test
   public void contextLoads() {

@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
-
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,17 +120,21 @@ public class ReservationRepositoryTest {
     ReservationWindow window = reservation.window;
     assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
     assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
+    assertThat(dateFormat.format(window.naiveMax))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window.naiveExp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window;
     assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
     assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
+    assertThat(dateFormat.format(window.naiveMax))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window.naiveExp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
   }
 
   @Test
@@ -144,22 +147,42 @@ public class ReservationRepositoryTest {
     // should be half of window length after Exp
     ReservationWindow window = reservation.window;
     assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
-    assertThat(dateFormat.format(window.naiveMin)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().minus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
-    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMin))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window
+                        .naiveExp
+                        .toInstant()
+                        .minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMax))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window
+                        .naiveExp
+                        .toInstant()
+                        .plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window;
     assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
-    assertThat(dateFormat.format(window.naiveMin)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().minus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
-    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
-        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
-            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMin))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window
+                        .naiveExp
+                        .toInstant()
+                        .minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMax))
+        .isEqualTo(
+            dateFormat.format(
+                Date.from(
+                    window
+                        .naiveExp
+                        .toInstant()
+                        .plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
   }
 
   @Test
@@ -203,7 +226,7 @@ public class ReservationRepositoryTest {
     Date connectedDate2 = Date.from(requestedDate2.toInstant().plus(Duration.ofMinutes(30)));
     createAndPersistReservation(
         requestedDate2, Optional.of(ReservationEventType.CONNECTED), Optional.of(connectedDate2));
-    
+
     reservationRepository.calculateAverageWaitTime();
     assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(1500000L);
   }
@@ -217,7 +240,7 @@ public class ReservationRepositoryTest {
     createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
     Reservation res2WithNoEventsInSystem = createAndPersistReservation(date1);
 
-    // Confirm the average wait time does not yet exist 
+    // Confirm the average wait time does not yet exist
     reservationRepository.calculateAverageWaitTime();
     assertThat(reservationRepository.getAverageWaitTimeMillis().isPresent()).isFalse();
 
@@ -262,7 +285,7 @@ public class ReservationRepositoryTest {
     connectedRes.events.add(event2);
     reservationRepository.save(connectedRes);
 
-    // Confirm the average wait time is now 10 minutes 
+    // Confirm the average wait time is now 10 minutes
     reservationRepository.calculateAverageWaitTime();
     assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(600000L);
 
@@ -280,7 +303,7 @@ public class ReservationRepositoryTest {
         Optional.of(ReservationEventType.CONNECTED),
         Optional.of(Date.from(date4.toInstant().plus(Duration.ofMinutes(20)))));
 
-    // Confirm the average wait time is now 15 minutes 
+    // Confirm the average wait time is now 15 minutes
     reservationRepository.calculateAverageWaitTime();
     assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(900000L);
 
@@ -295,8 +318,9 @@ public class ReservationRepositoryTest {
                 Date.from(
                     date5
                         .toInstant()
-                        .plus(Duration.ofMinutes(15).minus(
-                            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2))))));
+                        .plus(
+                            Duration.ofMinutes(15)
+                                .minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2))))));
 
     // Old reservations should have updated wait times.
     Optional<Reservation> originalRes = reservationRepository.findById(res1WithNoEventsInSystem.id);

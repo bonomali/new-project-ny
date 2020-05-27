@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-
 import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,8 +62,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   // Average time between reservation request and the first connection event
   public Optional<Long> averageWaitTimeMillis = Optional.empty();
 
-  private static Logger logger =
-      LoggerFactory.logger(CustomizedReservationRepository.class);
+  private static Logger logger = LoggerFactory.logger(CustomizedReservationRepository.class);
 
   @Override
   @SuppressWarnings("unchecked")
@@ -124,12 +122,12 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
    * being requested and the first CONNECTED event) for all reservations in the database. Note that
    * the stored average can be empty if there are no reservations in the database that have been
    * taken off the queue.
-   * 
-   * Note that this method is scheduled to run once every minute. Since it's scheduled, it must have
-   * void return type.
+   *
+   * <p>Note that this method is scheduled to run once every minute. Since it's scheduled, it must
+   * have void return type.
    */
   @Scheduled(fixedDelay = 60000)
-  @SuppressWarnings({ "rawtypes" })
+  @SuppressWarnings({"rawtypes"})
   public void calculateAverageWaitTime() {
     // TODO: Try to chain pipeline operators instead of having 4 distinct stages.
     // Stage 1: All events with connected status
@@ -163,12 +161,16 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
     // TODO: Return stddev as well and use that rather than a hardcoded window length.
 
-    Double avgWaitTime = output.getMappedResults().size() == 1 ?
-        (Double) output.getUniqueMappedResult().get("avgWait") : null;
+    Double avgWaitTime =
+        output.getMappedResults().size() == 1
+            ? (Double) output.getUniqueMappedResult().get("avgWait")
+            : null;
     averageWaitTimeMillis =
         (avgWaitTime == null) ? Optional.empty() : Optional.of(avgWaitTime.longValue());
-    logger.info("Average wait time: " +
-        (averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L) + " ms");
+    logger.info(
+        "Average wait time: "
+            + (averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L)
+            + " ms");
   }
 
   @Override
