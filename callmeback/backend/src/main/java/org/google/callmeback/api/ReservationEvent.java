@@ -25,4 +25,9 @@ public class ReservationEvent {
     this.date = date;
     this.type = type;
   }
+
+  /** Returns a ReservationEvent of ReservationEventType CONNECTED at the current Date. */
+  public static ReservationEvent newConnectedEvent() {
+    return new ReservationEvent(new Date(), ReservationEventType.CONNECTED);
+  }
 }
