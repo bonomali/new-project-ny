@@ -8,5 +8,3 @@ spring:
 movingAverage:
     numberOfCalls: 10
     smoothingFactor: 2
-
-

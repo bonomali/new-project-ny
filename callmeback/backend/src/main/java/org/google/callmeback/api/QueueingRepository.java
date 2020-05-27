@@ -1,7 +1,7 @@
 package org.google.callmeback.api;
 
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.bson.types.ObjectId;
@@ -49,16 +49,17 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
 
   public Reservation startNextCall() {
-    Reservation callToStart = getNextCall();
-    if (callToStart == null) {
+    Reservation nextCall = getNextCall();
+    if (nextCall == null) {
       return null;
     }
 
-    MovingAverageAggregate storedAverage = getMovingAverage();
-    double currentMovingAverage = storedAverage == null ? 0 : storedAverage.waitTimeMovingAverage;
-    Update update = createCallStartDatabaseUpdate(callToStart, currentMovingAverage);
+    MovingAverageAggregate previousMovingAverage = getMovingAverage();
+    double currentMovingAverage = 
+        previousMovingAverage == null ? 0 : previousMovingAverage.waitTimeMovingAverage;
+    Update update = buildUpdateToStartCall(nextCall, currentMovingAverage);
 
-    Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(callToStart.id)));
+    Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(nextCall.id)));
     FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
     Reservation updatedRes =
         mongoTemplate.findAndModify(
@@ -81,7 +82,11 @@ class QueueingRepositoryImpl implements QueueingRepository {
     return mongoTemplate.findOne(nextCallQuery, Reservation.class);
   }
 
-  /** Retrieves the existing moving average from the database. */
+  /** 
+   * Retrieves the most recent moving average from the database. This means finding the most recent
+   * ReservationEventType.CONNECTED event, and returning the moving average stored on the document
+   * where that event is found.
+   */
   private MovingAverageAggregate getMovingAverage() {
     Aggregation agg =
         Aggregation.newAggregation(
@@ -99,7 +104,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
 
   /**
-   * Calculate the current exponential moving average.
+   * Calculates the current exponential moving average.
    *
    * @param smoothingFactor The most common choice is '2'. As this is increased, more recent events
    *     have a higher impact on the moving average.
@@ -112,23 +117,29 @@ class QueueingRepositoryImpl implements QueueingRepository {
   private double exponentialMovingAverage(
       double smoothingFactor, int observedEvents, double newValue, double previousMovingAverage) {
 
+    if (observedEvents < 0 ) { 
+      throw new IllegalArgumentException("Number of observed events must be positive.");
+    } else if (observedEvents == Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Number of observed events is too large.");
+    }
+
     double multiplier = smoothingFactor / (1 + observedEvents);
     return newValue * multiplier + previousMovingAverage * (1 - multiplier);
   }
 
   /**
-   * Create the {@code org.springframework.data.mongodb.core.query.Update} that marks a call as
+   * Creates the {@code org.springframework.data.mongodb.core.query.Update} that marks a call as
    * connected and computes the new moving average based on the difference between the reservation's
    * {@code requestDate} and the connected event time.
    *
-   * @param callToStart the Reservation representing the next call to be connected to an agent
+   * @param nextCall the Reservation representing the next call to be connected to an agent
    * @param currentMovingAverage the moving average for the call wait time currently stored in the
    *     database
    * @return the Update to be passed to a {@code MongoTemplate} which updates the {$code
-   *     callToStart} record in the database
+   *     nextCall} record in the database
    */
-  private Update createCallStartDatabaseUpdate(
-      Reservation callToStart, double currentMovingAverage) {
+  private Update buildUpdateToStartCall(
+      Reservation nextCall, double currentMovingAverage) {
 
     /**
      * Note: this makes the (unrealistic) assumption that an agent is immediately connected to the
@@ -137,14 +148,12 @@ class QueueingRepositoryImpl implements QueueingRepository {
      * assuming the agent is immediately connected (instead, they would need to try to reach the
      * caller, and later update the caller's ReservationEvents).
      */
-    ReservationEvent connectedEvent = new ReservationEvent();
-    connectedEvent.date = new Date();
-    connectedEvent.type = ReservationEventType.CONNECTED;
-    List<ReservationEvent> resEvents = new ArrayList<ReservationEvent>();
-    resEvents.add(connectedEvent);
+    ReservationEvent connectedEvent = 
+        new ReservationEvent(new Date(), ReservationEventType.CONNECTED);
+    List<ReservationEvent> resEvents = Arrays.asList(connectedEvent);
 
     double waitTime =
-        Duration.between(callToStart.requestDate.toInstant(), connectedEvent.date.toInstant())
+        Duration.between(nextCall.requestDate.toInstant(), connectedEvent.date.toInstant())
             .toMinutes();
     double newMovingAverage =
         exponentialMovingAverage(
