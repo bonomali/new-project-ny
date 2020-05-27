@@ -49,14 +49,17 @@ function Reservation(props) {
 }
 
 function convertReservationToState(reservation, id) {
-    const expCallStartMin = new Date(reservation.window.min)
-    const expCallStartMax = new Date(reservation.window.max)
+    const naiveExpCallStartMin = new Date(reservation.window.naiveMin)
+    const naiveExpCallStartMax = new Date(reservation.window.naiveMax)
+    const maExpCallStartMin = new Date(reservation.window.movingAvgMin)
+    const maExpCallStartMax = new Date(reservation.window.movingAvgMax)
 
     return {
         id: id,
         topic: "Business", // Not in response yet, hard coded for demo.
         resolved: reservation.resolution != null,
-        expCallStartMin, expCallStartMax,
+        naiveExpCallStartMin, naiveExpCallStartMax,
+        maExpCallStartMin, maExpCallStartMax,
     };
 };
 
