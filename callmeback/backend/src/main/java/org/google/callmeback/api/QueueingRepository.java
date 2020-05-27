@@ -2,7 +2,6 @@ package org.google.callmeback.api;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +54,19 @@ class QueueingRepositoryImpl implements QueueingRepository {
     }
 
     MovingAverageAggregate previousMovingAverage = getMovingAverage();
-    double currentMovingAverage = 
-        previousMovingAverage == null ? 0 : previousMovingAverage.waitTimeMovingAverage;
-    Update update = buildUpdateToStartCall(nextCall, currentMovingAverage);
 
-    Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(nextCall.id)));
-    FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
-    Reservation updatedRes =
-        mongoTemplate.findAndModify(
-            idQuery, update, opts, MovingAverageAggregate.class, "reservation");
-    return updatedRes;
+    /**
+     * Note: this makes the (unrealistic) assumption that an agent is immediately connected to the
+     * first caller in line. Out of scope for now is a separate locking mechanism to indicate that
+     * an agent is working on a caller and no other agent should pick up that caller, but without
+     * assuming the agent is immediately connected (instead, they would need to try to reach the
+     * caller, and later update the caller's ReservationEvents).
+     */
+    ReservationEvent connectedEvent = ReservationEvent.newConnectedEvent();
+    double newMovingAverage = 
+        getNewExponentialMovingAverage(nextCall, connectedEvent, previousMovingAverage);
+
+    return updateNextCall(nextCall, connectedEvent, newMovingAverage);
   }
 
   /**
@@ -128,37 +130,50 @@ class QueueingRepositoryImpl implements QueueingRepository {
   }
 
   /**
-   * Creates the {@code org.springframework.data.mongodb.core.query.Update} that marks a call as
-   * connected and computes the new moving average based on the difference between the reservation's
-   * {@code requestDate} and the connected event time.
+   * Given a Reservation that has been connected to an agent, and the ReservationEvent of type
+   * CONNECTED, updates the existing exponential moving average with the actual call wait time from
+   * the provided reservation.
    *
-   * @param nextCall the Reservation representing the next call to be connected to an agent
-   * @param currentMovingAverage the moving average for the call wait time currently stored in the
-   *     database
-   * @return the Update to be passed to a {@code MongoTemplate} which updates the {$code
-   *     nextCall} record in the database
+   * @param reservation the Reservation representing the next call to be connected to an agent.
+   * @param connectedEvent the ReservationEventType.CONNECTED event created for {$code nextCall}.
+   * @param previousMovingAverage the most recent exponential moving average, required to calculate
+   * the new exponential moving average.
+   * @return the new exponential moving average.
    */
-  private Update buildUpdateToStartCall(
-      Reservation nextCall, double currentMovingAverage) {
+  private double getNewExponentialMovingAverage(
+      Reservation reservation, 
+      ReservationEvent connectedEvent, 
+      MovingAverageAggregate previousMovingAverage) {
 
-    /**
-     * Note: this makes the (unrealistic) assumption that an agent is immediately connected to the
-     * first caller in line. Out of scope for now is a separate locking mechanism to indicate that
-     * an agent is working on a caller and no other agent should pick up that caller, but without
-     * assuming the agent is immediately connected (instead, they would need to try to reach the
-     * caller, and later update the caller's ReservationEvents).
-     */
-    ReservationEvent connectedEvent = 
-        new ReservationEvent(new Date(), ReservationEventType.CONNECTED);
-    List<ReservationEvent> resEvents = Arrays.asList(connectedEvent);
+    double waitTimeMovingAverage = 
+        previousMovingAverage == null ? 0 : previousMovingAverage.waitTimeMovingAverage;
 
     double waitTime =
-        Duration.between(nextCall.requestDate.toInstant(), connectedEvent.date.toInstant())
+        Duration.between(reservation.requestDate.toInstant(), connectedEvent.date.toInstant())
             .toMinutes();
-    double newMovingAverage =
-        exponentialMovingAverage(
-            smoothingFactor, numberOfCallsToAverage, waitTime, currentMovingAverage);
 
-    return new Update().set("events", resEvents).set("waitTimeMovingAverage", newMovingAverage);
+    return exponentialMovingAverage(
+        smoothingFactor, numberOfCallsToAverage, waitTime, waitTimeMovingAverage);
+  }
+
+  /**
+   * Saves the updated call Reservation to MongoDB, inclusive of the most recent wait time moving
+   * average.
+   * 
+   * @param nextCall the reservation that has been connected to an agent.
+   * @param connectedEvent the event describing the reservation's connection to an agent.
+   * @param waitTimeMovingAverage the estimated wait time as an exponential moving average.
+   * @return the updated Reservation, with the connectedEvent and waitTimeMovingAverage embedded.
+   */
+  private MovingAverageAggregate updateNextCall(
+      Reservation nextCall, ReservationEvent connectedEvent, double waitTimeMovingAverage) {
+
+    Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(nextCall.id)));
+    Update update = new Update()
+        .set("events", Arrays.asList(connectedEvent))
+        .set("waitTimeMovingAverage", waitTimeMovingAverage);
+    FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
+    return mongoTemplate.findAndModify(
+        idQuery, update, opts, MovingAverageAggregate.class, "reservation");
   }
 }
