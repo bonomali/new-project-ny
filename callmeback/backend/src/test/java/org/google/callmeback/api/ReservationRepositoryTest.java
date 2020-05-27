@@ -1,11 +1,13 @@
 package org.google.callmeback.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.google.callmeback.api.CustomizedReservationRepository.WINDOW_LENGTH_MILLIS;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
+
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,10 +21,12 @@ public class ReservationRepositoryTest {
   final String businessTopic = "Business";
   final String unemploymentTopic = "Unemployment";
   final String dmvTopic = "DMV";
+  final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
   @BeforeEach
   public void setUp() {
     reservationRepository.deleteAll();
+    reservationRepository.calculateAverageWaitTime();
   }
 
   @Test
@@ -109,33 +113,113 @@ public class ReservationRepositoryTest {
   }
 
   @Test
-  public void testReservationWindow_singleReservation() {
+  public void testReservationWindow_requestDateBeforeCurrentDate() {
     Date requestedDate = new Date();
     Reservation reservation = createAndPersistReservation(requestedDate);
 
-    // There are no other reservations in the system, so the window.naiveMin should be equivalent to
-    // the
-    // window.naiveExp
+    // Exp and Min should be equivalent to requestDate; Max should be window length after Min
     ReservationWindow window = reservation.window;
+    assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
     assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
+    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window;
+    assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
     assertThat(window.naiveExp).isEqualTo(window.naiveMin);
-    assertThat(window.naiveMax).isAfter(window.naiveExp);
+    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
   }
 
   @Test
-  public void testReservationWindow_multipleReservationsWithMultipleEvents() {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  public void testReservationWindow_requestDateAfterCurrentDate() {
+    // Create a reservation with requested date after current date
+    Date requestedDate = Date.from(new Date().toInstant().plus(Duration.ofDays(1)));
+    Reservation reservation = createAndPersistReservation(requestedDate);
 
+    // Exp should be equivalent to requestDate; Min should be half of window length before Exp; Max
+    // should be half of window length after Exp
+    ReservationWindow window = reservation.window;
+    assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
+    assertThat(dateFormat.format(window.naiveMin)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().minus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+
+    Reservation reservationById = reservationRepository.findById(reservation.id).get();
+    window = reservationById.window;
+    assertThat(dateFormat.format(window.naiveExp)).isEqualTo(dateFormat.format(requestedDate));
+    assertThat(dateFormat.format(window.naiveMin)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().minus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+    assertThat(dateFormat.format(window.naiveMax)).isEqualTo(
+        dateFormat.format(Date.from(window.naiveExp.toInstant().plus(
+            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+  }
+
+  @Test
+  public void testGetAverageWaitTimeMillis_withoutReservationsIsEmpty() {
+    assertThat(reservationRepository.getAverageWaitTimeMillis().isPresent()).isFalse();
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().isPresent()).isFalse();
+  }
+
+  @Test
+  public void testGetAverageWaitTimeMillis_withNonConnectedReservationsIsEmpty() {
+    createAndPersistReservation(new Date());
+    createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
+
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().isPresent()).isFalse();
+  }
+
+  @Test
+  public void testGetAverageWaitTimeMillis_withSingleConnectedReservation() {
+    // Request date and connected date are 20 minutes apart
+    Date requestedDate = new Date();
+    Date connectedDate = Date.from(requestedDate.toInstant().plus(Duration.ofMinutes(20)));
+    createAndPersistReservation(
+        requestedDate, Optional.of(ReservationEventType.CONNECTED), Optional.of(connectedDate));
+    createAndPersistReservation(new Date());
+
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(1200000L);
+  }
+
+  @Test
+  public void testGetAverageWaitTimeMillis_withMultipleConnectedReservations() {
+    // Request date and connected date are 20 minutes apart
+    Date requestedDate = new Date();
+    Date connectedDate = Date.from(requestedDate.toInstant().plus(Duration.ofMinutes(20)));
+    createAndPersistReservation(
+        requestedDate, Optional.of(ReservationEventType.CONNECTED), Optional.of(connectedDate));
+    // Request date and connected date are 30 minutes apart
+    Date requestedDate2 = new Date();
+    Date connectedDate2 = Date.from(requestedDate2.toInstant().plus(Duration.ofMinutes(30)));
+    createAndPersistReservation(
+        requestedDate2, Optional.of(ReservationEventType.CONNECTED), Optional.of(connectedDate2));
+    
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(1500000L);
+  }
+
+  @Test
+  public void testGetAverageWaitTimeMillis_multipleReservationsWithMultipleEvents() {
     // Add reservations with and without events and with different delays between them.
     // Reservations with no events (will not be factored in to avg wait time calculation).
     Date date1 = new Date();
     Reservation res1WithNoEventsInSystem = createAndPersistReservation(date1);
     createAndPersistReservation(new Date(), Optional.of(ReservationEventType.ATTEMPTED));
     Reservation res2WithNoEventsInSystem = createAndPersistReservation(date1);
+
+    // Confirm the average wait time does not yet exist 
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().isPresent()).isFalse();
 
     // Check that the reservations added so far have expected wait time of 0 (exp = min).
     assertThat(res1WithNoEventsInSystem.window.naiveExp)
@@ -166,17 +250,21 @@ public class ReservationRepositoryTest {
             date2,
             Optional.of(ReservationEventType.ATTEMPTED),
             Optional.of(Date.from(date2.toInstant().plus(Duration.ofMinutes(5)))));
-    // Add a second connected event.
+    // Add a connected event.
     ReservationEvent event = new ReservationEvent();
     event.date = Date.from(date2.toInstant().plus(Duration.ofMinutes(10)));
     event.type = ReservationEventType.CONNECTED;
-    // Add an attempted event.
+    // Add a second connected event.
     ReservationEvent event2 = new ReservationEvent();
     event2.date = Date.from(date2.toInstant().plus(Duration.ofMinutes(15)));
     event2.type = ReservationEventType.CONNECTED;
     connectedRes.events.add(event);
     connectedRes.events.add(event2);
     reservationRepository.save(connectedRes);
+
+    // Confirm the average wait time is now 10 minutes 
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(600000L);
 
     // New reservation should have exp wait time of 10 minutes.
     Date date3 = new Date();
@@ -192,6 +280,10 @@ public class ReservationRepositoryTest {
         Optional.of(ReservationEventType.CONNECTED),
         Optional.of(Date.from(date4.toInstant().plus(Duration.ofMinutes(20)))));
 
+    // Confirm the average wait time is now 15 minutes 
+    reservationRepository.calculateAverageWaitTime();
+    assertThat(reservationRepository.getAverageWaitTimeMillis().get()).isEqualTo(900000L);
+
     // New reservation should have expected wait time of 15 minutes.
     Date date5 = new Date();
     Reservation resWithMultiplePriorConnectedRes = createAndPersistReservation(date5);
@@ -203,7 +295,8 @@ public class ReservationRepositoryTest {
                 Date.from(
                     date5
                         .toInstant()
-                        .plus(Duration.ofMinutes(15).minus(Duration.ofMillis(300000))))));
+                        .plus(Duration.ofMinutes(15).minus(
+                            Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2))))));
 
     // Old reservations should have updated wait times.
     Optional<Reservation> originalRes = reservationRepository.findById(res1WithNoEventsInSystem.id);

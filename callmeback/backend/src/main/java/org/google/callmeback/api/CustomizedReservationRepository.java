@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+
+import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,6 +16,7 @@ import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * A ReservationRepository that overrides various methods of MongoRepository.
@@ -21,17 +25,33 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
  * @param <ID> the type of the id of the entity the repository manages, specifically String
  */
 public interface CustomizedReservationRepository<T, ID> {
+
+  // (Hard-coded) Length of the expected reservation window
+  public static final int WINDOW_LENGTH_MILLIS = 600000;
+
   /**
    * Returns a Reservation by the specified ID, including populating the ReservationWindow, based on
-   * the number of reservations in the system.
+   * the average wait time for reservations in the system.
    */
   Optional<T> findById(ID id);
 
   /**
    * Persists and returns the specified Reservation, with the ReservationWindow populated, based on
-   * the number of reservations in the system.
+   * the average wait time for reservations in the system.
    */
   <S extends T> S save(S entity);
+
+  /**
+   * Calculates and stores the average wait time for all reservations in the database. Note that
+   * this is visible for testing.
+   */
+  void calculateAverageWaitTime();
+
+  /**
+   * Returns the average wait time for all reservations in the database. Note that this is visible
+   * for testing.
+   */
+  Optional<Long> getAverageWaitTimeMillis();
 }
 
 class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservationRepository<T, ID> {
@@ -40,8 +60,11 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   @Autowired private AuditingHandler auditingHandler;
 
-  // (Hard-coded) Length of the expected reservation window
-  public static final int WINDOW_LENGTH_MILLIS = 600000;
+  // Average time between reservation request and the first connection event
+  public Optional<Long> averageWaitTimeMillis = Optional.empty();
+
+  private static Logger logger =
+      LoggerFactory.logger(CustomizedReservationRepository.class);
 
   @Override
   @SuppressWarnings("unchecked")
@@ -71,17 +94,15 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     ReservationWindow window = new ReservationWindow();
 
     // Set expected value as the reservation request time plus the expected wait time
-    Optional<Long> averageWaitTimeMillis = getAverageWaitTimeMillis();
     long expectedWaitTimeMillis =
-        averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get().longValue() : 0L;
+        averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L;
     window.naiveExp =
         Date.from(requestDate.toInstant().plus(Duration.ofMillis(expectedWaitTimeMillis)));
 
     // Set window minimum as the greater value of expected time minus half of the hard-coded window
     // length and the current time. If it is set to the current time, update window.naiveExp to the
-    // current
-    // time as well. This ensures the window is either inclusive of or later than the current time
-    // and that the expected time is not earlier than the current time.
+    // current time as well. This ensures the window is either inclusive of or later than the
+    // current time and that the expected time is not earlier than the current time.
     Date currentDate = new Date();
     Date calculatedWindowMinimum =
         Date.from(window.naiveExp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)));
@@ -99,12 +120,17 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   }
 
   /**
-   * Returns the average wait time (i.e. the amount of time between the reservation being requested
-   * and the first CONNECTED event) for all reservations in the database. Note that the return value
-   * can be null if there are no reservations in the database that have been taken off the queue.
+   * Calculates and stores the average wait time (i.e. the amount of time between the reservation
+   * being requested and the first CONNECTED event) for all reservations in the database. Note that
+   * the stored average can be empty if there are no reservations in the database that have been
+   * taken off the queue.
+   * 
+   * Note that this method is scheduled to run once every minute. Since it's scheduled, it must have
+   * void return type.
    */
-  @SuppressWarnings({"rawtypes"})
-  private Optional<Long> getAverageWaitTimeMillis() {
+  @Scheduled(fixedDelay = 60000)
+  @SuppressWarnings({ "rawtypes" })
+  public void calculateAverageWaitTime() {
     // TODO: Try to chain pipeline operators instead of having 4 distinct stages.
     // Stage 1: All events with connected status
     ProjectionOperation connectedEventsStage =
@@ -137,7 +163,16 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
     // TODO: Return stddev as well and use that rather than a hardcoded window length.
 
-    Double avgWaitTime = (Double) output.getUniqueMappedResult().get("avgWait");
-    return avgWaitTime == null ? Optional.empty() : Optional.of(avgWaitTime.longValue());
+    Double avgWaitTime = output.getMappedResults().size() == 1 ?
+        (Double) output.getUniqueMappedResult().get("avgWait") : null;
+    averageWaitTimeMillis =
+        (avgWaitTime == null) ? Optional.empty() : Optional.of(avgWaitTime.longValue());
+    logger.info("Average wait time: " +
+        (averageWaitTimeMillis.isPresent() ? averageWaitTimeMillis.get() : 0L) + " ms");
+  }
+
+  @Override
+  public Optional<Long> getAverageWaitTimeMillis() {
+    return averageWaitTimeMillis;
   }
 }
