@@ -44,38 +44,38 @@ function Feedback(props) {
     }
 
     return (
-        <Container text textAlign='center' className='paper'>
-            <div>
-                <div style={{"fontSize":"20px", "paddingBottom":"10px"}}>
-                    How was your call?
-                </div>
-                <Form onSubmit={handleSubmit}>
-                <Rating
-                icon='star'
-                size='huge'
-                defaultRating={defaultRating}
-                maxRating={5}
-                onRate={(evt, data)=>{setRating(data.rating)}}
-                />
-                <br/>
-                <br/>
-                <Form.TextArea
-                value={details}
-                placeholder="Tell us more (optional)"
-                onChange={(evt)=>{setDetails(evt.target.value)}}
-                />
-                <Button
-                type="submit"
-                color="blue"
-                variant="contained"
-                disabled={!submitButtonEnabled}
-                className="submit"
-                >
-                Submit feedback
-                </Button>
-                </Form>
-            </div>
-        </Container>
+      <Container text textAlign='center' className='paper'>
+        <div>
+          <div style={{"fontSize":"20px", "paddingBottom":"10px"}}>
+              How was your call?
+          </div>
+          <Form onSubmit={handleSubmit}>
+            <Rating
+              icon='star'
+              size='huge'
+              defaultRating={defaultRating}
+              maxRating={5}
+              onRate={(evt, data)=>{setRating(data.rating)}}
+            />
+            <br/>
+            <br/>
+            <Form.TextArea
+              value={details}
+              placeholder="Tell us more (optional)"
+              onChange={(evt)=>{setDetails(evt.target.value)}}
+            />
+            <Button
+              type="submit"
+              color="blue"
+              variant="contained"
+              disabled={!submitButtonEnabled}
+              className="submit"
+            >
+              Submit feedback
+            </Button>
+          </Form>
+        </div>
+      </Container>
     )
 }
 
