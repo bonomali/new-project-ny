@@ -53,9 +53,7 @@ public interface CustomizedReservationRepository<T, ID> {
    */
   OptionalLong getAverageWaitTimeMillis();
 
-  /**
-   * Returns the moving average wait time. Note that this is visible for testing.
-   */
+  /** Returns the moving average wait time. Note that this is visible for testing. */
   OptionalLong getMovingAverageWaitTimeMillis();
 }
 
@@ -93,9 +91,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     return (S) reservation;
   }
 
-  /**
-   * Returns a ReservationWindow using both types of "average wait time" calculations.
-   */
+  /** Returns a ReservationWindow using both types of "average wait time" calculations. */
   private ReservationWindow getWindow(Date requestDate) {
     ReservationWindow window = new ReservationWindow();
 
@@ -106,7 +102,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     // Set window using naive calculation
     long expectedWaitTime = averageWaitTimeMillis.orElse(0L);
     window.naiveWindow = calculateWindowFromExpWaitTime(expectedWaitTime, requestDate);
-  
+
     // Set window using moving average calculation (right now uses different fields).
     expectedWaitTime = getMovingAverageWaitTimeMillis().orElse(0L);
     window.movingAvgWindow = calculateWindowFromExpWaitTime(expectedWaitTime, requestDate);
@@ -115,7 +111,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
 
   /**
    * Calculates the Window given the expected wait time and the reservation request time.
-   * 
+   *
    * @param expectedWaitTimeMillis = expected wait time in milliseconds
    * @param requestDate = date/time the call was requested
    * @return a Window with min, max, and exp call back times
@@ -139,8 +135,7 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
     }
 
     // Set window maximum as the window minimum plus the window length
-    window.max =
-        Date.from(window.min.toInstant().plusMillis(WINDOW_LENGTH_MILLIS));
+    window.max = Date.from(window.min.toInstant().plusMillis(WINDOW_LENGTH_MILLIS));
     return window;
   }
 

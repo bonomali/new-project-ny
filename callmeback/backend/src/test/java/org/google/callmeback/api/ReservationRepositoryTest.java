@@ -123,8 +123,7 @@ public class ReservationRepositoryTest {
     assertThat(dateFormat.format(window.max))
         .isEqualTo(
             dateFormat.format(
-                Date.from(
-                    window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
+                Date.from(window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window.naiveWindow;
@@ -133,8 +132,7 @@ public class ReservationRepositoryTest {
     assertThat(dateFormat.format(window.max))
         .isEqualTo(
             dateFormat.format(
-                Date.from(
-                    window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
+                Date.from(window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS)))));
   }
 
   @Test
@@ -151,18 +149,12 @@ public class ReservationRepositoryTest {
         .isEqualTo(
             dateFormat.format(
                 Date.from(
-                    window
-                        .exp
-                        .toInstant()
-                        .minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+                    window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
     assertThat(dateFormat.format(window.max))
         .isEqualTo(
             dateFormat.format(
                 Date.from(
-                    window
-                        .exp
-                        .toInstant()
-                        .plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+                    window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
 
     Reservation reservationById = reservationRepository.findById(reservation.id).get();
     window = reservationById.window.naiveWindow;
@@ -171,18 +163,12 @@ public class ReservationRepositoryTest {
         .isEqualTo(
             dateFormat.format(
                 Date.from(
-                    window
-                        .exp
-                        .toInstant()
-                        .minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+                    window.exp.toInstant().minus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
     assertThat(dateFormat.format(window.max))
         .isEqualTo(
             dateFormat.format(
                 Date.from(
-                    window
-                        .exp
-                        .toInstant()
-                        .plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
+                    window.exp.toInstant().plus(Duration.ofMillis(WINDOW_LENGTH_MILLIS / 2)))));
   }
 
   @Test
