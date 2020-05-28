@@ -2,7 +2,7 @@ const axios = require('axios');
 const faker = require('faker');
 const moment = require('moment');
 
-function sendReservation(apiUrl) {
+function sendReservation(apiUrl, rewindRequestDateMins) {
     const queries =
         ['I lost my job, how can I get unemployment?',
          'I need help with small business aid',
@@ -11,16 +11,11 @@ function sendReservation(apiUrl) {
         preferredName: faker.name.findName(),
         contactPhone: faker.phone.phoneNumber(),
         query: queries[Math.round(Math.random()*(queries.length-1))],
-        requestDate: moment(),
+        requestDate: moment().subtract(rewindRequestDateMins, 'minutes').toDate(),
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
-        .then((response) => {
-            let updatedRes = response.data;
-            updatedRes.requestDate = moment().subtract(30, 'minutes').toDate()
-            axios.patch(response.data._links.self.href, updatedRes)
-                .then((response) => { console.log("patch response: ", response.data) })
-        })
-        .catch((error) => console.log(error))
+        .then((response) => { console.log(response) })
+        .catch((error) => console.log(error));
 }
 
 module.exports = {
