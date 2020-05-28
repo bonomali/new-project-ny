@@ -28,6 +28,12 @@ const argv = yargs
         type: 'string',
         required: true,
     })
+    .option('apiUrl', {
+        alias: 'api-url',
+        description: 'The URL (host + port) the call me back API is running on',
+        type: 'string',
+        required: true,
+    })
     .help()
     .alias('help', 'h')
     .argv;

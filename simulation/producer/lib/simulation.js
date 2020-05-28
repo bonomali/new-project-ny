@@ -14,7 +14,12 @@ function sendReservation(apiUrl) {
         requestDate: moment(),
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
-        .then((response) => console.log(response.data))
+        .then((response) => {
+            let updatedRes = response.data;
+            updatedRes.requestDate = moment().subtract(30, 'minutes').toDate()
+            axios.patch(response.data._links.self.href, updatedRes)
+                .then((response) => { console.log("patch response: ", response.data) })
+        })
         .catch((error) => console.log(error))
 }
 
