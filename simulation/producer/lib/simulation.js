@@ -14,7 +14,7 @@ function sendReservation(apiUrl, rewindRequestDateMins) {
         requestDate: moment().subtract(rewindRequestDateMins, 'minutes').toDate(),
     };
     axios.post(apiUrl+'/api/v1/reservations', reservation)
-        .then((response) => { console.log(response) })
+        .then((response) => { console.log(response.data) })
         .catch((error) => console.log(error));
 }
 
