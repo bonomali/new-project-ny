@@ -49,10 +49,10 @@ function Reservation(props) {
 }
 
 function convertReservationToState(reservation, id) {
-    const naiveExpCallStartMin = new Date(reservation.window.naiveMin)
-    const naiveExpCallStartMax = new Date(reservation.window.naiveMax)
-    const maExpCallStartMin = new Date(reservation.window.movingAvgMin)
-    const maExpCallStartMax = new Date(reservation.window.movingAvgMax)
+    const naiveExpCallStartMin = new Date(reservation.window.naiveWindow.min)
+    const naiveExpCallStartMax = new Date(reservation.window.naiveWindow.max)
+    const maExpCallStartMin = new Date(reservation.window.movingAvgWindow.min)
+    const maExpCallStartMax = new Date(reservation.window.movingAvgWindow.max)
 
     return {
         id: id,

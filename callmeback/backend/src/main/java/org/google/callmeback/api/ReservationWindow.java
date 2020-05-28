@@ -1,13 +1,14 @@
 package org.google.callmeback.api;
 
-import java.util.Date;
-
 public class ReservationWindow {
-  public Date naiveMin;
-  public Date naiveMax;
-  public Date naiveExp;
-
-  public Date movingAvgMin;
-  public Date movingAvgMax;
-  public Date movingAvgExp;
+  /** 
+   * The Window with the expected, minimum and maximum call times using a naive
+   * calculation of the average call wait time.
+  */
+  public Window naiveWindow;
+  /** 
+   * The Window with the expected, minimum and maximum call times using a moving
+   * average call wait time calculation.
+   */
+  public Window movingAvgWindow;
 }

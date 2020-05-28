@@ -13,7 +13,7 @@ package org.google.callmeback.api;
 public class ReservationWaitTime extends Reservation {
 
   /**
-   * The exponential moving average, in minutes, representing the average wait time based on the
+   * The exponential moving average, in milliseconds, representing the average wait time based on the
    * previous moving average and the time that it took for this Reservation to be connected with an
    * agent.
    */
