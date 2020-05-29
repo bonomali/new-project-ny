@@ -5,6 +5,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import WaitDetails from './WaitDetails';
 import moment from 'moment';
 
+// TODO: Dynamically tie this to the index.js changes so that we don't
+// have to manually update both.
 moment.updateLocale('en', {
   // Abbreviate relative time rendered output from "minutes" to "min".
   // Override any value of seconds to show "now" rather than "a few seconds".
