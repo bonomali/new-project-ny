@@ -3,6 +3,18 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter as Router } from 'react-router-dom';
 import WaitDetails from './WaitDetails';
+import moment from 'moment';
+
+moment.updateLocale('en', {
+  // Abbreviate relative time rendered output from "minutes" to "min".
+  // Override any value of seconds to show "now" rather than "a few seconds".
+  relativeTime: {
+    s: 'now',
+    m: '1 min',
+    mm: '%d min',
+    h: '1 hour',
+  },
+});
 
 test('renders wait details with current time', async () => {
   const mockDate = new Date();
@@ -21,7 +33,7 @@ test('renders wait details with current time', async () => {
   );
   expect(getByText("We'll call you in")).toBeDefined();
   expect(getByText('Cancel call')).toBeDefined();
-  expect(getAllByText('a few seconds').length).toEqual(4);
+  expect(getAllByText('now').length).toEqual(4);
   expect(getAllByText('mocktopic').length).toEqual(2);
 });
 
@@ -43,6 +55,6 @@ test('renders wait details with 1-2 hour wait', async () => {
       <WaitDetails reservationDetails={mockReservationDetails} />
     </Router>
   );
-  expect(getAllByText('an hour').length).toEqual(2);
+  expect(getAllByText('1 hour').length).toEqual(2);
   expect(getAllByText('2 hours').length).toEqual(2);
 });
