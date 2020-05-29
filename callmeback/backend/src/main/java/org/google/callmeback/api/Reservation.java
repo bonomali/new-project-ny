@@ -56,6 +56,21 @@ public class Reservation {
   /** The expected call back times for the resident. */
   public ReservationWindow window;
 
+  /**
+   * The exponential moving average, in milliseconds, representing the average wait time based on
+   * the previous moving average and the time that it took for this Reservation to be connected with
+   * an agent.
+   *
+   * <p>Therefore, the moving average stored on a reservation document does *not* represent the
+   * amount of time that the reservation waited before being connected with an agent.
+   * 
+   * <p>TODO: this field should ideally be stored in a separate document (likely in a separate 
+   * MongoDB collection). Storing the moving average separately from the Reservation provides a 
+   * clearer separation of concerns, given that the moving average stored on a document incorporates
+   * the historical moving average for all Reservations that were connected to an agent before it.
+   */
+  public double waitTimeMovingAverage;
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {

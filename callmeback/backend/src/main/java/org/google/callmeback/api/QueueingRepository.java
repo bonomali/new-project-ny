@@ -108,15 +108,15 @@ class QueueingRepositoryImpl implements QueueingRepository {
             Aggregation.limit(1),
             Aggregation.project("waitTimeMovingAverage"));
 
-    AggregationResults<ReservationWaitTime> results =
-        mongoTemplate.aggregate(agg, "reservation", ReservationWaitTime.class);
+    AggregationResults<Reservation> results =
+        mongoTemplate.aggregate(agg, "reservation", Reservation.class);
 
-    List<ReservationWaitTime> resultList = results.getMappedResults();
-    ReservationWaitTime previousMovingAverage = resultList.stream().findFirst().orElse(null);
+    List<Reservation> resultList = results.getMappedResults();
+    Reservation lastConnectedReservation = resultList.stream().findFirst().orElse(null);
     OptionalDouble waitTimeMovingAverage =
-        previousMovingAverage == null
+        lastConnectedReservation == null
             ? OptionalDouble.empty()
-            : OptionalDouble.of(previousMovingAverage.waitTimeMovingAverage);
+            : OptionalDouble.of(lastConnectedReservation.waitTimeMovingAverage);
     return waitTimeMovingAverage;
   }
 
@@ -186,7 +186,7 @@ class QueueingRepositoryImpl implements QueueingRepository {
    * @param waitTimeMovingAverage the estimated wait time as an exponential moving average.
    * @return the updated Reservation, with the connectedEvent and waitTimeMovingAverage embedded.
    */
-  private ReservationWaitTime updateNextCall(
+  private Reservation updateNextCall(
       Reservation nextCall, ReservationEvent connectedEvent, double waitTimeMovingAverage) {
 
     Query idQuery = new Query(Criteria.where("_id").is(new ObjectId(nextCall.id)));
@@ -196,6 +196,6 @@ class QueueingRepositoryImpl implements QueueingRepository {
             .set("waitTimeMovingAverage", waitTimeMovingAverage);
     FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
     return mongoTemplate.findAndModify(
-        idQuery, update, opts, ReservationWaitTime.class, "reservation");
+        idQuery, update, opts, Reservation.class, "reservation");
   }
 }
