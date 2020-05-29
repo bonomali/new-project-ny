@@ -203,6 +203,8 @@ class CustomizedReservationRepositoryImpl<T, ID> implements CustomizedReservatio
   @Override
   public OptionalLong getMovingAverageWaitTimeMillis() {
     OptionalDouble waitTime = queueingRepository.getMovingAverage();
+    System.out.print("waitTime in getMovingAverageWaitTimeMillis: ");
+    System.out.println(waitTime);
     if (!waitTime.isPresent()) {
       return OptionalLong.empty();
     }

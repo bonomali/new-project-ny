@@ -75,7 +75,8 @@ class QueueingRepositoryImpl implements QueueingRepository {
     ReservationEvent connectedEvent = ReservationEvent.newConnectedEvent();
     double newMovingAverage =
         getNewExponentialMovingAverage(nextCall, connectedEvent, previousMovingAverage);
-
+    System.out.print("newMovingAverage when starting next call");
+    System.out.println(newMovingAverage);
     return updateNextCall(nextCall, connectedEvent, newMovingAverage);
   }
 
@@ -146,6 +147,8 @@ class QueueingRepositoryImpl implements QueueingRepository {
 
     double multiplier = smoothingFactor / (1 + observedEvents);
 
+    System.out.print("previousMovingAverage when calculating expmovingavg");
+    System.out.println(previousMovingAverage);
     if (!previousMovingAverage.isPresent()) {
       return newValue;
     } else {
