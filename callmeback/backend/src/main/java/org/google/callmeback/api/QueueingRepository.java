@@ -195,7 +195,6 @@ class QueueingRepositoryImpl implements QueueingRepository {
             .set("events", Arrays.asList(connectedEvent))
             .set("waitTimeMovingAverage", waitTimeMovingAverage);
     FindAndModifyOptions opts = FindAndModifyOptions.options().returnNew(true);
-    return mongoTemplate.findAndModify(
-        idQuery, update, opts, Reservation.class, "reservation");
+    return mongoTemplate.findAndModify(idQuery, update, opts, Reservation.class, "reservation");
   }
 }
