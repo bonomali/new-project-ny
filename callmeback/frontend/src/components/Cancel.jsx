@@ -8,14 +8,6 @@ import axios from 'axios';
 
 function Cancel() {
   let location = useLocation();
-
-  const callStartFormatted = (
-    <Moment format='h:mm A'>{location.state.expCallStartMin}</Moment>
-  );
-  const callStartMaxFormatted = (
-    <Moment format='h:mm A'>{location.state.expCallStartMax}</Moment>
-  );
-  const reservationLink = '/reservations/' + location.state.id;
   const history = useHistory();
 
   const handleSubmit = (evt) => {
@@ -44,8 +36,27 @@ function Cancel() {
       );
   };
 
+  // If the state isn't populated, display empty page
+  if (!location || !location.state) {
+    return (
+      <Container
+        text
+        className='paper'
+        data-testid='cancel-container'
+      ></Container>
+    );
+  }
+
+  const callStartFormatted = (
+    <Moment format='h:mm A'>{location.state.expCallStartMin}</Moment>
+  );
+  const callStartMaxFormatted = (
+    <Moment format='h:mm A'>{location.state.expCallStartMax}</Moment>
+  );
+  const reservationLink = '/reservations/' + location.state.id;
+
   return (
-    <Container text className='paper'>
+    <Container text className='paper' data-testid='cancel-container'>
       <div style={{ textAlign: 'center' }}>Cancel your call?</div>
       <br />
       <div style={{ fontSize: 'small' }}>

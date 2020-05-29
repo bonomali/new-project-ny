@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom';
 
 function ThankYou() {
   return (
-    <Container text style={{ paddingTop: '2em' }}>
+    <Container
+      text
+      style={{ paddingTop: '2em' }}
+      data-testid='thankyou-container'
+    >
       <div>Thank you!</div>
       <br />
       <div>

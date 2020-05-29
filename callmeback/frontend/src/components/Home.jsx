@@ -56,7 +56,12 @@ function Home(props) {
   };
 
   return (
-    <Container text textAlign='center' className='paper'>
+    <Container
+      text
+      textAlign='center'
+      className='paper'
+      data-testid='home-container'
+    >
       <div>
         <Header as='h1'>Request a call with us</Header>
         <div>

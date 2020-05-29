@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Routes from './Routes.jsx';
 import moment from 'moment';
 
@@ -13,7 +14,9 @@ moment.updateLocale('en', {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Routes />
+    <Router>
+      <Routes />
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

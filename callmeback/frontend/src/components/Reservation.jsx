@@ -36,7 +36,12 @@ function Reservation(props) {
   }, [fetchReservation]);
 
   return (
-    <Container text textAlign='center' className='paper'>
+    <Container
+      text
+      textAlign='center'
+      className='paper'
+      data-testid='reservation-container'
+    >
       {reservationDetails.id !== '' && !reservationDetails.resolved && (
         <WaitDetails reservationDetails={reservationDetails} />
       )}
