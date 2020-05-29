@@ -48,7 +48,7 @@ function sendReservations (apiUrl, callsPerPeriod, rewindRequestDateMins) {
  * parameters will introduce the same volume of calls that can be handled by the script
  * at ../consumer/main.js.
  * 
- * sample call: node main.js --calls 100 --period 60 --speed-up 120 --api-url 'http://192.168.64.4:31442'
+ * sample call: node main.js --calls 100 --period 60 --rewind-request-dates-by 30 --api-url 'http://192.168.64.4:31442'
  */
 function main() {
     const delay = argv.periodLength * 60 * 1000 // periodLength is in minutes, turn into milliseconds
