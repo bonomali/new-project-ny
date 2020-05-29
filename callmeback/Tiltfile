@@ -1,0 +1,11 @@
+k8s_yaml(kustomize('kubernetes'))
+
+docker_build(
+  'google-org/call-me-back-backend',
+  'backend',
+)
+
+docker_build(
+  'google-org/call-me-back-frontend',
+  'frontend',
+)

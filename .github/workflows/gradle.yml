@@ -17,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build and test
-      working-directory: .
-      run: ./gradlew buildProdImage
+      working-directory: callmeback
+      run: ./gradlew test
 
     - uses: romeovs/lcov-reporter-action@v0.2.11
       with:

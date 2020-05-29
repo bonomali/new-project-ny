@@ -1,22 +1,103 @@
-# callmeback
+# Call Me Back
 
-Prototype project allowing for NYS residents to contact a customer service representative.
+Prototype project allowing for NYS residents to contact a customer service
+representative. The app here is built based on the team's understanding of ITS's
+preferred infrastructure. The app contains:
 
-This is a Spring Boot app with a React UI. Starter code generated from https://start.spring.io.
+  * An [Express.js](http://expressjs.com/) server with a
+    [React.js](https://reactjs.org/) frontend.
+  * A [Spring Boot](https://spring.io/projects/spring-boot) server with a basic
+    REST service.
+  * A [MongoDB](https://www.mongodb.com/) server.
+  * Kubernetes configuration to manage the deployment of the three services with
+    an [Nginx Ingress Controller](https://kubernetes.github.io/ingress-nginx/).
+  * A [Tilt](https://tilt.dev) configuration for setting up a local dev
+    environment.
 
-Spring Boot code is under `src`. React code is under `frontend`. Upon compilation, `frontend` code will be packaged with the Spring Boot app into a JAR for deployment.
+## Prerequisites
 
-## Build & Run
+  * A local Kubernetes cluster
+    * Mac: [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+    * Linux: [minikube](https://minikube.sigs.k8s.io/docs/start/)
+  * [Tilt](https://docs.tilt.dev/install.html)
 
-See top level README.md
+## Building and running
 
-## Reference Documentation
-For further reference, please consider the following sections:
+### Start your Kubernetes environment
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.2.6.RELEASE/gradle-plugin/reference/html/)
+#### Mac
 
-## Additional Links
-These additional references should also help you:
+Enabling Kubernetes in Docker (as in the Tilt instructions) allows this to work. Nothing additional needs to be run.
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+You may need to set Docker as your Kubernetes context:
+
+```sh
+kubectl config set-context docker-desktop
+```
+
+#### Linux
+
+```bash
+minikube start
+```
+
+### Enable Ingress Functionality
+
+#### Mac
+
+Follow the instructions for [Allowing Ingress in Docker](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac)
+
+Run:
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/cloud/deploy.yaml
+```
+
+This may need to be re-run if you blow up your Kubernetes configuration.
+
+#### Linux
+
+```
+minikube addons enable ingress
+```
+
+### Start the app
+
+```
+tilt up
+```
+
+Then get the IP address for the app and connect to it in your browser over HTTP:
+
+```
+kubectl get ingress -o go-template --template="{{(index .items 0).status.loadBalancer.ingress}}"
+```
+
+If this doesn't return anything then you may have not enabled the ingress
+controller above.
+
+### Access Mongo shell
+
+Once the app has started:
+
+```
+# get the name of the pod starting with cmb-mongo-
+kubectl get pods
+
+# open a bash shell in the mongo pod
+kubectl exec -it {pod-name} -- /bin/bash
+
+# start the mongo CLI. replace <password> with the password value in kustomization.yaml.
+mongo -u root -p <password>
+
+# print all documents to console, confirming a successful CLI session
+use test
+db.reservation.find()
+```
+
+## Known Issues
+
+* The HAL Browser redirect doesn't quite work properly if you go to `/api/v1`.
+  * Workaround: Go to `/api/v1/browser/index.html`.
+  * More reading:
+    https://stackoverflow.com/questions/41116262/the-hal-browser-doesnt-get-autoconfigured-correctly-in-spring-data-rest

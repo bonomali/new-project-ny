@@ -10,7 +10,7 @@ spec:
   selector:
     app: call-me-back
     tier: mongo
-  clusterIP: None
+  type: NodePort
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

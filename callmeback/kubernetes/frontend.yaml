@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cmb-frontend-service
+  labels:
+    app: call-me-back
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: call-me-back
+    tier: web
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cmb-frontend
+  labels:
+    app: call-me-back
+spec:
+  selector:
+    matchLabels:
+      app: call-me-back
+      tier: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: call-me-back
+        tier: web
+    spec:
+      containers:
+        - image: google-org/call-me-back-frontend:dev
+          name: cmb-frontend
+          ports:
+            - containerPort: 3000
+              name: frontend
