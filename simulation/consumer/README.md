@@ -11,6 +11,7 @@ A "consumer" script to be run via the Command Line that simulates handling and c
 From the consumer directory, run:
 
 ```bash
+npm install
 node main.js --api-url 'http://192.168.64.4:31442'
 ```
 
