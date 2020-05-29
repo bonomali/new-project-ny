@@ -5,10 +5,13 @@ import Routes from './Routes.jsx';
 import moment from 'moment';
 
 moment.updateLocale('en', {
-  // Abbreviate relative time rendered output from "minutes" to "min"
+  // Abbreviate relative time rendered output from "minutes" to "min".
+  // Override any value of seconds to show "now" rather than "a few seconds".
   relativeTime: {
+    s: 'now',
     m: '1 min',
     mm: '%d min',
+    h: '1 hour',
   },
 });
 
