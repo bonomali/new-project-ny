@@ -68,7 +68,7 @@ function WaitDetails(props) {
                     </Link>
                 </div>
                 <br/>
-                <p style={{"textAlign":"left", "fontSize":"small"}}>
+                <div style={{"textAlign":"left", "fontSize":"small"}}>
                     You have requested a call with New York State about <b>{topic}</b>.
                     Someone will call you between {callStartFormatted} and {callStartMaxFormatted}.
                     Keep your phone nearby!
@@ -81,7 +81,7 @@ function WaitDetails(props) {
                     <label style={{"display":"table-cell"}}>Text me five minutes before as a reminder. <a href="#no-op">Data charges</a> may apply.</label>
                     <br/>
                     </div>
-                </p>
+                </div>
                 <div className = "faq-title">
                     Common questions about <b>{topic}</b> 
                 </div>

@@ -32,7 +32,7 @@ function endCall(apiUrl, reservation) {
         events: reservationEvents,
         resolution: resolution,
     };
-
+    
     let hrefArray = reservation._links.self.href.split('/');
     let reservationId = hrefArray[hrefArray.length - 1];
     return axios.patch(apiUrl + '/api/v1/reservations/' + reservationId, request)
