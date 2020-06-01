@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
-import org.assertj.core.util.Lists;
+import org.google.callmeback.TestHelpers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -356,12 +356,7 @@ public class ReservationRepositoryTest {
 
   private Reservation createAndPersistReservation(
       Date requestDate, String topic, Optional<ReservationEvent> reservationEvent) {
-    Reservation reservation = new Reservation();
-    reservation.requestDate = requestDate;
-    reservation.topic = topic;
-    if (reservationEvent.isPresent()) {
-      reservation.events = Lists.newArrayList(reservationEvent.get());
-    }
+    Reservation reservation = TestHelpers.createReservation(requestDate, topic, reservationEvent);
     return reservationRepository.save(reservation);
   }
 }
