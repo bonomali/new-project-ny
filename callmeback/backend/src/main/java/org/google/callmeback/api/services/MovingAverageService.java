@@ -75,13 +75,12 @@ public class MovingAverageService {
       OptionalDouble previousMovingAverage) {
 
     if (reservation == null) {
-        throw new IllegalArgumentException(
-            "Moving average cannot be calculated for a `null` Reservation");
+      throw new IllegalArgumentException(
+          "Moving average cannot be calculated for a `null` Reservation");
     } else if (connectedEvent == null || connectedEvent.type != ReservationEventType.CONNECTED) {
-        throw new IllegalArgumentException(
-            "A non-null ReservationEvent of type CONNECTED must be provided to calculate a " + 
-            "moving average."
-        );
+      throw new IllegalArgumentException(
+          "A non-null ReservationEvent of type CONNECTED must be provided to calculate a "
+              + "moving average.");
     }
 
     double waitTimeMs =
