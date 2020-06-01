@@ -30,11 +30,16 @@ function WaitDetails(props) {
   const longWait = callStartMaxDuration.asHours() >= 24;
   const iconName = longWait ? 'calendar alternate outline' : 'clock';
 
+  const callStartMinMoment = moment(naiveExpCallStartMin);
+  const callStartMinDuration = moment.duration(callStartMinMoment.diff(now));
+
   let waitTimeEstimate;
   if (longWait) {
     waitTimeEstimate = (
       <Moment format={'ddd, MMMM Do'}>{naiveExpCallStartMax}</Moment>
     );
+  } else if (callStartMinDuration <= 0) {
+    waitTimeEstimate = "just a moment"
   } else {
     waitTimeEstimate = (
       <div>

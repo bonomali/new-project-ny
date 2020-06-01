@@ -38,7 +38,7 @@ test('renders wait details with current time', async () => {
   );
   expect(getByText("We'll call you in")).toBeDefined();
   expect(getByText('Cancel call')).toBeDefined();
-  expect(getAllByText('now').length).toEqual(4);
+  expect(getAllByText('just a moment').length).toEqual(1);
   expect(getAllByText('mocktopic').length).toEqual(2);
 });
 
