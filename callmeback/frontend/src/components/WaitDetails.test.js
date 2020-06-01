@@ -17,6 +17,9 @@ moment.updateLocale('en', {
     h: '1 hour',
   },
 });
+// Specify exact minutes in the 1-59 range. Without this, 45-59 mins is
+// rendered as "1 hour".
+moment.relativeTimeThreshold('m', 59);
 
 test('renders wait details with current time', async () => {
   const mockDate = new Date();
@@ -59,4 +62,27 @@ test('renders wait details with 1-2 hour wait', async () => {
   );
   expect(getAllByText('1 hour').length).toEqual(2);
   expect(getAllByText('2 hours').length).toEqual(2);
+});
+
+test('renders wait details with 45 mins - 1 hour', async () => {
+  const mockDateMin = new Date();
+  mockDateMin.setMinutes(mockDateMin.getMinutes() + 45);
+  // Add 30 mins to the starting wait time.
+  const mockDateMax = new Date(mockDateMin);
+  mockDateMax.setMinutes(mockDateMax.getMinutes() + 30);
+  const mockReservationDetails = {
+    topic: 'mocktopic',
+    naiveExpCallStartMin: mockDateMin,
+    naiveExpCallStartMax: mockDateMax,
+    maExpCallStartMin: mockDateMin,
+    maExpCallStartMax: mockDateMax,
+    id: 'mockid',
+  };
+  const { getAllByText } = render(
+    <Router>
+      <WaitDetails reservationDetails={mockReservationDetails} />
+    </Router>
+  );
+  expect(getAllByText('45 min').length).toEqual(2);
+  expect(getAllByText('1 hour').length).toEqual(2);
 });
