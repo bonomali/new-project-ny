@@ -14,6 +14,9 @@ moment.updateLocale('en', {
     h: '1 hour',
   },
 });
+// Specify exact minutes in the 1-59 range. Without this, 45-59 mins is
+// rendered as "1 hour".
+moment.relativeTimeThreshold('m', 59);
 
 ReactDOM.render(
   <React.StrictMode>
