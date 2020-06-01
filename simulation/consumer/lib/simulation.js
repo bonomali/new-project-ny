@@ -6,7 +6,11 @@ function startCall(apiUrl) {
             console.log(JSON.stringify(response.data)); 
             return response;
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+            if (!error.response || error.response.status != '404') {
+                console.log(error) // don't print the error if there is no reservation to start; that is WAI
+            }
+        });
 }
 
 function endCall(reservation) {
