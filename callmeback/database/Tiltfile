@@ -1,0 +1,5 @@
+# Start with a base Dockerfile with none of our source code,
+# and an entry point that starts a server.
+
+k8s_yaml(kustomize('.'))
+k8s_resource('database')

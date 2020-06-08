@@ -2,11 +2,12 @@ server:
   servlet:
     context-path: /api
 spring:
-    data:
-        mongodb:
-            authentication-database: admin
-        rest:
-            base-path: /v1
+  data:
+    mongodb:
+      database: nyst
+      authentication-database: admin
+    rest:
+      base-path: /v1
 defaults:
     movingAverage:
         numberOfCalls: 10

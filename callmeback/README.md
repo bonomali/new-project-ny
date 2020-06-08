@@ -67,7 +67,13 @@ minikube addons enable ingress
 tilt up
 ```
 
-Then get the IP address for the app and connect to it in your browser over HTTP:
+When using docker-desktop as your local kubernetes cluster, you can start the 
+application by navigating to `http://localhost`. Depending on your computer's
+proxy configuration, you may need to open the application in an Incognito
+window.
+
+When using minikube as your local kubernetes cluster, you will need to navigate
+to the specific IP address for the application. You can find the address via:
 
 ```
 kubectl get ingress -o go-template --template="{{(index .items 0).status.loadBalancer.ingress}}"
@@ -81,23 +87,19 @@ controller above.
 Once the app has started:
 
 ```
-# get the name of the pod starting with cmb-mongo-
-kubectl get pods
-
 # open a bash shell in the mongo pod
-kubectl exec -it {pod-name} -- /bin/bash
+kubectl exec -it database-0 sh
 
-# start the mongo CLI. replace <password> with the password value in kustomization.yaml.
+# start the mongo CLI. replace <password> with the value in backend/k8s.yml
 mongo -u root -p <password>
 
 # print all documents to console, confirming a successful CLI session
-use test
+use nyst
 db.reservation.find()
 ```
 
-## Known Issues
+### Access the HAL Explorer
 
-* The HAL Browser redirect doesn't quite work properly if you go to `/api/v1`.
-  * Workaround: Go to `/api/v1/browser/index.html`.
-  * More reading:
-    https://stackoverflow.com/questions/41116262/the-hal-browser-doesnt-get-autoconfigured-correctly-in-spring-data-rest
+The [HAL Explorer](https://github.com/toedter/hal-explorer) provides a user 
+interface for interacting with the REST API. You can view the UI by
+navigating to `http://<hostname>/api/v1/`.

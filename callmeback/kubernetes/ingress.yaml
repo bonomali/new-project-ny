@@ -10,9 +10,9 @@ spec:
       paths:
       - path: /(api/.*)
         backend:
-          serviceName: cmb-backend-service
+          serviceName: backend-service
           servicePort: 8080
       - path: /(.*)
         backend:
-          serviceName: cmb-frontend-service
+          serviceName: frontend-service
           servicePort: 3000

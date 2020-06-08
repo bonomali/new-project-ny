@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      host: database-service
+      username: root
+      password: ABADIDEA

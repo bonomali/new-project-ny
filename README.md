@@ -14,42 +14,76 @@ For more details on specific processes or systems, see the wiki.
 * [kubectl (1.18.2 or
   higher)](https://kubernetes.io/docs/tasks/tools/install-kubectl)
 * [minikube (1.9.2 or
-  higher)](https://kubernetes.io/docs/tasks/tools/install-minikube/)
+  higher)](https://kubernetes.io/docs/tasks/tools/install-minikube/) (optional)
+* [tilt.dev](https://tilt.dev/)
+* Java 8
+* Node (current)
+
+Note: minikube is not required on platforms, such as OSX, that support Docker 
+Desktop (as opposed to Docker Engine). Docker Desktop supports Kubernetes and
+kubectl out of the box. 
 
 ## Building and running
 
-Note that as long as Docker is installed properly, minikube should use
-Docker as its driver, and a separate Hypervisor should not be necessary to
-install.
+For local development, the easiest way to build and run is via tilt.dev. For
+example:
 
-To build and run:
+```
+> cd callmeback
+callmeback> tilt up
+```
 
-* `./gradlew appName:buildImage` - Builds an image for a local run
-* `./gradlew appName:buildProdImage` - Builds a hermetic prod image
-* `./gradlew appName:start` - Starts (or updates) the running app
-* `./gradlew appName:stop` - Stops the running app
+You can also build and run the backend by:
 
-Replace `appName` with the directory name you'd like to run or exclude it to
-build or run everything (e.g. `./gradlew callmeback:run).
+```
+> cd callmeback/backend
+callmeback/backend> ./gradlew build
+callmeback/backend> ./gradlew start
+```
 
-Note that during development, only `./gradlew appName:start` should be necessary
-to rebuild and restart the application with the updated code.
+and the frontend by:
+
+```
+> cd callmeback/frontend
+callmeback/frontend> yarn build
+callmeback/frontend> yarn start
+```
+
+If ever builds don't seem to be working exactly right, try cleaning your build
+directories with:
+
+```
+> git clean -dfX
+```
+
+## Viewing logs
 
 To view logs:
 
 ```
 > kubectl get pods
 NAME                         READY   STATUS    RESTARTS   AGE
-cmb-mongo-5d746ddb7d-85w7n   1/1     Running   0          61s
-cmb-web-5bd6c94b98-8dlfp     1/1     Running   0          61s
-> kubectl logs -f cmb-web-5bd6c94b98-8dlfp
+database-0                    1/1     Running   0          61s
+frontend-6574b66989-lpjpr     1/1     Running   0          61s
+> kubectl logs -f frontend-6574b66989-lpjpr
 # logs begin streaming from the selected container
 ```
 
-To run tests:
+## Running tests
 
-* `./gradlew appName:test` - Runs (backend) tests for the specified `appName`.
-* `./gradlew -i appName:test` - Same as above and prints application logs to test output.
+To run backend tests:
+
+```
+> cd callmeback/backend
+callmeback/backend> ./gradlew test
+```
+
+To run frontend tests:
+
+```
+> cd callmeback/frontend
+callmeback/frontend> yarn test
+```
 
 ## Source Code Headers
 

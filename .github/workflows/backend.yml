@@ -1,13 +1,17 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Build and Test Check
+name: Validate `callmeback/backend`
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
+defaults:
+  run:
+    working-directory: callmeback/backend
 
 jobs:
   build:
@@ -16,8 +20,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build and test
-      working-directory: callmeback
+    - name: Run gradle
       run: ./gradlew test
 
     - uses: romeovs/lcov-reporter-action@v0.2.11
