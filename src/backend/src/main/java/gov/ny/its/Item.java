@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 @Document
 public class Item {
   @Id 
-  public String id;
+  public long id;
 
   public String name;
 }

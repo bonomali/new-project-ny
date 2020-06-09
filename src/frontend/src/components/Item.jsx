@@ -1,0 +1,23 @@
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+
+function Item(props) {
+  const { id } = useParams();
+  const [item, setItem] = useState({ name: 'n/a' });
+
+  useEffect(() => {
+    axios.get('/api/v1/items/' + id)
+      .then((response) => {
+        setItem(response.data)
+      });
+  })
+
+  return (
+    <div>
+      <p>Item {id} is named "{item.name}".</p>
+    </div>
+  );
+}
+
+export default Item;

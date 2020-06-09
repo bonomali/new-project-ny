@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Reservation from './components/Reservation.jsx';
+import Item from './components/Item.jsx';
 
 function Routes() {
   return (
     <div className='container-fluid'>
       <Switch>
-        <Route path='/reservations/:id' component={Reservation} />
-        <Route exact path='/' component={Reservation} />
+        <Route path='/items/:id' component={Item} />
+        <Route exact path='/' component={Item} />
       </Switch>
     </div>
   );
