@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: backend
     app.kubernetes.io/component: backend
-    app.kubernetes.io/part-of: callmeback
+    app.kubernetes.io/part-of: its
 spec:
   ports:
     - port: 8080
@@ -20,7 +20,7 @@ metadata:
   labels:
       app.kubernetes.io/name: backend
       app.kubernetes.io/component: backend
-      app.kubernetes.io/part-of: callmeback        
+      app.kubernetes.io/part-of: its        
 spec:
   selector:
     matchLabels:
@@ -30,7 +30,7 @@ spec:
       labels:
         app.kubernetes.io/name: backend
         app.kubernetes.io/component: backend
-        app.kubernetes.io/part-of: callmeback        
+        app.kubernetes.io/part-of: its        
     spec:
       containers:
       - name: backend

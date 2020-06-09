@@ -29,24 +29,24 @@ For local development, the easiest way to build and run is via tilt.dev. For
 example:
 
 ```
-> cd callmeback
-callmeback> tilt up
+> cd src
+src> tilt up
 ```
 
 You can also build and run the backend by:
 
 ```
-> cd callmeback/backend
-callmeback/backend> ./gradlew build
-callmeback/backend> ./gradlew start
+> cd src/backend
+src/backend> ./gradlew build
+src/backend> ./gradlew start
 ```
 
 and the frontend by:
 
 ```
-> cd callmeback/frontend
-callmeback/frontend> yarn build
-callmeback/frontend> yarn start
+> cd src/frontend
+src/frontend> yarn build
+src/frontend> yarn start
 ```
 
 If ever builds don't seem to be working exactly right, try cleaning your build
@@ -74,15 +74,15 @@ frontend-6574b66989-lpjpr     1/1     Running   0          61s
 To run backend tests:
 
 ```
-> cd callmeback/backend
-callmeback/backend> ./gradlew test
+> cd src/backend
+src/backend> ./gradlew test
 ```
 
 To run frontend tests:
 
 ```
-> cd callmeback/frontend
-callmeback/frontend> yarn test
+> cd src/frontend
+src/frontend> yarn test
 ```
 
 ## Source Code Headers

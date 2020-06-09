@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: frontend
     app.kubernetes.io/component: frontend
-    app.kubernetes.io/part-of: callmeback
+    app.kubernetes.io/part-of: its
 spec:
   ports:
     - port: 3000
@@ -26,7 +26,7 @@ spec:
       labels:
         app.kubernetes.io/name: frontend
         app.kubernetes.io/component: frontend
-        app.kubernetes.io/part-of: callmeback        
+        app.kubernetes.io/part-of: its        
     spec:
       containers:
       - name: frontend
