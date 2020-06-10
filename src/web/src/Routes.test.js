@@ -19,5 +19,5 @@ test('/ routes to Item', async () => {
       <Routes />
     </MemoryRouter>
   );
-  expect(getByTestId('home-container')).toBeDefined();
+  expect(getByTestId('item-container')).toBeDefined();
 });

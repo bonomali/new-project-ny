@@ -41,12 +41,12 @@ src/api> ./gradlew build
 src/api> ./gradlew start
 ```
 
-and the app by:
+and the web by:
 
 ```
-> cd src/app
-src/app> yarn build
-src/app> yarn start
+> cd src/web
+src/web> yarn build
+src/web> yarn start
 ```
 
 If ever builds don't seem to be working exactly right, try cleaning your build
@@ -64,8 +64,8 @@ To view logs:
 > kubectl get pods
 NAME                         READY   STATUS    RESTARTS   AGE
 database-0                    1/1     Running   0          61s
-app-6574b66989-lpjpr     1/1     Running   0          61s
-> kubectl logs -f app-6574b66989-lpjpr
+web-6574b66989-lpjpr     1/1     Running   0          61s
+> kubectl logs -f web-6574b66989-lpjpr
 # logs begin streaming from the selected container
 ```
 
@@ -78,11 +78,11 @@ To run api tests:
 src/api> ./gradlew test
 ```
 
-To run app tests:
+To run web tests:
 
 ```
-> cd src/app
-src/app> yarn test
+> cd src/web
+src/web> yarn test
 ```
 
 ## Source Code Headers

@@ -14,7 +14,7 @@ function Item(props) {
   })
 
   return (
-    <div>
+    <div data-testid='item-container'>
       <p>Item {id} is named "{item.name}".</p>
     </div>
   );

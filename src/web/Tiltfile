@@ -1,7 +1,7 @@
 # Start with a base Dockerfile with none of our source code,
 # and an entry point that starts a server.
 
-docker_build('app-image', '.',
+docker_build('web-image', '.',
   live_update=[
     # when package.json changes, we need to do a full build
     fall_back_on(['package.json', 'yarn.lock']),
@@ -10,4 +10,4 @@ docker_build('app-image', '.',
   ])
 
 k8s_yaml('k8s.yml')
-k8s_resource('app', port_forwards=3000, resource_deps=['api'])
+k8s_resource('web', port_forwards=3000, resource_deps=['api'])
