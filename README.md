@@ -33,20 +33,20 @@ example:
 src> tilt up
 ```
 
-You can also build and run the backend by:
+You can also build and run the api by:
 
 ```
-> cd src/backend
-src/backend> ./gradlew build
-src/backend> ./gradlew start
+> cd src/api
+src/api> ./gradlew build
+src/api> ./gradlew start
 ```
 
-and the frontend by:
+and the app by:
 
 ```
-> cd src/frontend
-src/frontend> yarn build
-src/frontend> yarn start
+> cd src/app
+src/app> yarn build
+src/app> yarn start
 ```
 
 If ever builds don't seem to be working exactly right, try cleaning your build
@@ -64,25 +64,25 @@ To view logs:
 > kubectl get pods
 NAME                         READY   STATUS    RESTARTS   AGE
 database-0                    1/1     Running   0          61s
-frontend-6574b66989-lpjpr     1/1     Running   0          61s
-> kubectl logs -f frontend-6574b66989-lpjpr
+app-6574b66989-lpjpr     1/1     Running   0          61s
+> kubectl logs -f app-6574b66989-lpjpr
 # logs begin streaming from the selected container
 ```
 
 ## Running tests
 
-To run backend tests:
+To run api tests:
 
 ```
-> cd src/backend
-src/backend> ./gradlew test
+> cd src/api
+src/api> ./gradlew test
 ```
 
-To run frontend tests:
+To run app tests:
 
 ```
-> cd src/frontend
-src/frontend> yarn test
+> cd src/app
+src/app> yarn test
 ```
 
 ## Source Code Headers

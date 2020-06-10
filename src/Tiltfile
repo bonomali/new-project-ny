@@ -1,5 +1,5 @@
 include('./database/Tiltfile')
-include('./backend/Tiltfile')
-include('./frontend/Tiltfile')
+include('./api/Tiltfile')
+include('./app/Tiltfile')
 
 k8s_yaml('./kubernetes/ingress.yaml')

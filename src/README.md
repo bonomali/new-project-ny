@@ -5,7 +5,7 @@ representative. The app here is built based on the team's understanding of ITS's
 preferred infrastructure. The app contains:
 
   * An [Express.js](http://expressjs.com/) server with a
-    [React.js](https://reactjs.org/) frontend.
+    [React.js](https://reactjs.org/) app.
   * A [Spring Boot](https://spring.io/projects/spring-boot) server with a basic
     REST service.
   * A [MongoDB](https://www.mongodb.com/) server.
@@ -90,7 +90,7 @@ Once the app has started:
 # open a bash shell in the mongo pod
 kubectl exec -it database-0 sh
 
-# start the mongo CLI. replace <password> with the value in backend/k8s.yml
+# start the mongo CLI. replace <password> with the value in api/k8s.yml
 mongo -u root -p <password>
 
 # print all documents to console, confirming a successful CLI session

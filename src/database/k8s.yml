@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: database
     app.kubernetes.io/component: database
-    app.kubernetes.io/part-of: backend
+    app.kubernetes.io/part-of: api
 spec:
   clusterIP: None
   ports:
@@ -29,7 +29,7 @@ spec:
       labels:
         app.kubernetes.io/name: database
         app.kubernetes.io/component: database
-        app.kubernetes.io/part-of: backend
+        app.kubernetes.io/part-of: api
     spec:
       containers:
       - name: database
