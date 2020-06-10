@@ -1,46 +1,30 @@
-import { waitFor } from '@testing-library/dom';
-import '@testing-library/jest-dom/extend-expect';
-import { render } from '@testing-library/react';
-import axiosMock from 'axios';
+import { render, waitForElement, waitFor } from '@testing-library/react';
+import axios from 'axios';
 import React from 'react';
-import routeData from 'react-router';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Item from './Item.jsx';
+import '@testing-library/jest-dom/extend-expect'
 
 jest.mock('axios');
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => (0)
+}));
 
-const mockParams = {
-  id: 0,
-};
-
-beforeAll(() => {
-  jest.useFakeTimers();
-});
-
-beforeEach(() => {
-  jest.resetAllMocks();
-  jest.spyOn(routeData, 'useParams').mockReturnValue(mockParams);
-});
-
-test('renders Feedback for resolved reservation', async () => {
-  const mockLocation = {
-    pathname: '/items/0',
-    state: {
-      item: { name: 'zero' },
-    },
-  };
-
-  axiosMock.get.mockResolvedValue({
-    data: { name: 'zero' },
+it('renders an item', async () => {
+  axios.get.mockResolvedValue({
+    data: {
+      name: 'zero'
+    }
   });
 
-  render(
-    <Router>
-      <Item location={mockLocation} />
-    </Router>
+  const { getByTestId } = render(
+    <MemoryRouter initialEntries={["/items/0"]}>
+      <Item />
+    </MemoryRouter>
   );
 
-  // Wait for fetchReservation to be called
-  await waitFor(() => expect(axiosMock.get).toHaveBeenCalledTimes(1));
-  expect(axiosMock.get).toHaveBeenCalledWith('/api/v1/items/0');
+  const e = await waitFor(() => getByTestId('item-container'))
+  expect(axios.get).toHaveBeenCalledTimes(1);
 });
+

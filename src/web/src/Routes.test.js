@@ -1,12 +1,12 @@
-import React from 'react';
-import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import Routes from './Routes';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import Routes from './Routes';
 
 test('/items/:id routes to Item', async () => {
   const { getByTestId } = render(
-    <MemoryRouter initialEntries={['/items/mockid']}>
+    <MemoryRouter initialEntries={['/items/0']}>
       <Routes />
     </MemoryRouter>
   );

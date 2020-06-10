@@ -4,7 +4,7 @@ import Item from './components/Item.jsx';
 
 function Routes() {
   return (
-    <div className='container-fluid'>
+    <div>
       <Switch>
         <Route path='/items/:id' component={Item} />
         <Route exact path='/' component={Item} />
