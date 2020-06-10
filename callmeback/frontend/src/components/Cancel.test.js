@@ -7,6 +7,9 @@ import Cancel from './Cancel';
 import { BrowserRouter as Router } from 'react-router-dom';
 import routeData from 'react-router';
 
+// TODO: Check that the "keep my call" user story sends the user back to the
+// WaitDetails page (either the standard page or the moving average page)
+
 jest.mock('axios');
 let historyAdd = '';
 jest.mock('react-router-dom', () => ({

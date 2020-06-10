@@ -8,24 +8,23 @@ import moment from 'moment';
 function WaitDetails(props) {
   const {
     topic,
-    naiveExpCallStartMin,
-    naiveExpCallStartMax,
-    maExpCallStartMin,
-    maExpCallStartMax,
+    callStartMin,
+    callStartMax,
     id,
+    useMovingAverage,
   } = props.reservationDetails;
 
   const callStartFormatted = (
-    <Moment format='h:mm A'>{naiveExpCallStartMin}</Moment>
+    <Moment format='h:mm A'>{callStartMin}</Moment>
   );
   const callStartMaxFormatted = (
-    <Moment format='h:mm A'>{naiveExpCallStartMax}</Moment>
+    <Moment format='h:mm A'>{callStartMax}</Moment>
   );
 
   const [checked, setCheckbox] = useState(false);
 
   const now = moment();
-  const callStartMaxMoment = moment(naiveExpCallStartMax);
+  const callStartMaxMoment = moment(callStartMax);
   const callStartMaxDuration = moment.duration(callStartMaxMoment.diff(now));
   const longWait = callStartMaxDuration.asHours() >= 24;
   const iconName = longWait ? 'calendar alternate outline' : 'clock';
@@ -33,32 +32,20 @@ function WaitDetails(props) {
   let waitTimeEstimate;
   if (longWait) {
     waitTimeEstimate = (
-      <Moment format={'ddd, MMMM Do'}>{naiveExpCallStartMax}</Moment>
+      <Moment format={'ddd, MMMM Do'}>{callStartMax}</Moment>
     );
   } else {
     waitTimeEstimate = (
       <div>
         <span>
           <Moment fromNow ago>
-            {naiveExpCallStartMin}
+            {callStartMin}
           </Moment>{' '}
           -{' '}
           <Moment fromNow ago>
-            {naiveExpCallStartMax}
+            {callStartMax}
           </Moment>
         </span>
-        <br />
-        {!!maExpCallStartMax && (
-          <span>
-            <Moment fromNow ago>
-              {maExpCallStartMin}
-            </Moment>{' '}
-            -{' '}
-            <Moment fromNow ago>
-              {maExpCallStartMax}
-            </Moment>
-          </span>
-        )}
       </div>
     );
   }
@@ -66,23 +53,38 @@ function WaitDetails(props) {
   return (
     <Container text className='paper'>
       {/* Ensure props are loaded before rendering the component */}
-      {!!naiveExpCallStartMin && (
+      {!!callStartMin && (
         <div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '20px' }}>
               We'll call you {longWait ? 'on' : 'in'}
             </div>
-            <div style={{ fontSize: '30px' }}>
-              <Icon name={iconName} />
-              {waitTimeEstimate}
+            <div style={{ display: 'inline-table', alignItems: 'center'}}>
+              <div style={{ display: 'table-row', fontSize: '30px' }}>
+                <span
+                  style={{
+                    display: 'table-cell',
+                    textAlign: 'right',
+                    paddingRight: '4px',
+                    verticalAlign: 'top',
+                  }}
+                >
+                  <Icon name={iconName} />
+                </span>
+                <label style={{ display: 'table-cell' }}>
+                  {waitTimeEstimate}
+                </label>
+              </div>
             </div>
+            <br/>
             <Link
               to={{
                 pathname: '/cancel',
                 state: {
-                  naiveExpCallStartMin: naiveExpCallStartMin,
-                  naiveExpCallStartMax: naiveExpCallStartMax,
+                  callStartMin: callStartMin,
+                  callStartMax: callStartMax,
                   id: id,
+                  useMovingAverage: useMovingAverage,
                 },
               }}
               style={{ fontSize: '12px' }}

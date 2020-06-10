@@ -10,7 +10,8 @@ function Reservation(props) {
 
   const [reservationDetails, setReservationDetails] = useState(() => {
     if (!!props && !!props.location.state) {
-      return convertReservationToState(props.location.state.reservation, id);
+      return convertReservationToState(props.location.state.reservation, id,
+          props.useMovingAverage);
     }
     return {};
   });
@@ -18,12 +19,13 @@ function Reservation(props) {
   const fetchReservation = useCallback(async () => {
     try {
       const response = await axios.get('/api/v1/reservations/' + id);
-      const reservation = convertReservationToState(response.data, id);
+      const reservation = convertReservationToState(response.data, id,
+          props.useMovingAverage);
       setReservationDetails(reservation);
     } catch (error) {
       console.log(error); // Add other error handling.
     }
-  }, [id]);
+  }, [id, props.useMovingAverage]);
 
   useEffect(() => {
     fetchReservation(); // Run this once upfront to get the data.
@@ -52,20 +54,25 @@ function Reservation(props) {
   );
 }
 
-function convertReservationToState(reservation, id) {
-  const naiveExpCallStartMin = new Date(reservation.window.naiveWindow.min);
-  const naiveExpCallStartMax = new Date(reservation.window.naiveWindow.max);
-  const maExpCallStartMin = new Date(reservation.window.movingAvgWindow.min);
-  const maExpCallStartMax = new Date(reservation.window.movingAvgWindow.max);
+/*
+** convertReservationToState takes the reservation and returns the state
+** for the component.
+*/
+function convertReservationToState(reservation, id, useMovingAverage) {
+  const callStartMin = new Date(useMovingAverage ?
+      reservation.window.movingAvgWindow.min :
+      reservation.window.naiveWindow.min);
+  const callStartMax = new Date(useMovingAverage ?
+      reservation.window.movingAvgWindow.max :
+      reservation.window.naiveWindow.max);
 
   return {
     id: id,
     topic: 'Business', // Not in response yet, hard coded for demo.
     resolved: reservation.resolution != null,
-    naiveExpCallStartMin,
-    naiveExpCallStartMax,
-    maExpCallStartMin,
-    maExpCallStartMax,
+    callStartMin,
+    callStartMax,
+    useMovingAverage: useMovingAverage,
   };
 }
 

@@ -25,10 +25,8 @@ test('renders wait details with current time', async () => {
   const mockDate = new Date();
   const mockReservationDetails = {
     topic: 'mocktopic',
-    naiveExpCallStartMin: mockDate,
-    naiveExpCallStartMax: mockDate,
-    maExpCallStartMin: mockDate,
-    maExpCallStartMax: mockDate,
+    callStartMin: mockDate,
+    callStartMax: mockDate,
     id: 'mockid',
   };
   const { getByText, getAllByText } = render(
@@ -38,7 +36,7 @@ test('renders wait details with current time', async () => {
   );
   expect(getByText("We'll call you in")).toBeDefined();
   expect(getByText('Cancel call')).toBeDefined();
-  expect(getAllByText('now').length).toEqual(4);
+  expect(getAllByText('now').length).toEqual(2);
   expect(getAllByText('mocktopic').length).toEqual(2);
 });
 
@@ -49,19 +47,17 @@ test('renders wait details with 1-2 hour wait', async () => {
   mockDateMax.setHours(mockDateMax.getHours() + 1);
   const mockReservationDetails = {
     topic: 'mocktopic',
-    naiveExpCallStartMin: mockDateMin,
-    naiveExpCallStartMax: mockDateMax,
-    maExpCallStartMin: mockDateMin,
-    maExpCallStartMax: mockDateMax,
+    callStartMin: mockDateMin,
+    callStartMax: mockDateMax,
     id: 'mockid',
   };
-  const { getAllByText } = render(
+  const { getByText } = render(
     <Router>
       <WaitDetails reservationDetails={mockReservationDetails} />
     </Router>
   );
-  expect(getAllByText('1 hour').length).toEqual(2);
-  expect(getAllByText('2 hours').length).toEqual(2);
+  expect(getByText("1 hour")).toBeDefined();
+  expect(getByText("2 hours")).toBeDefined();
 });
 
 test('renders wait details with 45 mins - 1 hour', async () => {
@@ -72,17 +68,15 @@ test('renders wait details with 45 mins - 1 hour', async () => {
   mockDateMax.setMinutes(mockDateMax.getMinutes() + 30);
   const mockReservationDetails = {
     topic: 'mocktopic',
-    naiveExpCallStartMin: mockDateMin,
-    naiveExpCallStartMax: mockDateMax,
-    maExpCallStartMin: mockDateMin,
-    maExpCallStartMax: mockDateMax,
+    callStartMin: mockDateMin,
+    callStartMax: mockDateMax,
     id: 'mockid',
   };
-  const { getAllByText } = render(
+  const { getByText } = render(
     <Router>
       <WaitDetails reservationDetails={mockReservationDetails} />
     </Router>
   );
-  expect(getAllByText('45 min').length).toEqual(2);
-  expect(getAllByText('1 hour').length).toEqual(2);
+  expect(getByText("45 min")).toBeDefined();
+  expect(getByText("1 hour")).toBeDefined();
 });

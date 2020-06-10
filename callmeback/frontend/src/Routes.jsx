@@ -17,6 +17,9 @@ function Routes() {
         <Route path='/cancel' component={Cancel} />
         <Route path='/cancelconfirmation' component={CancelConfirmation} />
         <Route path='/reservations/:id' component={Reservation} />
+        <Route path='/reservations-ma/:id'
+          component={(props) =>
+            <Reservation {...props} useMovingAverage={true} />} />
         <Route exact path='/' component={Home} />
       </Switch>
     </div>

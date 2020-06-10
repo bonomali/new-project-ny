@@ -9,6 +9,7 @@ import Reservation from './Reservation';
 
 // TODO: Add test checking that fetchReservation is called at interval
 // TODO: Fix "use act()" warnings
+// TODO: Check that useMovingAverage is set correctly in state
 
 jest.mock('axios');
 

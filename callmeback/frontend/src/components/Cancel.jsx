@@ -48,12 +48,15 @@ function Cancel() {
   }
 
   const callStartFormatted = (
-    <Moment format='h:mm A'>{location.state.expCallStartMin}</Moment>
+    <Moment format='h:mm A'>{location.state.callStartMin}</Moment>
   );
   const callStartMaxFormatted = (
-    <Moment format='h:mm A'>{location.state.expCallStartMax}</Moment>
+    <Moment format='h:mm A'>{location.state.callStartMax}</Moment>
   );
-  const reservationLink = '/reservations/' + location.state.id;
+  const reservationLink =
+      location.state.useMovingAverage ?
+      '/reservations-ma/' + location.state.id :
+      '/reservations/' + location.state.id;
 
   return (
     <Container text className='paper' data-testid='cancel-container'>

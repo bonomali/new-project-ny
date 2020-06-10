@@ -49,6 +49,15 @@ test('/reservations/:id routes to Reservation', async () => {
   expect(getByTestId('reservation-container')).toBeDefined();
 });
 
+test('/reservations-ma/:id routes to Reservation', async () => {
+  const { getByTestId } = render(
+    <MemoryRouter initialEntries={['/reservations/mockid']}>
+      <Routes />
+    </MemoryRouter>
+  );
+  expect(getByTestId('reservation-container')).toBeDefined();
+});
+
 test('/ routes to Home', async () => {
   const { getByTestId } = render(
     <MemoryRouter initialEntries={['/']}>
