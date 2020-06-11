@@ -7,4 +7,4 @@ ADD BOOT-INF/lib /app/lib
 ADD META-INF /app/META-INF
 ADD BOOT-INF/classes /app
 
-ENTRYPOINT java -cp .:./lib/* gov.ny.its.CallMeBackApp
+ENTRYPOINT java -cp .:./lib/* gov.ny.its.Application
