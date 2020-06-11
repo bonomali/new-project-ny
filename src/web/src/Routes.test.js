@@ -29,7 +29,7 @@ test('/items/:id routes to Item', async () => {
       <Routes />
     </MemoryRouter>
   );
-  const e = await waitFor(() => getByTestId('item-container'))
+  await waitFor(() => getByTestId('item-container'));
 });
 
 test('/ routes to Item', async () => {
@@ -38,5 +38,5 @@ test('/ routes to Item', async () => {
       <Routes />
     </MemoryRouter>
   );
-  const e = await waitFor(() => getByTestId('item-container'))
+  await waitFor(() => getByTestId('item-container'));
 });

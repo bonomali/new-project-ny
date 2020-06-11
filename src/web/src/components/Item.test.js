@@ -23,7 +23,7 @@ it('renders an item', async () => {
     </MemoryRouter>
   );
 
-  const e = await waitFor(() => getByTestId('item-container'))
+  await waitFor(() => getByTestId('item-container'));
   expect(axios.get).toHaveBeenCalledTimes(1);
 });
 
