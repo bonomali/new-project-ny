@@ -19,9 +19,9 @@ For more details on specific processes or systems, see the wiki.
 * Java 8
 * Node (current)
 
-Note: minikube is not required on platforms, such as OSX, that support Docker 
+Note: minikube is not required on platforms, such as OSX, that support Docker
 Desktop (as opposed to Docker Engine). Docker Desktop supports Kubernetes and
-kubectl out of the box. 
+kubectl out of the box.
 
 ## Building and running
 
@@ -85,25 +85,107 @@ To run web tests:
 src/web> yarn test
 ```
 
-## Source Code Headers
+# Starter
 
-Every file containing source code must include copyright and license
-information. This includes any JS/CSS files that you might be serving out to
-browsers. (This is to help well-intentioned people avoid accidental copying that
-doesn't comply with the license.)
+The app here is built based on the team's understanding of NYS ITS's
+preferred infrastructure. The app contains:
 
-Apache header:
+  * An [Express.js](http://expressjs.com/) server with a
+    [React.js](https://reactjs.org/) app.
+  * A [Spring Boot](https://spring.io/projects/spring-boot) server with a basic
+    REST service.
+  * A [MongoDB](https://www.mongodb.com/) server.
+  * Kubernetes configuration to manage the deployment of the three services with
+    an [Nginx Ingress Controller](https://kubernetes.github.io/ingress-nginx/).
+  * A [Tilt](https://tilt.dev) configuration for setting up a local dev
+    environment.
 
-    Copyright 2020 Google LLC
+## Prerequisites
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+  * A local Kubernetes cluster
+    * Mac: [Docker for Mac](https://docs.docker.com/docker-for-mac/install/)
+    * Linux: [minikube](https://minikube.sigs.k8s.io/docs/start/)
+  * [Tilt](https://docs.tilt.dev/install.html)
 
-        https://www.apache.org/licenses/LICENSE-2.0
+## Building and running
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+### Start your Kubernetes environment
+
+#### Mac
+
+Enabling Kubernetes in Docker (as in the Tilt instructions) allows this to work. Nothing additional needs to be run.
+
+You may need to set Docker as your Kubernetes context:
+
+```sh
+kubectl config set-context docker-desktop
+```
+
+#### Linux
+
+```bash
+minikube start
+```
+
+### Enable Ingress Functionality
+
+#### Mac
+
+Follow the instructions for [Allowing Ingress in Docker](https://kubernetes.github.io/ingress-nginx/deploy/#docker-for-mac)
+
+Run:
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-0.32.0/deploy/static/provider/cloud/deploy.yaml
+```
+
+This may need to be re-run if you blow up your Kubernetes configuration.
+
+#### Linux
+
+```
+minikube addons enable ingress
+```
+
+### Start the app
+
+```
+tilt up
+```
+
+When using docker-desktop as your local kubernetes cluster, you can start the
+application by navigating to `http://localhost`. Depending on your computer's
+proxy configuration, you may need to open the application in an Incognito
+window.
+
+When using minikube as your local kubernetes cluster, you will need to navigate
+to the specific IP address for the application. You can find the address via:
+
+```
+kubectl get ingress -o go-template --template="{{(index .items 0).status.loadBalancer.ingress}}"
+```
+
+If this doesn't return anything then you may have not enabled the ingress
+controller above.
+
+### Access Mongo shell
+
+Once the app has started:
+
+```
+# open a bash shell in the mongo pod
+kubectl exec -it database-0 sh
+
+# start the mongo CLI. replace <password> with the value in api/k8s.yml
+mongo -u root -p <password>
+
+# print all documents to console, confirming a successful CLI session
+use nyst
+db.reservation.find()
+```
+
+### Access the HAL Explorer
+
+The [HAL Explorer](https://github.com/toedter/hal-explorer) provides a user
+interface for interacting with the REST API. You can view the UI by
+navigating to `http://<hostname>/api/v1/`.
