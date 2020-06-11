@@ -14,5 +14,5 @@ spec:
           servicePort: 8080
       - path: /(.*)
         backend:
-          serviceName: app-service
+          serviceName: web-service
           servicePort: 3000
