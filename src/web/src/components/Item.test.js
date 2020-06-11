@@ -1,9 +1,8 @@
-import { render, waitForElement, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import Item from './Item.jsx';
-import '@testing-library/jest-dom/extend-expect'
 
 jest.mock('axios');
 jest.mock('react-router-dom', () => ({

@@ -1,8 +1,27 @@
+import axios from 'axios';
 import '@testing-library/jest-dom/extend-expect';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import Routes from './Routes';
+
+jest.mock('axios');
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => (0)
+}));
+
+beforeEach(() => {
+  axios.get.mockResolvedValue({
+    data: {
+      name: 'zero'
+    }
+  });
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
 
 test('/items/:id routes to Item', async () => {
   const { getByTestId } = render(
@@ -10,7 +29,7 @@ test('/items/:id routes to Item', async () => {
       <Routes />
     </MemoryRouter>
   );
-  expect(getByTestId('item-container')).toBeDefined();
+  const e = await waitFor(() => getByTestId('item-container'))
 });
 
 test('/ routes to Item', async () => {
@@ -19,5 +38,5 @@ test('/ routes to Item', async () => {
       <Routes />
     </MemoryRouter>
   );
-  expect(getByTestId('item-container')).toBeDefined();
+  const e = await waitFor(() => getByTestId('item-container'))
 });

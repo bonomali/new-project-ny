@@ -16,7 +16,7 @@ function Item(props) {
       });
   }, [ id ]);
 
-  if (id === undefined) {
+  if (id === undefined || item === undefined) {
     return (
       <div data-testid='item-container'>
         Loading...
