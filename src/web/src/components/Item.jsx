@@ -2,9 +2,18 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
+
+// the hoc
+import { withNamespaces } from 'react-i18next';
+
+function App({ t }) {
+  return <h1>{t('Hello World')}</h1>
+}
+
+
 function Item(props) {
   const { id } = useParams();
-  const [ item, setItem ] = useState();
+  const [item, setItem] = useState();
 
   useEffect(() => {
     axios.get('/api/v1/items/' + id)
@@ -14,7 +23,7 @@ function Item(props) {
       .catch((reason) => {
         console.log(reason);
       });
-  }, [ id ]);
+  }, [id]);
 
   if (id === undefined || item === undefined) {
     return (
@@ -31,4 +40,4 @@ function Item(props) {
   );
 }
 
-export default Item;
+export default App;
