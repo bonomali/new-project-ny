@@ -3,17 +3,42 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
-
+import { Dropdown } from 'semantic-ui-react'
+ 
 function App() {
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+  const changeLanguage = (e, { value }) => {
+    i18n.changeLanguage(value);
   }
 
   const [t] = useTranslation();
+
+  const langOptions = [
+    {
+      key: 'en',
+      text: 'English',
+      value: 'en',
+    },
+    {
+      key: 'es',
+      text: 'Spanish',
+      value: 'es',
+    },
+    {
+      key: 'de',
+      text: 'German',
+      value: 'de',
+    }
+  ]
+  
   return (
     <div>
-      <button onClick={() => changeLanguage('es')}>es</button>
-      <button onClick={() => changeLanguage('en')}>en</button>
+      <Dropdown
+      onChange={changeLanguage}
+      placeholder='Select Language'
+      fluid
+      selection
+      options={langOptions}
+      />
       <h1>{t('Hello World')}</h1>
       <h1>{t('Item phrase', { id: '1', name: 'One' })}</h1>
     </div>
