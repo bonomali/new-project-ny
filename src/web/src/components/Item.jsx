@@ -36,7 +36,8 @@ function Item(props) {
       <button onClick={() => changeLanguage('es')}>es</button>
       <button onClick={() => changeLanguage('en')}>en</button>
       <h1>{t('Hello World')}</h1>
-      <h1>{t('Item phrase', { id: '1', name: 'One' })}</h1>
+      <h1>{t('Item phrase', { id: '1', name: "One" })}</h1>
+      <h1>{t('randomkey', { item })}</h1>
     </div>
   );
 }

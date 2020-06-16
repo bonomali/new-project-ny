@@ -1,4 +1,5 @@
 {
   "Hello World": "hola mundo",
-  "Item phrase": "Articulo {{id}} se llama {{name}}"
+  "Item phrase": "Articulo {{id}} se llama {{name}}",
+  "randomkey": "Me llamo {{item.name}}"
 }
