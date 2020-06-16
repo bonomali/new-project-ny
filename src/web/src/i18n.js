@@ -2,22 +2,16 @@ import i18n from 'i18next';
 import { initReactI18next } from "react-i18next";
 import detector from "i18next-browser-languagedetector";
 
-// Relative imports outside of src/ aren't supported so hardcoding into
-// "resources" for now below.
-// import translationEN from '../public/locales/en/translation.json';
-// import translationES from '../public/locales/es/translation.json';
+import translationEN from './locales/en/translation.json';
+import translationES from './locales/es/translation.json';
 
 // the translations
 const resources = {
   en: {
-    translation: {
-      "Hello World": "hello world"
-    }
+    translation: translationEN
   },
   es: {
-    translation: {
-      "Hello World": "hola mundo"
-    }
+    translation: translationES
   },
 };
 
