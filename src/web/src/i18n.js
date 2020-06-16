@@ -1,25 +1,26 @@
 import i18n from 'i18next';
-import { reactI18nextModule } from "react-i18next";
+import { initReactI18next } from "react-i18next";
 
-import translationEN from '../public/locales/en/translation.json';
-import translationES from '../public/locales/es/translation.json';
-
+// Relative imports outside of src/ aren't supported so hardcoding into
+// "resources" for now below.
+// import translationEN from '../public/locales/en/translation.json';
+// import translationES from '../public/locales/es/translation.json';
 
 // the translations
 const resources = {
   en: {
-    translation: translationEN
+    translation: "Hello World"
   },
   es: {
-    translation: translationES
+    translation: "Hola Mundo"
   },
 };
 
 i18n
-  .use(reactI18nextModule) // passes i18n down to react-i18next
+  .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources,
-    lng: "en",
+    lng: "es",
 
     keySeparator: false, // we do not use keys in form messages.welcome
 

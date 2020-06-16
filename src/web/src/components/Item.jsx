@@ -1,15 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
-
-// the hoc
-import { withNamespaces } from 'react-i18next';
-
-function App({ t }) {
+function App() {
+  const [t] = useTranslation();
   return <h1>{t('Hello World')}</h1>
 }
-
 
 function Item(props) {
   const { id } = useParams();
@@ -40,4 +37,4 @@ function Item(props) {
   );
 }
 
-export default App;
+export default App; //,Item
