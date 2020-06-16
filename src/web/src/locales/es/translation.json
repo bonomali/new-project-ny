@@ -1,3 +1,4 @@
 {
-  "Hello World": "hola mundo"
+  "Hello World": "hola mundo",
+  "Item phrase": "Articulo {{id}} se llama {{name}}"
 }

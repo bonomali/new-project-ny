@@ -1,3 +1,4 @@
 {
-  "Hello World": "hello world"
+  "Hello World": "hello world",
+  "Item phrase": "Item {{id}} is named {{name}}"
 }
