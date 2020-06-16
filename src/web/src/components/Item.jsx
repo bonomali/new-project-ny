@@ -2,10 +2,21 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 function App() {
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  }
+
   const [t] = useTranslation();
-  return <h1>{t('Hello World')}</h1>
+  return (
+    <div>
+      <button onClick={() => changeLanguage('es')}>es</button>
+      <button onClick={() => changeLanguage('en')}>en</button>
+      <h1>{t('Hello World')}</h1>
+    </div>
+  )
 }
 
 function Item(props) {
