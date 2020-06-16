@@ -1,0 +1,4 @@
+{
+    "Hello World": "Hallo welt",
+    "Item phrase": "Punkt {{number}} heißt \"{{item.name}}\"."
+}
