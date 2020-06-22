@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router';
-import { Container } from 'semantic-ui-react';
+import React, {useState, useEffect, useCallback} from 'react';
+import {useParams} from 'react-router';
+import {Container} from 'semantic-ui-react';
 import Feedback from './Feedback.jsx';
 import WaitDetails from './WaitDetails.jsx';
 import axios from 'axios';
 
+/**
+ * @param {object} props contains the state of this page
+ * @return {string} Container displaying information about the user's
+ * reservation
+ */
 function Reservation(props) {
-  const { id } = useParams();
+  const {id} = useParams();
 
   const [reservationDetails, setReservationDetails] = useState(() => {
     if (!!props && !!props.location.state) {
@@ -70,10 +75,13 @@ function Reservation(props) {
   );
 }
 
-/*
-** convertReservationToState takes the reservation and returns the state
-** for the component.
-*/
+/**
+ * @param {object} reservation the reservation being viewed on this page
+ * @param {string} id the id of the reservation
+ * @param {bool} useMovingAverage flag controlling whether the movingAverage
+ * is used to estimate the wait time (as opposed to the naive average)
+ * @return {object} the state for the component
+ */
 function convertReservationToState(reservation, id, useMovingAverage) {
   const callStartMin = new Date(useMovingAverage ?
       reservation.window.movingAvgWindow.min :

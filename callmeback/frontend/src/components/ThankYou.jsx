@@ -15,14 +15,17 @@
  */
 
 import React from 'react';
-import { Container } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import {Container} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
+/**
+ * @return {string} Container thanking the user for providing feedback
+ */
 function ThankYou() {
   return (
     <Container
       text
-      style={{ paddingTop: '2em' }}
+      style={{paddingTop: '2em'}}
       data-testid='thankyou-container'
     >
       <div>Thank you!</div>

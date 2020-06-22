@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { Container, Icon } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Container, Icon} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 import Moment from 'react-moment';
 import FaqAccordion from './FaqAccordion.jsx';
 import moment from 'moment';
 
+/**
+ * @param {object} props contains information about the reservation
+ * @return {string} Container displaying the expected wait time for a particular
+ * reservation
+ */
 function WaitDetails(props) {
   const {
     topic,
@@ -71,12 +76,12 @@ function WaitDetails(props) {
       {/* Ensure props are loaded before rendering the component */}
       {!!callStartMin && (
         <div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '20px' }}>
+          <div style={{textAlign: 'center'}}>
+            <div style={{fontSize: '20px'}}>
               We'll call you {longWait ? 'on' : 'in'}
             </div>
-            <div style={{ display: 'inline-table', alignItems: 'center'}}>
-              <div style={{ display: 'table-row', fontSize: '30px' }}>
+            <div style={{display: 'inline-table', alignItems: 'center'}}>
+              <div style={{display: 'table-row', fontSize: '30px'}}>
                 <span
                   style={{
                     display: 'table-cell',
@@ -87,7 +92,7 @@ function WaitDetails(props) {
                 >
                   <Icon name={iconName} />
                 </span>
-                <label style={{ display: 'table-cell' }}>
+                <label style={{display: 'table-cell'}}>
                   {waitTimeEstimate}
                 </label>
               </div>
@@ -103,19 +108,19 @@ function WaitDetails(props) {
                   useMovingAverage: useMovingAverage,
                 },
               }}
-              style={{ fontSize: '12px' }}
+              style={{fontSize: '12px'}}
             >
               Cancel call
             </Link>
           </div>
           <br />
-          <div style={{ textAlign: 'left', fontSize: 'small' }}>
+          <div style={{textAlign: 'left', fontSize: 'small'}}>
             You have requested a call with New York State about <b>{topic}</b>.
             Someone will call you between {callStartFormatted} and{' '}
             {callStartMaxFormatted}. Keep your phone nearby!
             <br />
             <br />
-            <div style={{ display: 'table-row' }}>
+            <div style={{display: 'table-row'}}>
               <span
                 style={{
                   display: 'table-cell',
@@ -131,7 +136,7 @@ function WaitDetails(props) {
                   value={checked}
                 />
               </span>
-              <label style={{ display: 'table-cell' }}>
+              <label style={{display: 'table-cell'}}>
                 Text me five minutes before as a reminder.{' '}
                 <a href='#no-op'>Data charges</a> may apply.
               </label>

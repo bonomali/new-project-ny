@@ -15,9 +15,12 @@
  */
 
 import React from 'react';
-import { Container } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import {Container} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
+/**
+ * @return {string} A container confirming the user has canceled their call
+ */
 function CancelConfirmation() {
   return (
     <Container

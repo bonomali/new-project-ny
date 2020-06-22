@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Home from './components/Home.jsx';
 import Reservation from './components/Reservation.jsx';
@@ -23,6 +23,10 @@ import ThankYou from './components/ThankYou.jsx';
 import Cancel from './components/Cancel.jsx';
 import CancelConfirmation from './components/CancelConfirmation.jsx';
 
+/**
+ * @return {string} a div which includes support for routing URLs to the
+ * relevant component
+ */
 function Routes() {
   return (
     <div className='container-fluid'>

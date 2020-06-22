@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Container, Form, Rating, Button } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {Container, Form, Rating, Button} from 'semantic-ui-react';
+import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 
+/**
+ * @param {object} props contains the id of the reservation
+ * @return {string} Container allowing the user to provide feedback on their
+ * experience
+ */
 function Feedback(props) {
   const id = props.id;
   const [details, setDetails] = useState('');
@@ -46,27 +51,27 @@ function Feedback(props) {
       comment: details,
     };
     axios
-      .patch('/api/v1/reservations/' + id, {
-        feedback: feedback,
-      })
-      .then(
-        (response) => {
-          console.log(response);
+        .patch('/api/v1/reservations/' + id, {
+          feedback: feedback,
+        })
+        .then(
+            (response) => {
+              console.log(response);
 
-          // Send to a thank you screen.
-          history.push('/thankyou');
-        },
-        (error) => {
-          console.log(error);
-          // TODO Display error in the UI.
-        }
-      );
+              // Send to a thank you screen.
+              history.push('/thankyou');
+            },
+            (error) => {
+              console.log(error);
+              // TODO Display error in the UI.
+            },
+        );
   };
 
   return (
     <Container text textAlign='center' className='paper'>
       <div>
-        <div style={{ fontSize: '20px', paddingBottom: '10px' }}>
+        <div style={{fontSize: '20px', paddingBottom: '10px'}}>
           How was your call?
         </div>
         <Form onSubmit={handleSubmit}>

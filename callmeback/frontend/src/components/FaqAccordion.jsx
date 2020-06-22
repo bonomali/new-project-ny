@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { Accordion, Icon } from 'semantic-ui-react';
+import React, {useState} from 'react';
+import {Accordion, Icon} from 'semantic-ui-react';
 
+/**
+ * @return {string} Multiple accordions with sample FAQs
+ */
 function FaqAccordion() {
   const [activeIndex, setIndex] = useState(-1);
 
   const handleClick = (e, titleProps) => {
-    const { index } = titleProps;
+    const {index} = titleProps;
     const newIndex = activeIndex === index ? -1 : index;
     setIndex(newIndex);
   };

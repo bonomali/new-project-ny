@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
+import {render, fireEvent, screen} from '@testing-library/react';
+import {waitFor} from '@testing-library/dom';
 import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import Feedback from './Feedback';
@@ -35,7 +35,7 @@ jest.mock('react-router-dom', () => ({
 test('renders feedback form', async () => {
   render(<Feedback id='mockid' />);
 
-  axiosMock.patch.mockResolvedValueOnce({ data: {} });
+  axiosMock.patch.mockResolvedValueOnce({data: {}});
 
   const ratingButtons = screen.getAllByRole('radio');
   const details = screen.getByPlaceholderText('Tell us more (optional)');

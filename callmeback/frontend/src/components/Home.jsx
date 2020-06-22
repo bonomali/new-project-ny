@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Container, Button, Form, Input, Header } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {Container, Button, Form, Input, Header} from 'semantic-ui-react';
+import {useHistory} from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
 
-function Home(props) {
+/**
+ * @return {string} Container with a form allowing a user to sign up for a
+ * reservation
+ */
+function Home() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [query, setQuery] = useState('');
   const [requestButtonEnabled, setRequestButtonEnabled] = useState(false);
   const history = useHistory();
-  const validPhoneNumber = /^(\((\d{3})\)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
+  const validPhoneNumber =
+      /^(\((\d{3})\)|(\d{3}))([\s-.]?)(\d{3})([\s-.]?)(\d{4})$/;
 
   useEffect(() => {
     if (
@@ -34,8 +39,9 @@ function Home(props) {
       name.trim() !== '' &&
       query.trim() !== ''
     ) {
-      // only set requestButtonEnabled to true if number, name, and topic are provided
-      // AND requestButtonEnabled is not already true (don't re-render if we don't need to)
+      // only set requestButtonEnabled to true if number, name, and topic are
+      // provided AND requestButtonEnabled is not already true (don't re-render
+      // if we don't need to)
       if (!requestButtonEnabled) setRequestButtonEnabled(true);
     } else {
       if (requestButtonEnabled) setRequestButtonEnabled(false);
@@ -53,21 +59,22 @@ function Home(props) {
       requestDate: moment(),
     };
     axios.post('/api/v1/reservations', reservation).then(
-      (response) => {
-        console.log(response);
+        (response) => {
+          console.log(response);
 
-        // Get ID of reservation from response, and direct the user to
-        // /reservations/{id} where they will see information about their call.
-        let hrefArray = response.data._links.self.href.split('/');
-        let reservationId = hrefArray[hrefArray.length - 1];
-        history.push('/reservations/' + reservationId, {
-          reservation: response.data,
-        });
-      },
-      (error) => {
-        console.log(error);
+          // Get ID of reservation from response, and direct the user to
+          // /reservations/{id} where they will see information about their
+          // call.
+          const hrefArray = response.data._links.self.href.split('/');
+          const reservationId = hrefArray[hrefArray.length - 1];
+          history.push('/reservations/' + reservationId, {
+            reservation: response.data,
+          });
+        },
+        (error) => {
+          console.log(error);
         // TODO Display error in the UI.
-      }
+        },
     );
   };
 

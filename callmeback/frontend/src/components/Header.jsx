@@ -15,10 +15,13 @@
  */
 
 import React from 'react';
-import { useLocation } from 'react-router';
+import {useLocation} from 'react-router';
 
+/**
+ * @return {string} div containing the NYS header
+ */
 function Header() {
-  let location = useLocation();
+  const location = useLocation();
 
   return (
     <div>
@@ -31,7 +34,7 @@ function Header() {
           <img
             src='/nygov-logo.png'
             alt='New York State logo'
-            style={{ width: '5em' }}
+            style={{width: '5em'}}
           />
         </div>
       )}

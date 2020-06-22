@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
+import {render, screen} from '@testing-library/react';
+import {waitFor} from '@testing-library/dom';
 import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import routeData from 'react-router';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
 import Reservation from './Reservation';
 
 // TODO: Add test checking that fetchReservation is called at interval
@@ -61,7 +61,7 @@ const mockResolvedReservation = {
     type: 'RESOLVED',
   },
 };
-const WaitDetailsString = "We'll call you in";
+const WaitDetailsString = 'We\'ll call you in';
 const FeedbackString = 'How was your call?';
 
 beforeAll(() => {
@@ -84,9 +84,9 @@ test('renders WaitDetails for unresolved reservation', async () => {
     data: mockUnresolvedReservation,
   });
   render(
-    <Router>
-      <Reservation location={mockLocation} />
-    </Router>
+      <Router>
+        <Reservation location={mockLocation} />
+      </Router>,
   );
 
   // Confirm the WaitDetails component is rendered
@@ -98,7 +98,7 @@ test('renders WaitDetails for unresolved reservation', async () => {
 
   // Confirm the WaitDetails component is rendered
   await waitFor(() =>
-    expect(screen.getByText(WaitDetailsString)).toBeDefined()
+    expect(screen.getByText(WaitDetailsString)).toBeDefined(),
   );
 });
 
@@ -113,9 +113,9 @@ test('renders Feedback for resolved reservation', async () => {
     data: mockResolvedReservation,
   });
   render(
-    <Router>
-      <Reservation location={mockLocation} />
-    </Router>
+      <Router>
+        <Reservation location={mockLocation} />
+      </Router>,
   );
 
   // Confirm the Feedback component is rendered
@@ -140,9 +140,9 @@ test('renders WaitDetails initially, then Feedback', async () => {
     data: mockResolvedReservation,
   });
   render(
-    <Router>
-      <Reservation location={mockLocation} />
-    </Router>
+      <Router>
+        <Reservation location={mockLocation} />
+      </Router>,
   );
 
   // Confirm the WaitDetails component is rendered
@@ -165,9 +165,9 @@ test('renders WaitDetails once fetchReservation returns', async () => {
     data: mockUnresolvedReservation,
   });
   render(
-    <Router>
-      <Reservation location={mockLocation} />
-    </Router>
+      <Router>
+        <Reservation location={mockLocation} />
+      </Router>,
   );
 
   // Confirm neither component is rendered
@@ -180,6 +180,6 @@ test('renders WaitDetails once fetchReservation returns', async () => {
 
   // Confirm the WaitDetails component is rendered
   await waitFor(() =>
-    expect(screen.getByText(WaitDetailsString)).toBeDefined()
+    expect(screen.getByText(WaitDetailsString)).toBeDefined(),
   );
 });

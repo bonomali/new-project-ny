@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
+import {render, fireEvent, screen} from '@testing-library/react';
+import {waitFor} from '@testing-library/dom';
 import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import Cancel from './Cancel';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
 import routeData from 'react-router';
 
 // TODO: Check that the "keep my call" user story sends the user back to the
@@ -40,23 +40,23 @@ jest.mock('react-router-dom', () => ({
 test('cancels call', async () => {
   const mockLocation = {
     pathname: '/cancel',
-    state: { id: 'id' },
+    state: {id: 'id'},
   };
   jest.spyOn(routeData, 'useLocation').mockReturnValue(mockLocation);
   render(
-    <Router>
-      <Cancel />
-    </Router>
+      <Router>
+        <Cancel />
+      </Router>,
   );
 
-  axiosMock.patch.mockResolvedValueOnce({ data: {} });
+  axiosMock.patch.mockResolvedValueOnce({data: {}});
 
   const submit = screen.getByRole('button');
   fireEvent.submit(submit);
 
   await waitFor(() => expect(axiosMock.patch).toHaveBeenCalledTimes(1));
   expect(axiosMock.patch).toHaveBeenCalledWith('/api/v1/reservations/id', {
-    resolution: expect.objectContaining({ type: 'CANCELED' }),
+    resolution: expect.objectContaining({type: 'CANCELED'}),
   });
   expect(historyAdd).toBe('/cancelconfirmation');
 });

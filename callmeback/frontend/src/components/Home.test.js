@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
+import {render, fireEvent, screen} from '@testing-library/react';
+import {waitFor} from '@testing-library/dom';
 import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import Home from './Home';
@@ -37,7 +37,7 @@ test('renders call queue form', async () => {
   expect(screen.getByRole('button')).toHaveAttribute('disabled');
 
   axiosMock.post.mockResolvedValueOnce({
-    data: { _links: { self: { href: 'reservations/res-id' } } },
+    data: {_links: {self: {href: 'reservations/res-id'}}},
   });
 
   const name = screen.getByPlaceholderText('Name');
@@ -66,12 +66,12 @@ test('renders call queue form', async () => {
 
   await waitFor(() => expect(axiosMock.post).toHaveBeenCalledTimes(1));
   expect(axiosMock.post).toHaveBeenCalledWith(
-    '/api/v1/reservations',
-    expect.objectContaining({
-      preferredName: 'mockname',
-      contactPhone: '1234567890',
-      query: 'mockquery',
-    })
+      '/api/v1/reservations',
+      expect.objectContaining({
+        preferredName: 'mockname',
+        contactPhone: '1234567890',
+        query: 'mockquery',
+      }),
   );
   expect(historyAdd).toBe('/reservations/res-id');
 });

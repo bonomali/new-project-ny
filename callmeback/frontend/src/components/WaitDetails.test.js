@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import {render} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { BrowserRouter as Router } from 'react-router-dom';
+import {BrowserRouter as Router} from 'react-router-dom';
 import WaitDetails from './WaitDetails';
 import moment from 'moment';
 
@@ -45,12 +45,12 @@ test('renders wait details with current time', async () => {
     callStartMax: mockDate,
     id: 'mockid',
   };
-  const { getByText, getAllByText } = render(
-    <Router>
-      <WaitDetails reservationDetails={mockReservationDetails} />
-    </Router>
+  const {getByText, getAllByText} = render(
+      <Router>
+        <WaitDetails reservationDetails={mockReservationDetails} />
+      </Router>,
   );
-  expect(getByText("We'll call you in")).toBeDefined();
+  expect(getByText('We\'ll call you in')).toBeDefined();
   expect(getByText('Cancel call')).toBeDefined();
   expect(getAllByText('now').length).toEqual(2);
   expect(getAllByText('mocktopic').length).toEqual(2);
@@ -67,13 +67,13 @@ test('renders wait details with 1-2 hour wait', async () => {
     callStartMax: mockDateMax,
     id: 'mockid',
   };
-  const { getByText } = render(
-    <Router>
-      <WaitDetails reservationDetails={mockReservationDetails} />
-    </Router>
+  const {getByText} = render(
+      <Router>
+        <WaitDetails reservationDetails={mockReservationDetails} />
+      </Router>,
   );
-  expect(getByText("1 hour")).toBeDefined();
-  expect(getByText("2 hours")).toBeDefined();
+  expect(getByText('1 hour')).toBeDefined();
+  expect(getByText('2 hours')).toBeDefined();
 });
 
 test('renders wait details with 45 mins - 1 hour', async () => {
@@ -88,11 +88,11 @@ test('renders wait details with 45 mins - 1 hour', async () => {
     callStartMax: mockDateMax,
     id: 'mockid',
   };
-  const { getByText } = render(
-    <Router>
-      <WaitDetails reservationDetails={mockReservationDetails} />
-    </Router>
+  const {getByText} = render(
+      <Router>
+        <WaitDetails reservationDetails={mockReservationDetails} />
+      </Router>,
   );
-  expect(getByText("45 min")).toBeDefined();
-  expect(getByText("1 hour")).toBeDefined();
+  expect(getByText('45 min')).toBeDefined();
+  expect(getByText('1 hour')).toBeDefined();
 });
