@@ -28,7 +28,7 @@ defaults:
     working-directory: callmeback/backend
 
 jobs:
-  build:
+  build_backend:
 
     runs-on: ubuntu-latest
 
